@@ -9,10 +9,11 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
-import javax.swing.JPanel;
+
+import aniExtraGUI.EPanel;
 
 
-public class TimelineLayer extends JPanel {
+public class TimelineLayer extends EPanel {
 	Main parent;
 	int layerID;
 	String layerName;
@@ -24,23 +25,24 @@ public class TimelineLayer extends JPanel {
 	int myMask = -1;
 	ArrayList<TimelineButton> jbs = new ArrayList<TimelineButton>();
 	TButton layerNameLabel;
-	JPanel labelArea = new JPanel();
-	JPanel lineArea;
+	EPanel labelArea = new EPanel();
+	EPanel lineArea;
 	boolean activeMask = false;
 	boolean visible = true;
 	
 	public TimelineLayer(Main parent, int layerID, boolean isMask) {
 		this.isMask = isMask;
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		lineArea = new JPanel();
-		lineArea.setBackground(parent.timeline.bgCol);
+		lineArea = new EPanel();
+		//lineArea.setBackground(parent.timeline.bgCol);
 		lineArea.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		this.parent = parent;
 		this.layerName = "Layer " + (layerID + 1);
 		if (isMask)
 			this.layerName = "Mask for " + (parent.CURRENTLAYER + 1);
 		this.layerID = layerID;
-		this.layerNameLabel = new TButton(this.layerName + ":");
+		this.layerNameLabel = new TButton();
+		layerNameLabel.setText(this.layerName + ":");
 		this.layerNameLabel.setFont(parent.timeline.f1);
 		parent.layerIndex++;
 		
@@ -62,7 +64,7 @@ public class TimelineLayer extends JPanel {
 			
 		} else {
 			activeMask=true;
-			lineArea.setBackground(new Color(207, 207, 207));
+			//lineArea.setBackground(new Color(207, 207, 207));
 			this.maskOf = parent.CURRENTLAYER;
 			int maskOfIndex = parent.canvas.getLayerIndex(parent.CURRENTLAYER);
 
@@ -85,8 +87,8 @@ public class TimelineLayer extends JPanel {
 	public TimelineLayer(Main parent, int layerID, boolean isMask,int maskOf, String label) {
 		this.isMask = isMask;
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		lineArea = new JPanel();
-		lineArea.setBackground(parent.timeline.bgCol);
+		lineArea = new EPanel();
+	//	lineArea.setBackground(parent.timeline.bgCol);
 		lineArea.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		this.parent = parent;
 		this.layerName = label;
@@ -104,7 +106,7 @@ public class TimelineLayer extends JPanel {
 		//	this.setPreferredSize(new Dimension(200,parent.timelineButtonHeight));
 		} else {
 			activeMask=true;
-			lineArea.setBackground(new Color(255, 255, 250));
+		//	lineArea.setBackground(new Color(255, 255, 250));
 			this.maskOf = maskOf;
 			int maskOfIndex = parent.canvas.getLayerIndex(maskOf);
 
@@ -115,7 +117,7 @@ public class TimelineLayer extends JPanel {
 			parent.timeline.layers.get(maskOfIndex).add(lineArea);
 			parent.timeline.layers.get(maskOfIndex).add(
 					parent.timeline.layers.get(maskOfIndex).lineArea);
-			this.setBackground(new Color(0, 0, 0));
+			//this.setBackground(new Color(0, 0, 0));
 			parent.timeline.layers.get(maskOfIndex).revalidate();
 			parent.timeline.layers.get(maskOfIndex).repaint();
 			parent.timeline.revalidate();

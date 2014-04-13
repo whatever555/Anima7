@@ -11,14 +11,15 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
+
+import aniExtraGUI.EButton;
 
 
 /**
  * @author eddie
  *
  */
-public class BrushButton extends JButton {  
+public class BrushButton extends EButton {  
 	   /**
 	 * 
 	 */

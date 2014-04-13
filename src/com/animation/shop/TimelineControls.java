@@ -13,17 +13,18 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import aniExtraGUI.EButton;
+import aniExtraGUI.EInternalFrame;
+import aniExtraGUI.ELabel;
+import aniExtraGUI.EPanel;
+import aniExtraGUI.ESpinner;
 
-public class TimelineControls extends JInternalFrame {
+
+public class TimelineControls extends EInternalFrame {
 
 
 	/**
@@ -32,12 +33,12 @@ public class TimelineControls extends JInternalFrame {
 	private static final long serialVersionUID = 1L;
 	Color inactiveCol =new Color(240,240,240);
 	Color activeCol =new Color(190,190,190);
-	JButton toggleTrans ;
+	EButton toggleTrans ;
 	Main parent;
-	JSpinner fpsSpinber;
-	JButton loopButton ;
-	JSpinner onLeftSpinner ;
-	JSpinner onRightSpinner ;
+	ESpinner fpsSpinber;
+	EButton loopButton ;
+	ESpinner onLeftSpinner ;
+	ESpinner onRightSpinner ;
 	public TimelineControls(Main parent) {
 		this.parent = parent;
 		showMe();
@@ -51,56 +52,61 @@ public class TimelineControls extends JInternalFrame {
 		this.setResizable(true);
 		this.setDefaultCloseOperation(1);
 
-		this.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, new Color(
-				238, 238, 238)));
-
-		JPanel panelArea = new JPanel();
+	
+		EPanel panelArea = new EPanel();
 
 		panelArea.setLayout(new BoxLayout(panelArea, BoxLayout.Y_AXIS));
 		
 
-		JPanel onionSkinArea = new JPanel();
+		EPanel onionSkinArea = new EPanel();
 		onionSkinArea.setLayout(new BoxLayout(onionSkinArea, BoxLayout.Y_AXIS));
-		JPanel fpsArea = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		EPanel fpsArea = new EPanel();
 
-		JPanel onionSkinArea1 = new JPanel(new FlowLayout(FlowLayout.LEADING));
-		JPanel onionSkinArea2 = new JPanel(new FlowLayout(FlowLayout.LEADING));
-		JPanel onionSkinArea3 = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		EPanel onionSkinArea1 = new EPanel();
+		EPanel onionSkinArea2 = new EPanel();
+		EPanel onionSkinArea3 = new EPanel();
 
+		fpsArea.setLayout(new FlowLayout(FlowLayout.LEADING));
+		onionSkinArea1.setLayout(new FlowLayout(FlowLayout.LEADING));
+		onionSkinArea2.setLayout(new FlowLayout(FlowLayout.LEADING));
+		onionSkinArea3.setLayout(new FlowLayout(FlowLayout.LEADING));
+		
 		onionSkinArea.add(onionSkinArea1);
 		onionSkinArea.add(onionSkinArea2);
 		onionSkinArea.add(onionSkinArea3);
 
-		JLabel tmpLbl = new JLabel("Onion Skin");
+		ELabel tmpLbl = new ELabel("Onion Skin");
 
 		onionSkinArea1.add(tmpLbl);
 		// onionSkinArea1.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-		JLabel fpsLabel = new JLabel("FPS: ");
+		ELabel fpsLabel = new ELabel("FPS: ");
 
 		SpinnerNumberModel onLeftModel = new SpinnerNumberModel(0, 0, 6,
 				1);
-		onLeftSpinner = new JSpinner(onLeftModel);
+		onLeftSpinner = new ESpinner(onLeftModel);
 
 		SpinnerNumberModel onRightModel = new SpinnerNumberModel(0, 0, 6,
 				1);
-		onRightSpinner = new JSpinner(onRightModel);
+		onRightSpinner = new ESpinner(onRightModel);
 
-		onionSkinArea2.add(new JLabel("Left: "));
+		onionSkinArea2.add(new ELabel("Left: "));
 		onionSkinArea2.add(onLeftSpinner);
 
-		onionSkinArea2.add(new JLabel("Right: "));
+		onionSkinArea2.add(new ELabel("Right: "));
 		onionSkinArea2.add(onRightSpinner);
 
 		SpinnerNumberModel fpsModel = new SpinnerNumberModel(parent.FPS, 1, 120,
 				1);
-		fpsSpinber = new JSpinner(fpsModel);
+		fpsSpinber = new ESpinner(fpsModel);
 
 		fpsArea.setAlignmentX(LEFT_ALIGNMENT);
 
 		onionSkinArea.setAlignmentX(LEFT_ALIGNMENT);
 
-		JPanel transparencyOfLayersPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
-		toggleTrans = new JButton("Toggle Layer Transparency");
+		EPanel transparencyOfLayersPanel = new EPanel();
+		transparencyOfLayersPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+		toggleTrans = new EButton();
+		toggleTrans.setText("Toggle Layer Transparency");
 		toggleTrans.setFont(parent.smallFont);
 		toggleTrans.setBackground(activeCol);
 		transparencyOfLayersPanel.setPreferredSize(new Dimension(180, 20));
@@ -109,16 +115,17 @@ public class TimelineControls extends JInternalFrame {
 		transparencyOfLayersPanel.setAlignmentX(LEFT_ALIGNMENT);
 		
 		
-		JPanel playControlPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
-		JButton playButton = new JButton();
+		EPanel playControlPanel = new EPanel();
+		playControlPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+		EButton playButton = new EButton();
 		playButton.setPreferredSize(new Dimension(20, 20));
-		JButton pauseButton = new JButton();
+		EButton pauseButton = new EButton();
 		pauseButton.setPreferredSize(new Dimension(20, 20));
-		JButton stopButton = new JButton();
+		EButton stopButton = new EButton();
 		stopButton.setPreferredSize(new Dimension(20, 20));
-		loopButton = new JButton();
+		loopButton = new EButton();
 		loopButton.setPreferredSize(new Dimension(20, 20));
-		JButton muteButton = new JButton();
+		EButton muteButton = new EButton();
 		muteButton.setPreferredSize(new Dimension(20, 20));
 		
 

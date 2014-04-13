@@ -5,10 +5,10 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
+import aniExtraGUI.EButton;
+import aniExtraGUI.EPanel;
 
-public class PreviousColours extends JPanel {
+public class PreviousColours extends EPanel {
 /**
 	 * 
 	 */
@@ -19,7 +19,7 @@ Main parent;
 		this.parent=parent;
 		this.setLayout(null);
 		this.setVisible(false);
-		this.setBackground(new Color(67,67,67));
+		this.setBackground(new Color(27,27,27));
 	}
 	
 	public void update(){
@@ -28,7 +28,7 @@ Main parent;
 		
 			for(int j = parent.PREVCOLS.size() - 1; j >= 0; j--){
 				Color col = parent.PREVCOLS.get(j);
-				JButton jb = new JButton();
+				EButton jb = new EButton();
 				jb.setPreferredSize(new Dimension(20,40));
 				jb.setMaximumSize(new Dimension(20,40));
 				jb.setBounds(0,(y*20),20,20);

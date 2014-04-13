@@ -10,7 +10,6 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.ScrollPane;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,7 +29,6 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -41,17 +39,20 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.colorchooser.ColorSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.FontUIResource;
 
 import processing.core.PImage;
 import aniExtraGUI.EInternalFrame;
+import aniExtraGUI.EPanel;
+import aniExtraGUI.EScrollPane;
+import aniExtraGUI.EScrollPane;
 import aniFilters.FilterFrame;
 
 /**
@@ -59,8 +60,12 @@ import aniFilters.FilterFrame;
  * 
  */
 public class Main {
-
+	
 	//TODO LIST
+	//SIMPLE BRUSHES
+	//Clean ICONS
+	//fix paste
+	//LAYER blending disolve etc
 	//Use disk files for Loaded File
 	//CLEAN UP UNUSED FILES *NB
 	// import images exceptions // stageholders
@@ -106,7 +111,7 @@ public class Main {
 	Font smallFont = new Font("Verdana", Font.ITALIC, 8);
 	
 	int MAXLAYERS = 5;
-	int MAXFRAMES = 120;
+	int MAXFRAMES = 600;
 	public int CURRENTFRAME = 0;
 	public int CURRENTLAYER = 0;
 	int CANVASWIDTH = 620;
@@ -155,19 +160,19 @@ public class Main {
 
 	public FilterFrame filterFrame;
 	public Canvas canvas;
-
+	EScrollPane canvasSc;
 	PenOptions penOps;
 	History historyPanel;
 
 	TimelineSwing timeline;
-	static EInternalFrame tlFrame = new EInternalFrame("Timeline");
+	static EInternalFrame tlFrame;
 TimelineControls timelineControls;
 
-	JPanel messagePanel = new JPanel();
+	EPanel messagePanel = new EPanel();
 
 	String fileConfigString="";
 	
-	JScrollPane scMain;
+	EScrollPane scMain;
 
 	   static String loadFile;
    JLabel messageTextArea;
@@ -188,25 +193,39 @@ TimelineControls timelineControls;
 	
 	public static void main(String[] args) {
 		
+		
+		UIManager.put("ScrollBar.trackHighlightForeground", (new Color(157,157,157))); 
+		UIManager.put("scrollbar", (new Color(57,57,157))); 
+		UIManager.put("ScrollBar.thumb", new ColorUIResource(new Color(157,157,157))); 
+		UIManager.put("ScrollBar.thumbHeight", 2); 
+		UIManager.put("ScrollBar.background", (new Color(57,57,57)));
+
+		UIManager.put("InternalFrame.activeTitleBackground", new ColorUIResource(new Color(57,57,57)));
+		UIManager.put("InternalFrame.inactiveTitleBackground", new ColorUIResource(new Color(57,57,57)));
+		UIManager.put("InternalFrame.activeTitleForeground", new ColorUIResource(new Color(202,202,202)));
+		UIManager.put("InternalFrame.inactiveTitleForeground", new ColorUIResource(new Color(202,202,202)));
+		UIManager.put("InternalFrame.titleFont", new FontUIResource(new Font("Verdana",Font.BOLD,10)));
+		
+		//	//	UIManager.put("InternalFrame.paletteCloseIcon", new IconUIResource(new Font("Verdana",Font.BOLD,10)));
+		
+		
 		if(args.length > 0) {
 			loadFile = (args[0]);
 		}
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				
-				try {
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-					JFrame.setDefaultLookAndFeelDecorated(true);
+			try {
+					//UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+					//JFrame.setDefaultLookAndFeelDecorated(true);
 					new Main();
+				
 
-
-					frame.setBackground(new Color(67, 67, 67));
-
+					
 				
 					frame.addComponentListener(new ComponentListener() 
 					{  
 					        public void componentResized(ComponentEvent evt) {
-					        	 tlFrame.repaint();
+					        	// tlFrame.repaint();
 					        }
 
 							@Override
@@ -582,12 +601,12 @@ public void saveText(String str,String txtFile){
 		frame.setSize(new Dimension(screenWidth,screenHeight));
 		
 		mainPanel = new JLayeredPane();
-		mainPanel.setBackground(new Color(67,67,67));
+		mainPanel.setBackground(new Color(27,27,27));
 		mainPanel.setOpaque(true);
 		frame.setVisible(true);
 		mainPanel.setVisible(true);
 		
-		JPanel messageHolder = new JPanel();
+		EPanel messageHolder = new EPanel();
 		
 		messagePanel.setPreferredSize(new Dimension(screenWidth,screenHeight));
 		messagePanel.setBackground(new Color(47,47,47));
@@ -742,7 +761,7 @@ mainPanel.add(topPanel);
 		
 		filterFrame.setPreferredSize(new Dimension(200,260));
 		filterFrame.setMaximumSize(new Dimension(200,260));
-		filterFrame.setBounds(200,200,200,300);
+		filterFrame.setBounds(200,200,400,300);
 		filterFrame.setBackground(new Color(255,255,255));
 		filterFrame.setVisible(false);
 
@@ -769,7 +788,7 @@ mainPanel.add(tlFrame);
 		mainPanel.add(BrushSelectionOps);
 		mainPanel.add(historyPanel);
 		mainPanel.add(toolBar);
-		JPanel bug_workaround = new JPanel();
+		EPanel bug_workaround = new EPanel();
 		
 mainPanel.add(bug_workaround);
 bug_workaround.setVisible(false);
@@ -779,7 +798,7 @@ bug_workaround.setVisible(false);
 		mainPanel.setPreferredSize(new Dimension(screenWidth,screenHeight));
 		
 		
-		scMain = new JScrollPane();
+		scMain = new EScrollPane();
 
 		scMain.setPreferredSize(new Dimension(screenWidth,screenHeight));
 		scMain.setBounds(0,0,screenWidth,screenHeight);
@@ -792,16 +811,12 @@ bug_workaround.setVisible(false);
 
 		frame.setVisible(true);
 
-tlFrame.toFront();
-try{
-	tlFrame.setSelected(true);
-}catch(Exception ex)
-{
 
-}
 
 	}
 	public Main() {
+
+		canvasFrame = new EInternalFrame("Canvas");
 		LOADED=false;
 		initVars();
 		loadApplication();
@@ -810,6 +825,7 @@ try{
 				setLoadedFile(loadFile);
 			}
 			LOADED=true;
+			
 	}
 
 	public void addActions() {
@@ -968,7 +984,6 @@ try{
 	
 		
 		historyPanel = new History(this);
-		historyPanel.setBorder(null);
 		
 		//mainPanel.add(historyPanel,2);
 	}
@@ -986,10 +1001,10 @@ try{
 		timelineControls = new TimelineControls(this);
 	}
 	public void addTimeline() {
-		
+		tlFrame = new EInternalFrame("Timeline");
 		 timeline = new TimelineSwing(MAXLAYERS, MAXFRAMES, this);
 		
-		JScrollPane timelineScrollPane = new JScrollPane();
+		EScrollPane timelineScrollPane = new EScrollPane();
 		//timelineScrollPane.add(timeline);
 
 		timelineScrollPane.setViewportView(timeline);
@@ -1003,8 +1018,6 @@ try{
 		tlFrame.setVisible(true);
 
 		
-		tlFrame.setBorder(BorderFactory.createMatteBorder(2,2,2,2,new Color(238,238,238)));
-		
 		tlFrame.add(timelineScrollPane);
 
 
@@ -1013,7 +1026,7 @@ try{
 
 	}
 
-	public EInternalFrame canvasFrame = new EInternalFrame("Canvas");
+	public EInternalFrame canvasFrame ;
 	
 
 
@@ -1026,7 +1039,7 @@ try{
 		canvas.setVisible(true);
 		canvas.init();
 
-		JPanel canvasPanel = new JPanel();
+		EPanel canvasPanel = new EPanel();
 		canvasPanel.setBounds(0, 0, CANVASWIDTH, CANVASHEIGHT);
 		canvasPanel.setVisible(true);
 
@@ -1039,17 +1052,15 @@ canvasPanel.setBackground(new Color(67,67,67));
 		//canvasFrame.setClosable(true);
 		canvasFrame.setResizable(true);
 		canvasFrame.setDefaultCloseOperation(1);
-		canvasFrame.setBorder(BorderFactory.createMatteBorder(2,2,2,2,new Color(67,67,67)));
 		
 
-
 		
-		ScrollPane canvasSc = new ScrollPane();
+		canvasSc = new EScrollPane();
 
 		canvasSc.setBounds(50, 10, CANVASWIDTH, CANVASHEIGHT);
 		
 		canvasSc.setVisible(true);
-		canvasSc.add(canvasPanel);
+		canvasSc.setViewportView(canvasPanel);
 		canvasFrame.add(canvasSc);
 
 		
@@ -1074,17 +1085,17 @@ canvasPanel.setBackground(new Color(67,67,67));
 		final JMenu mnFile = new JMenu("File");
 		menuBar.add(mnFile);
 
-		final JMenuItem mntmNew = new JMenuItem("New.. [Ctrl+N]");
+		final JMenuItem mntmNew = new JMenuItem("New..");
 		mnFile.add(mntmNew);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK);
 		mntmNew.setAccelerator(tmpKey);
 		
-		final JMenuItem mntmOpen = new JMenuItem("Open.. [Ctrl+O]");
+		final JMenuItem mntmOpen = new JMenuItem("Open..");
 		mnFile.add(mntmOpen);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK);
 		mntmOpen.setAccelerator(tmpKey);
 
-		mntmSave = new JMenuItem("Save.. [Ctrl+S]");
+		mntmSave = new JMenuItem("Save..");
 		mnFile.add(mntmSave);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK);
 		mntmSave.setAccelerator(tmpKey);
@@ -1094,7 +1105,7 @@ canvasPanel.setBackground(new Color(67,67,67));
 		
 		mnFile.addSeparator();
 		
-		mnImportImage = new JMenuItem("Import Image To Stage.. [Ctrl+I]");
+		mnImportImage = new JMenuItem("Import Image To Stage..");
 		mnFile.add(mnImportImage);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK);
 		mnImportImage.setAccelerator(tmpKey);
@@ -1148,27 +1159,27 @@ canvasPanel.setBackground(new Color(67,67,67));
 		mnLayers.add(mntmDeleteLayer);
 		
 
-		JMenuItem mntmToggleKey = new JMenuItem("Toggle Keyframe [Ctrl+K]");
+		JMenuItem mntmToggleKey = new JMenuItem("Toggle Keyframe");
 		mnLayers.add(mntmToggleKey);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_K, InputEvent.CTRL_DOWN_MASK);
 		mntmToggleKey.setAccelerator(tmpKey);
 		
-		JMenuItem mntmMoveRightOne = new JMenuItem("Go Forward 1 Frame [Ctrl+RIGHT]");
+		JMenuItem mntmMoveRightOne = new JMenuItem("Go Forward 1 Frame");
 		mnLayers.add(mntmMoveRightOne);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,InputEvent.CTRL_DOWN_MASK);
 		mntmMoveRightOne.setAccelerator(tmpKey);
 		
-		JMenuItem mntmMoveLeftOne = new JMenuItem("Go Back 1 Frame [Ctrl+LEFT]");
+		JMenuItem mntmMoveLeftOne = new JMenuItem("Go Back 1 Frame");
 		mnLayers.add(mntmMoveLeftOne);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_LEFT,InputEvent.CTRL_DOWN_MASK);
 		mntmMoveLeftOne.setAccelerator(tmpKey);
 
-		JMenuItem mntmMoveDownOne = new JMenuItem("Move Down 1 Layer [Ctrl+DOWN]");
+		JMenuItem mntmMoveDownOne = new JMenuItem("Move Down 1 Layer");
 		mnLayers.add(mntmMoveDownOne);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN,InputEvent.CTRL_DOWN_MASK);
 		mntmMoveDownOne.setAccelerator(tmpKey);
 		
-		JMenuItem mntmMoveUpOne = new JMenuItem("Move Up 1 Layer [Ctrl+UP]");
+		JMenuItem mntmMoveUpOne = new JMenuItem("Move Up 1 Layer");
 		mnLayers.add(mntmMoveUpOne);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_UP,InputEvent.CTRL_DOWN_MASK);
 		mntmMoveUpOne.setAccelerator(tmpKey);
@@ -1177,27 +1188,27 @@ canvasPanel.setBackground(new Color(67,67,67));
 		JMenu mnEdit = new JMenu("Edit");
 		menuBar.add(mnEdit);
 
-		JMenuItem mntmUndo = new JMenuItem("Undo    [Ctrl+Z]");
+		JMenuItem mntmUndo = new JMenuItem("Undo");
 		mnEdit.add(mntmUndo);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK);
 		mntmUndo.setAccelerator(tmpKey);
 		
-		JMenuItem mntmRedo = new JMenuItem("Redo    [Ctrl+Y]");
+		JMenuItem mntmRedo = new JMenuItem("Redo");
 		mnEdit.add(mntmRedo);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_DOWN_MASK);
 		mntmRedo.setAccelerator(tmpKey);
 		
-		JMenuItem mntmCut = new  JMenuItem("Cut     [Ctrl+X]");
+		JMenuItem mntmCut = new  JMenuItem("Cut");
 		mnEdit.add(mntmCut);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK);
 		mntmCut.setAccelerator(tmpKey);
 
-		JMenuItem mntmCopy = new  JMenuItem("Copy    [Ctrl+C]");
+		JMenuItem mntmCopy = new  JMenuItem("Copy");
 		mnEdit.add(mntmCopy);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK);
 		mntmCopy.setAccelerator(tmpKey);
 
-		JMenuItem mntmPaste = new JMenuItem("Paste   [Ctrl+P]");
+		JMenuItem mntmPaste = new JMenuItem("Paste");
 		mnEdit.add(mntmPaste);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_DOWN_MASK);
 		mntmPaste.setAccelerator(tmpKey);
@@ -1246,7 +1257,7 @@ canvasPanel.setBackground(new Color(67,67,67));
 		final JMenu mnBrush = new JMenu("Brush");
 		menuBar.add(mnBrush);
 
-		final JMenuItem mntmBrushColor = new JMenuItem("Brush Color..   [Ctrl+U]");
+		final JMenuItem mntmBrushColor = new JMenuItem("Brush Color..");
 		mnBrush.add(mntmBrushColor);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.CTRL_DOWN_MASK);
 		mntmBrushColor.setAccelerator(tmpKey);

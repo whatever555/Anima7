@@ -2,18 +2,17 @@ package com.animation.shop;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Panel;
-import java.awt.ScrollPane;
 
 import javax.swing.BorderFactory;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import aniExtraGUI.EInternalFrame;
+import aniExtraGUI.ELabel;
+import aniExtraGUI.EPanel;
+import aniExtraGUI.ESlider;
+import aniExtraGUI.EScrollPane;
 
 
 /**
@@ -24,7 +23,7 @@ import javax.swing.event.ChangeListener;
  * @author eddie
  *
  */
-public class PenOptions extends JInternalFrame implements ChangeListener {
+public class PenOptions extends EInternalFrame implements ChangeListener {
 /**
 	 * 
 	 */
@@ -37,21 +36,21 @@ ColorButton colorButton;
 		
 	}
 
-	JLabel brushSizeLabel2 ;
-	JLabel brushAlphaLabel2 ;
-	JSlider brushSizeSlider;
-	JSlider brushAlphaSlider;
-	ScrollPane sc;
+	ELabel brushSizeLabel2 ;
+	ELabel brushAlphaLabel2 ;
+	ESlider brushSizeSlider;
+	ESlider brushAlphaSlider;
+	EScrollPane sc;
 	public void showMe(){
 
 		int WIDTH = 260;
 		int HEIGHT= 220;
 		
-		sc = new ScrollPane();
+		sc = new EScrollPane();
 
-		sc.setBounds(0,0,WIDTH-20,HEIGHT);
-		//sc.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		//sc.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		sc.setBounds(0,0,WIDTH,HEIGHT);
+		//sc.setHorizontalScrollBarPolicy(EScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		//sc.setVerticalScrollBarPolicy(EScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		this.setTitle("Brush Options");
 		this.setLayout(new BorderLayout());
 		this.setVisible(false);
@@ -64,21 +63,21 @@ ColorButton colorButton;
 		 this.setDefaultCloseOperation(1);
 		
 		
-		Panel penOpsPanel = new Panel(null);
-		penOpsPanel.setBounds(0,0,WIDTH,HEIGHT-60);
-		//penOpsPanel.setLayout(null);
+		EPanel penOpsPanel = new EPanel();
+		//penOpsPanel.setBounds(0,0,WIDTH,HEIGHT-60);
+		penOpsPanel.setLayout(null);
 		
 		
 	
 		
-		JPanel brushSizePanel = new JPanel();
+		EPanel brushSizePanel = new EPanel();
 		brushSizePanel.setBounds(0,5,WIDTH,130);
 		brushSizePanel.setLayout(null);
 		//brushSizePanel.setBackground(Color.lightGray);
 		penOpsPanel.add(brushSizePanel);
 		
 		
-		JPanel colorOptionsPanel = new JPanel();
+		EPanel colorOptionsPanel = new EPanel();
 		colorOptionsPanel.setVisible(true);
 		colorOptionsPanel.setBounds(0,135,WIDTH,40);
 		colorOptionsPanel.setLayout(null);
@@ -87,7 +86,7 @@ ColorButton colorButton;
 		
 
 		
-		Font font = new Font("Verdana", Font.ITALIC, 8);
+		//Font font = new Font("Verdana", Font.ITALIC, 8);
 		
 
 
@@ -96,18 +95,18 @@ ColorButton colorButton;
 		//#### BRUSH OPTIONS PANEL ###############################################################	
 		
 		
-		JLabel brushSizeLabel = new JLabel("Brush Size");
+		ELabel brushSizeLabel = new ELabel("Brush Size");
 		brushSizeLabel.setBounds(2,5,100,30);
 		brushSizePanel.add(brushSizeLabel);
 		
-		brushSizeLabel2 = new JLabel("Brush Size");
+		brushSizeLabel2 = new ELabel("Brush Size");
 		brushSizeLabel2.setBounds(120,5,100,30);
 		brushSizePanel.add(brushSizeLabel2);
 		
 		
 		brushSizeLabel2.setText(""+parent.PENSIZE);
 		
-		brushSizeSlider = new JSlider(SwingConstants.HORIZONTAL,0, WIDTH, parent.PENSIZE);
+		brushSizeSlider = new ESlider(0, WIDTH, parent.PENSIZE);
 		brushSizeSlider.addChangeListener(this);
 
 		//Turn on labels at major tick marks.
@@ -115,23 +114,23 @@ ColorButton colorButton;
 		brushSizeSlider.setMinorTickSpacing(25);
 		brushSizeSlider.setPaintLabels(true);
 		brushSizeSlider.setBounds(0,35,WIDTH-2,30);
-		brushSizeSlider.setFont(font);
+		//brushSizeSlider.setFont(font);
 		brushSizeSlider.setVisible(true);
 		brushSizePanel.add(brushSizeSlider);
 		
 		
-		JLabel brushAlphaLabel = new JLabel("Brush Alpha");
+		ELabel brushAlphaLabel = new ELabel("Brush Alpha");
 		brushAlphaLabel.setBounds(2,60,100,30);
 		brushSizePanel.add(brushAlphaLabel);
 		
-		brushAlphaLabel2 = new JLabel("Brush Alpha");
+		brushAlphaLabel2 = new ELabel("Brush Alpha");
 		brushAlphaLabel2.setBounds(120,60,100,30);
 		brushSizePanel.add(brushAlphaLabel2);
 		
 		
 		brushAlphaLabel2.setText(""+parent.PENALPHA);
 		
-		brushAlphaSlider = new JSlider(SwingConstants.HORIZONTAL,1, 255, parent.PENALPHA);
+		brushAlphaSlider = new ESlider(1, 255, parent.PENALPHA);
 		brushAlphaSlider.addChangeListener(this);
 
 		//Turn on labels at major tick marks.
@@ -140,7 +139,7 @@ ColorButton colorButton;
 		brushAlphaSlider.setPaintLabels(true);
 		brushAlphaSlider.setBounds(0,90,WIDTH-2,30);
 		
-		brushAlphaSlider.setFont(font);
+	//	brushAlphaSlider.setFont(font);
 
 		brushAlphaSlider.setVisible(true);
 		brushSizePanel.add(brushAlphaSlider);
@@ -156,7 +155,7 @@ ColorButton colorButton;
 				
 		colorButton.setBounds(2,5,20,20);
 		
-		JLabel changeColorButLabel = new JLabel("Selected Color");
+		ELabel changeColorButLabel = new ELabel("Selected Color");
 		changeColorButLabel.setBounds(32,5,180,20);
 		colorOptionsPanel.add(changeColorButLabel);
 		
@@ -178,15 +177,14 @@ ColorButton colorButton;
 		
 		this.add(sc);
 		
-		sc.add(penOpsPanel);
+		sc.setViewportView(penOpsPanel);
 		
-		this.setBorder(BorderFactory.createMatteBorder(2,2,2,2,new Color(67,67,67)));
 		
 	}
 	
 	@Override
 	public void stateChanged(ChangeEvent e) {
-	    JSlider source = (JSlider)e.getSource();
+	    ESlider source = (ESlider)e.getSource();
 	    if (!source.getValueIsAdjusting()) {
 	        
 	    	parent.PENSIZE = brushSizeSlider.getValue();

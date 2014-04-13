@@ -1,19 +1,17 @@
 package com.animation.shop;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Panel;
-import java.awt.ScrollPane;
 import java.net.URL;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.JInternalFrame;
-import javax.swing.JPanel;
 
-public class BrushSelection extends JInternalFrame {
+import aniExtraGUI.EInternalFrame;
+import aniExtraGUI.EPanel;
+import aniExtraGUI.EScrollPane;
+
+public class BrushSelection extends EInternalFrame {
 
 		/**
 	 * 
@@ -27,13 +25,15 @@ public class BrushSelection extends JInternalFrame {
 		}
 		
 		
-		Panel bordPanel = new Panel(new BorderLayout());
-		JPanel boxPanel;
-		ScrollPane sc;
+		EPanel bordPanel = new EPanel();
+		EPanel boxPanel;
+		EScrollPane sc;
 		int WIDTH  = 260;
 		int HEIGHT = 240;
 		
 		public void showThis(){
+
+			bordPanel.setLayout(new BorderLayout());
 			this.setLayout(new BorderLayout());
 			this.setVisible(false);
 			this.setTitle("Brush Selection");
@@ -41,24 +41,20 @@ public class BrushSelection extends JInternalFrame {
 			this.setResizable(true);
 			this.setDefaultCloseOperation(1);
 			
-			bordPanel.setBounds(0,0,WIDTH,HEIGHT);
-			sc = new ScrollPane();
-			
-			this.add(sc);
 			
 
+			sc = new EScrollPane();
+			sc.setBounds(0,0,WIDTH,HEIGHT);
+			
+			
 
-
-			this.setBorder(BorderFactory.createMatteBorder(2,2,2,2,new Color(238,238,238)));
 			
 			//this.setBorder(BorderFactory.createCompoundBorder(border1,border2));
 			
-			sc.add(bordPanel);
-			
-			
 			
 
-			boxPanel = new JPanel();
+		
+			boxPanel = new EPanel();
 
 			
 			boxPanel.setLayout(new BoxLayout(boxPanel, BoxLayout.Y_AXIS));
@@ -73,7 +69,8 @@ public class BrushSelection extends JInternalFrame {
 
 			
 			while(true){
-				JPanel contentPanel1=new JPanel(new FlowLayout(FlowLayout.LEADING));
+				EPanel contentPanel1=new EPanel();
+				contentPanel1.setLayout(new FlowLayout(FlowLayout.LEADING));
 				contentPanel1.setMaximumSize( new Dimension(WIDTH-10, 24));
 				contentPanel1.setVisible(true);
 				i=1;
@@ -103,8 +100,8 @@ public class BrushSelection extends JInternalFrame {
 			
 			
 			
-			JPanel contentPanel2 = new JPanel(new FlowLayout(FlowLayout.LEADING));
-			
+			EPanel contentPanel2 = new EPanel();
+			contentPanel2.setLayout(new FlowLayout(FlowLayout.LEADING));
 			contentPanel2.setMaximumSize( new Dimension(WIDTH-10, 24));
 			contentPanel2.setVisible(true);
 			
@@ -147,9 +144,14 @@ public class BrushSelection extends JInternalFrame {
 			
 			boxPanel.add(contentPanel2,3,0);
 			bordPanel.add(boxPanel);
-			sc.add(bordPanel);
 			bordPanel.setVisible(true);
 			
+			this.add(sc);
+			sc.setVisible(true);
+
+
+			sc.setViewportView(bordPanel);
+
 			
 		}
 }

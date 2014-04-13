@@ -10,16 +10,17 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class TopPanel extends JPanel{
+import aniExtraGUI.EButton;
+import aniExtraGUI.ELabel;
+import aniExtraGUI.EPanel;
+import aniExtraGUI.ESpinner;
+
+public class TopPanel extends EPanel{
 	/**
 	 * 
 	 */
@@ -29,15 +30,21 @@ public class TopPanel extends JPanel{
 	Main parent;
 	
 	
-	Color bgCol = new Color(47,47,47);
+	Color bgCol = new Color(37,37,37);
 	Color fCol  = new Color(167,167,167);
 	Image maxIcon,minIcon;
 	 boolean maxBool=false;
-	 final JButton minCanvas = new JButton();
-		
+	 final EButton minCanvas = new EButton();
+
+		EPanel colorOptionsPanel = new EPanel();
 	 
 	public TopPanel(Main parent){
 this.parent=parent;
+brushPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+fillPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+selectPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+squareSelectExtrasPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+
 		showMe();
 	}
 	
@@ -46,12 +53,20 @@ this.parent=parent;
 		this.setBackground(bgCol);
 		this.setForeground(fCol);
 		this.setLayout(new FlowLayout(FlowLayout.LEADING));
-		createBrushOptions();
+
+		addColorSelect();
 		createSelectOptions();
+		createBrushOptions();
 		createFillOptions();
-		this.add(selectPanel);
-		this.add(brushPanel);
+
+		createMinMaxCanvasBut();
+		
+
+		this.add(colorOptionsPanel);
 		this.add(fillPanel);
+		this.add(brushPanel);
+		this.add(selectPanel);
+		this.add(minCanvas);
 		brushPanel.setBackground(bgCol);
 		selectPanel.setBackground(bgCol);
 		fillPanel.setBackground(bgCol);
@@ -59,24 +74,41 @@ this.parent=parent;
 		brushPanel.setVisible(false);
 		fillPanel.setVisible(false);
 
-//		addMinMaxCanvasBut();
 	}
 	
+	public void addColorSelect(){
+		colorOptionsPanel.setVisible(true);
+		colorOptionsPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+		
+		
+		colorButton = new ColorButton(this.parent);
+		
+		
+		
+		
+		colorButton.setVisible(true);
 	
+		colorOptionsPanel.add(colorButton);
+		colorOptionsPanel.setVisible(true);
+		colorOptionsPanel.setBackground(bgCol);
+		
+
+	}
 	
 	ColorButton colorButton;
-	JSpinner fillSpinner;
-	JSpinner alphaSpinner;
-	JSpinner sizeSpinner;
-	JSpinner featherSpinner;
-	JSpinner roundCornerSpinner;
-	JPanel brushPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
-	JPanel fillPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
-	JPanel selectPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
-	JPanel squareSelectExtrasPanel  = new JPanel(new FlowLayout(FlowLayout.LEADING));
+	ESpinner fillSpinner;
+	ESpinner alphaSpinner;
+	ESpinner sizeSpinner;
+	ESpinner featherSpinner;
+	ESpinner roundCornerSpinner;
 	
+	EPanel brushPanel = new EPanel();
+	EPanel fillPanel = new EPanel();
+	EPanel selectPanel = new EPanel();
+	EPanel squareSelectExtrasPanel  = new EPanel();
 	
-	public void addMinMaxCanvasBut(){
+
+	public void createMinMaxCanvasBut(){
 		
 		final javax.swing.plaf.InternalFrameUI ifu= parent.canvasFrame.getUI();
 		final JComponent np =((javax.swing.plaf.basic.BasicInternalFrameUI)ifu).getNorthPane();
@@ -91,10 +123,10 @@ this.parent=parent;
 				e1.printStackTrace();
 			}
 
-minCanvas.setPreferredSize(new Dimension(30,30));
+minCanvas.setPreferredSize(new Dimension(20,20));
 minCanvas.setMaximumSize(new Dimension(30,30));
 minCanvas.setBounds(0,0,30,30);
-brushPanel.add(minCanvas);
+
 			
 			
 			minCanvas.setVisible(false);
@@ -127,26 +159,12 @@ brushPanel.add(minCanvas);
 	}
 	public void createBrushOptions(){
 				
-		JPanel colorOptionsPanel = new JPanel();
-		colorOptionsPanel.setVisible(true);
-		colorOptionsPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
-		
-		
-		colorButton = new ColorButton(this.parent);
-		
-		
-		
-		
-		colorButton.setVisible(true);
 	
-		colorOptionsPanel.add(colorButton);
-		colorOptionsPanel.setVisible(true);
-		colorOptionsPanel.setBackground(bgCol);
 		
 		
 		
 		
-		JLabel brushSizeLabel = new JLabel("Brush Size");
+		ELabel brushSizeLabel = new ELabel("Brush Size");
 
 		brushSizeLabel.setForeground(fCol);
 		
@@ -155,7 +173,7 @@ brushPanel.add(minCanvas);
 		
 		SpinnerNumberModel sizeModel = new SpinnerNumberModel(parent.PENSIZE,1, 255,
 				1);
-		sizeSpinner = new JSpinner(sizeModel);
+		sizeSpinner = new ESpinner(sizeModel);
 		
 		//sizeSpinner.setFont(parent.smallFont);
 		sizeSpinner.addChangeListener(new MyChangeListener());
@@ -165,7 +183,7 @@ brushPanel.add(minCanvas);
 
 		
 		
-		JLabel brushAlphaLabel = new JLabel("Brush Alpha");
+		ELabel brushAlphaLabel = new ELabel("Brush Alpha");
 		brushAlphaLabel.setForeground(fCol);
 		
 
@@ -174,7 +192,7 @@ brushPanel.add(minCanvas);
 		
 		SpinnerNumberModel alphaModel = new SpinnerNumberModel(parent.PENALPHA,1, 255,
 				1);
-		alphaSpinner = new JSpinner(alphaModel);
+		alphaSpinner = new ESpinner(alphaModel);
 		
 		alphaSpinner.setForeground(fCol);
 		alphaSpinner.addChangeListener(new MyChangeListener());
@@ -185,7 +203,6 @@ brushPanel.add(minCanvas);
 		sizeSpinner.setBackground(bgCol);
 		
 		
-		brushPanel.add(colorOptionsPanel);
 		brushPanel.add(brushSizeLabel);
 		brushPanel.add(sizeSpinner);
 		brushPanel.add(brushAlphaLabel);
@@ -211,21 +228,21 @@ brushPanel.add(minCanvas);
 	
 	public void hideAll(){
 
-		fillPanel.setVisible(false);
 		selectPanel.setVisible(false);
 		brushPanel.setVisible(false);
+		fillPanel.setVisible(false);
 	}
 	
 	
 	public void createFillOptions(){
 		
-		JLabel fillLabel = new JLabel("Fill Inaccuracy");
+		ELabel fillLabel = new ELabel("Fill Inaccuracy");
 
 		fillLabel.setForeground(fCol);
 		
 		SpinnerNumberModel fillModel = new SpinnerNumberModel(parent.fillInaccuracy,0, 700,
 				1);
-		fillSpinner = new JSpinner(fillModel);
+		fillSpinner = new ESpinner(fillModel);
 		
 		//sizeSpinner.setFont(parent.smallFont);
 		fillSpinner.addChangeListener(new MyChangeListener());
@@ -233,7 +250,6 @@ brushPanel.add(minCanvas);
 		fillSpinner.setBackground(bgCol);
 		
 
-		fillPanel.add(colorButton);
 		fillPanel.add(fillLabel);
 		fillPanel.add(fillSpinner);
 		
@@ -242,45 +258,39 @@ brushPanel.add(minCanvas);
 	public void createSelectOptions(){
 		//this.removeAll();
 		
-		squareSelectExtrasPanel = new JPanel();
+		
 		squareSelectExtrasPanel.setBackground(bgCol);
-		squareSelectExtrasPanel.setPreferredSize(new Dimension(400,30));
-		JLabel featherLabel = new JLabel("Feather: ");
-		//featherLabel.setFont(parent.smallFont);
-		featherLabel.setForeground(fCol);
-		JLabel roundCornerLabel = new JLabel("Rounded Corners: ");
-		//roundCornerLabel.setFont(parent.smallFont);
-		roundCornerLabel.setForeground(fCol);
+		ELabel featherLabel = new ELabel("Feather: ");
+		ELabel roundCornerLabel = new ELabel("Rounded Corners: ");
 		
 		SpinnerNumberModel featherModel = new SpinnerNumberModel(parent.FEATHERSIZE,0, 99,
 				1);
 		
-		featherSpinner = new JSpinner(featherModel);
-		//featherSpinner.setFont(parent.smallFont);
+		featherSpinner = new ESpinner(featherModel);
 		
 		SpinnerNumberModel roundCornerModel = new SpinnerNumberModel(parent.ROUNDCORNERSIZE,0, 99,
 				1);
 		
-		roundCornerSpinner = new JSpinner(roundCornerModel);
+		roundCornerSpinner = new ESpinner(roundCornerModel);
 		
 
 		featherSpinner.addChangeListener(new MyChangeListener());
 		roundCornerSpinner.addChangeListener(new MyChangeListener());
 		
-		JPanel spacer = new JPanel();
-		spacer.setPreferredSize(new Dimension(20,20));
+		EPanel spacer = new EPanel();
+		spacer.setPreferredSize(new Dimension(20,30));
 
 		spacer.setBackground(bgCol);
 		spacer.setBorder(null);
 
-		JButton selectRectButton = new JButton();
-		selectRectButton.setPreferredSize(new Dimension(25,25));
+		EButton selectRectButton = new EButton();
+		selectRectButton.setPreferredSize(new Dimension(20,20));
 		
-		JButton selectCircButton = new JButton();
-		selectCircButton.setPreferredSize(new Dimension(25,25));
+		EButton selectCircButton = new EButton();
+		selectCircButton.setPreferredSize(new Dimension(20,20));
 		
-		JButton squiggleButton = new JButton();
-		squiggleButton.setPreferredSize(new Dimension(25,25));
+		EButton squiggleButton = new EButton();
+		squiggleButton.setPreferredSize(new Dimension(20,20));
 		
 		try {
 			img = ImageIO.read(getClass().getResource("/data/icons/tools/selectRect.png"));
@@ -294,12 +304,13 @@ brushPanel.add(minCanvas);
 			e.printStackTrace();
 		}
 		
-		squareSelectExtrasPanel.add(featherLabel);
-		squareSelectExtrasPanel.add(featherSpinner);
-		squareSelectExtrasPanel.add(roundCornerLabel);
-		squareSelectExtrasPanel.add(roundCornerSpinner);
-		squareSelectExtrasPanel.add(spacer);
-		selectPanel.add(squareSelectExtrasPanel);
+
+		selectPanel.add(featherLabel);
+		selectPanel.add(featherSpinner);
+		selectPanel.add(roundCornerLabel);
+		selectPanel.add(roundCornerSpinner);
+		//squareSelectExtrasPanel.add(spacer);
+		//selectPanel.add(squareSelectExtrasPanel);
 		selectPanel.add(selectRectButton);
 		selectPanel.add(selectCircButton);
 		selectPanel.add(squiggleButton);

@@ -10,9 +10,10 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 
-public class ToolButton extends JButton {
+import aniExtraGUI.EButton;
+
+public class ToolButton extends EButton {
 /**
 	 * 
 	 */

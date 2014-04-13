@@ -6,11 +6,12 @@ import java.awt.FlowLayout;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
-import javax.swing.JInternalFrame;
-import javax.swing.JPanel;
+
+import aniExtraGUI.EInternalFrame;
+import aniExtraGUI.EPanel;
 
 
-public class ToolsBar extends JInternalFrame{
+public class ToolsBar extends EInternalFrame{
 /**
 	 * 
 	 */
@@ -33,7 +34,8 @@ this.setClosable(true);
 			this.setResizable(true);
 			this.setDefaultCloseOperation(1);
 			
-			JPanel toolsPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
+			EPanel toolsPanel = new EPanel();
+			toolsPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 			toolsPanel.setBounds(0,0,WIDTH,HEIGHT);
 			
 
@@ -64,8 +66,7 @@ this.setClosable(true);
 			this.setVisible(true);
 			
 
-			this.setBorder(BorderFactory.createMatteBorder(2,2,2,2,new Color(238,238,238)));
-			
+		
 			
 		}
 		

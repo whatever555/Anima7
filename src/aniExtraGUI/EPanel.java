@@ -1,6 +1,7 @@
 package aniExtraGUI;
 
 import java.awt.Color;
+import java.awt.Font;
 
 import javax.swing.JPanel;
 
@@ -12,6 +13,9 @@ public EPanel(){
 
 
 public void styleMe(){
-	setBackground(new Color(0,0,233));
+
+	setBackground(new Color(67,67,67));
+	setForeground(new Color(202,202,202));
+	setFont(new Font("Verdana", Font.BOLD, 10)); 
 }
 }

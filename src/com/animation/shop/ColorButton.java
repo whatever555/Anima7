@@ -6,14 +6,14 @@ package com.animation.shop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
+import aniExtraGUI.EButton;
 
 
 /**
  * @author eddie
  *
  */
-public class ColorButton extends JButton {  
+public class ColorButton extends EButton {  
 	   
 /**
 	 * 

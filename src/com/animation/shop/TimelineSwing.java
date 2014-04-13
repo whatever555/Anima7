@@ -11,11 +11,12 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JPanel;
 
 import processing.core.PImage;
+import aniExtraGUI.EButton;
+import aniExtraGUI.EPanel;
 
-public class TimelineSwing extends JPanel{
+public class TimelineSwing extends EPanel{
 /**
 	 * 
 	 */ 
@@ -32,13 +33,12 @@ PImage trans;
 
 
 int stkCol = 67;
-Color inactive = new Color(220,220,220);
-Color active   = new Color(250,250,250);
-Color highlightInactive = new Color(200,200,250);
-Color highlightActive = new Color(180,180,250);
-Color selectedFrameCol=new Color(120,120,200);
-Color selectedKeyCol=new Color(70,70,200);
-Color bgCol = new Color(127,127,127);
+Color inactive = new Color(120,120,120);
+Color active   = new Color(202,202,202);
+Color highlightInactive = new Color(120,120,190);
+Color highlightActive = new Color(70,70,190);
+Color selectedFrameCol=new Color(100,100,250);
+Color selectedKeyCol=new Color(70,70,250);
 Image emptyIcon;
 Font f1 = new Font("Verdana", Font.PLAIN, 10);
 Font f2 = new Font("Verdana", Font.PLAIN, 8);
@@ -114,16 +114,22 @@ public void addNewLayer(int y, boolean maskBool,int maskOf, String label){
 		repaint();
 
 	}
-	JPanel topBar = new JPanel(new FlowLayout(FlowLayout.LEFT,0,1));
+	EPanel topBar = new EPanel();
 	
 	public void createTopBar(){
-		TButton addNewLayerBut = new TButton("");
+		topBar.setLayout(new FlowLayout(FlowLayout.LEFT,0,1));
+		
+		EButton addNewLayerBut = new EButton();
 		addNewLayerBut.setPreferredSize(new Dimension(xoff,parent.timelineButtonHeight));
-	
+		addNewLayerBut.setBorder(null);
+		addNewLayerBut.setFont(f2);
+		
 		topBar.add(addNewLayerBut);
 		for(int x=0;x<parent.MAXFRAMES;x++){
-			TButton  frameNumberLabel = new TButton(""+(x+1));
+			EButton  frameNumberLabel = new EButton();
+			frameNumberLabel.setText(""+(x+1));
 			frameNumberLabel.setPreferredSize(new Dimension(parent.timelineButtonWidth,parent.timelineButtonHeight));
+			frameNumberLabel.setBorder(null);
 			frameNumberLabel.setFont(f2);
 			topBar.add(frameNumberLabel);
 			
@@ -131,11 +137,11 @@ public void addNewLayer(int y, boolean maskBool,int maskOf, String label){
 		this.add(topBar,0);
 	}
 
-	JPanel mainLine = new JPanel();
+	EPanel mainLine = new EPanel();
 	public void showMe(){
 	mainLine.setLayout(new BoxLayout(mainLine, BoxLayout.Y_AXIS));
 	
-		this.setBackground(bgCol);
+		//this.setBackground(bgCol);
 		
 		
 		createTopBar();
