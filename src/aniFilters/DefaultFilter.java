@@ -1,8 +1,8 @@
 package aniFilters;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
@@ -20,12 +20,13 @@ public class DefaultFilter extends EPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 Main parent;
-  EPanel mainPanel = new EPanel();
   ESpinner filterSpinber;
   FilterFrame holder;
+  EPanel mainPanel;
   String myname;
   int rangeLow=0;int rangeHigh=10;int defaultValue=0;
   public DefaultFilter(Main parent, FilterFrame holder,String myname,int rangeLow, int rangeHigh,int defaultValue){
+	mainPanel=new EPanel();
 	  this.holder=holder;
 	  this.parent = parent;
 	  this.myname=myname;
@@ -37,11 +38,11 @@ Main parent;
   }
   
   public void show(){
-	  this.setBackground(new Color(0,0,0));
-	  this.setLayout(new BorderLayout());
+	  //mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
+	  this.setLayout(new FlowLayout(FlowLayout.LEADING));
 	  //mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-	  this.setPreferredSize(new Dimension(400, 26));
-
+	  this.setPreferredSize(new Dimension(400, 70));
+this.setBounds(0,0,400,70);
 	  ELabel filterLabel = new ELabel(myname+": ");
 	  SpinnerNumberModel filterModel = new SpinnerNumberModel(defaultValue, rangeLow, rangeHigh,
 				1);
@@ -49,9 +50,9 @@ Main parent;
 
 		filterSpinber.addChangeListener(new MyChangeListener(myname));
 		
-		  
-		this.add(filterLabel);		
-		this.add(filterSpinber);
+		mainPanel.add(filterLabel);		
+		mainPanel.add(filterSpinber);
+this.add(mainPanel);
 
   }
   int updateCount=0;
@@ -67,9 +68,10 @@ Main parent;
 			{
 			    public void run() {
 			    	try {
-						Thread.sleep(50);
-				    	doAction(updateCount);
-				    	
+			    		final int x=updateCount;
+						Thread.sleep(300);
+
+						doAction(x);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -87,8 +89,10 @@ Main parent;
 	  parent.canvas.finaliseFrame(parent.CURRENTLAYER,parent.CURRENTFRAME);
 		 
 		holder.intVal1 = (Integer) filterSpinber.getValue();
-		
-		parent.canvas.defaultFilters(holder.intVal1/2, false,myname);
+		if(myname.equals("POSTERIZE"))
+		parent.canvas.defaultFilters(holder.intVal1, false,myname);
+		else
+		parent.canvas.defaultFilters((int)(holder.intVal1/2), false,myname);
 		holder.updatePreviewImage();
 	  }
   }

@@ -1,16 +1,17 @@
 package aniFilters;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.InternalFrameEvent;
@@ -41,23 +42,25 @@ public class FilterFrame extends EInternalFrame {
 	EPanel previewPanel;
 
 	EButton applyBut = new EButton();
-	ETabbedPane tabbedPane = new ETabbedPane();
-	boolean inactive = true;
-	
+	ETabbedPane tabbedPane;
+	EPanel testp;
 	public FilterFrame(final Main parent){
 		
-		
+		 tabbedPane = new ETabbedPane();
 		  
-		   
-		   
+		 EPanel mainPanel = new EPanel();
+		 mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+		 
 		filters = new ArrayList<String>();
 		filterPanes = new ArrayList<DefaultFilter>();
 		this.setAlignmentX( Component.LEFT_ALIGNMENT );
 		this.setTitle("Filter");
-		this.setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+		this.setLayout(new BorderLayout());
 		this.setClosable(true);
 		this.setResizable(true);
 		this.setDefaultCloseOperation(1);
+		this.setMinimumSize(new Dimension(400,200));
+		this.setPreferredSize(new Dimension(400,200));
 		
 		this.parent=parent;
 	
@@ -68,7 +71,7 @@ public class FilterFrame extends EInternalFrame {
 
 		filters.add("Posterize");
 		
-		filterPanes.add(new DefaultFilter(parent,this,"Posterize",0,255,0));
+		filterPanes.add(new DefaultFilter(parent,this,"Posterize",2,255,24));
 
 		filters.add("Threshold");
 		
@@ -76,19 +79,22 @@ public class FilterFrame extends EInternalFrame {
 		
 
 		filters.add("Spherify");
-		filterPanes.add(new DefaultFilter(parent,this,"Spherify",0,100,20));
+		filterPanes.add(new DefaultFilter(parent,this,"Spherify",1,100,20));
 
 		filters.add("Boxify");
 		
-		filterPanes.add(new DefaultFilter(parent,this,"Boxify",0,100,20));
-		
-		tabbedPane.setBackground(new Color(90,0,244));
+		filterPanes.add(new DefaultFilter(parent,this,"Boxify",1,100,20));
+		//tabbedPane.addTab("FUKC",new TButton("TEST"));
 		for(int i=0;i<filters.size();i++){
-			
-			tabbedPane.add(filterPanes.get(i));
-			filterPanes.get(i).setVisible(true);
+			JPanel jp = new JPanel();
+			jp.add(filterPanes.get(i));
+			filterPanes.get(i).setAlignmentX( Component.LEFT_ALIGNMENT );
+			tabbedPane.addTab(filters.get(i),jp);
+			//filterPanes.get(i).setVisible(true);
 		}
-		this.add(tabbedPane);
+		mainPanel.add(tabbedPane);
+		tabbedPane.setMinimumSize(new Dimension(400,60));
+		
 		previewImageHolder = new EPanel();
 		previewImageHolder.setLayout(new FlowLayout(FlowLayout.LEADING));
 		 previewImage = new ELabel();
@@ -96,14 +102,14 @@ public class FilterFrame extends EInternalFrame {
 		previewImage.setAlignmentX( Component.LEFT_ALIGNMENT );
 		previewImageHolder.add(previewImage);
 		previewImageHolder.setBackground(new Color(parent.canvas.bgColor));
-		this.add(previewImageHolder);
+		mainPanel.add(previewImageHolder);
 		
 		applyBut.setText("Apply");
 	   applyBut.setPreferredSize(new Dimension(200,26));
-	   this.add(applyBut);
+	   mainPanel.add(applyBut);
 	   
 	
-
+this.add(mainPanel);
 		
 		
 		
@@ -145,7 +151,6 @@ public class FilterFrame extends EInternalFrame {
 	
 	public void showFilter(String name){
 		
-	inactive=false;
 	 tabbedPane.addChangeListener(new MyChangeListener("tabbed"));
 	 
 	 applyBut.addActionListener(new MyActionListener("apply"));
@@ -157,6 +162,10 @@ public class FilterFrame extends EInternalFrame {
 			if(filters.get(i).equals(name)){
 				filterPanes.get(i).setVisible(true);
 				this.setTitle(name+" Filter");
+				if(i>0)
+					tabbedPane.setSelectedIndex(i-1);
+				else
+					tabbedPane.setSelectedIndex(i+1);
 				tabbedPane.setSelectedIndex(i);
 			}
 			
@@ -180,13 +189,15 @@ public class FilterFrame extends EInternalFrame {
 		     
 		  }
 			
-		//	previewImage.repaint();
+			previewImage.repaint();
 		//	previewImage.revalidate();
 		//	revalidate();
 		//	repaint();
 	  }
-	  public void actionChangeEvent(){
-		  if(!inactive){
+	  
+	  int changeIntCount = 0;
+	  public void actionChangeEvent(int x){
+		  if(changeIntCount == x){
 		  if(parent.canvas.previewImageBuffered!=null){
 		  parent.canvas.defaultFilters(intVal1,true,filters.get(tabbedPane.getSelectedIndex())); 
 
@@ -207,8 +218,24 @@ public class FilterFrame extends EInternalFrame {
 	        
 
 	        public void actionPerformed(ActionEvent e) {
-	        	 if(!inactive){
-	      actionChangeEvent();
+	        	 
+	        		if(myActionName.equals("apply")){
+	        		 changeIntCount++;
+		 new Thread()
+			{
+			    public void run() {
+			    	try {
+			    		final int x=changeIntCount;
+						Thread.sleep(300);
+
+					      actionChangeEvent(x);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+			    }
+			}.start();
 	        	 }
 	   	
 	    			}
@@ -226,11 +253,16 @@ public class FilterFrame extends EInternalFrame {
 	        
 
 	        public void stateChanged(ChangeEvent e) {
-	        	System.out.println("thats now "+filters.get(tabbedPane.getSelectedIndex()));
-	        	 if(!inactive){
-	        		 filterPanes.get(tabbedPane.getSelectedIndex()).filterSpinber.setValue(1);
+	        	 
+	        		 int d=(int) filterPanes.get(tabbedPane.getSelectedIndex()).defaultValue;
+	        		 int x=(int) filterPanes.get(tabbedPane.getSelectedIndex()).filterSpinber.getValue();
+		        		if(x==d){d+=1;}
+		        				
+		        		
+	        		 filterPanes.get(tabbedPane.getSelectedIndex()).filterSpinber.setValue(d);
+	        		 filterPanes.get(tabbedPane.getSelectedIndex()).filterSpinber.setValue(x);
 	        	//actionChangeEvent();
-	        	 }
+	        	 
 	    			}
 	        
 	        }

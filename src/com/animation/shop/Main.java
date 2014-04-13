@@ -193,7 +193,8 @@ TimelineControls timelineControls;
 	
 	public static void main(String[] args) {
 		
-		
+		UIManager.put("TabbedPane.selected", (new Color(37,37,37)));
+		UIManager.put("TabbedPane.background", (new Color(57,57,57)));
 		UIManager.put("ScrollBar.trackHighlightForeground", (new Color(157,157,157))); 
 		UIManager.put("scrollbar", (new Color(57,57,157))); 
 		UIManager.put("ScrollBar.thumb", new ColorUIResource(new Color(157,157,157))); 
@@ -759,8 +760,7 @@ mainPanel.add(topPanel);
 		toolBar.setBounds((int) (CANVASWIDTH+extraX+(defaultPanelWidth*1.8)),extraY,(int) (defaultPanelWidth*.2),defaultPanelHeight*2);
 		
 		
-		filterFrame.setPreferredSize(new Dimension(200,260));
-		filterFrame.setMaximumSize(new Dimension(200,260));
+		filterFrame.setPreferredSize(new Dimension(400,260));
 		filterFrame.setBounds(200,200,400,300);
 		filterFrame.setBackground(new Color(255,255,255));
 		filterFrame.setVisible(false);
@@ -1453,7 +1453,7 @@ canvasPanel.setBackground(new Color(67,67,67));
 		   		 filterFrame.setVisible(true);
 
 		   	//	filterFrame.setBounds(201,201,200,300);
-		   	showFilterFrameOnTop();
+		   	//showFilterFrameOnTop();
 			}
 		});
 		
@@ -1467,7 +1467,7 @@ canvasPanel.setBackground(new Color(67,67,67));
 		   		 filterFrame.showFilter("Spherify");
 		   		 filterFrame.setVisible(true);
 
-		   		showFilterFrameOnTop();
+		   		//showFilterFrameOnTop();
 			}
 		});
 		
@@ -1480,7 +1480,7 @@ canvasPanel.setBackground(new Color(67,67,67));
 		   		 filterFrame.showFilter("Boxify");
 		   		 filterFrame.setVisible(true);
 
-		   		showFilterFrameOnTop();
+		   		//showFilterFrameOnTop();
 			}
 		});
 		
@@ -1493,7 +1493,7 @@ canvasPanel.setBackground(new Color(67,67,67));
 		   		 filterFrame.showFilter("Threshold");
 		   		 filterFrame.setVisible(true);
 
-		   		showFilterFrameOnTop();
+		   	//	showFilterFrameOnTop();
 			}
 		});
 		
@@ -1506,7 +1506,7 @@ canvasPanel.setBackground(new Color(67,67,67));
 		   		 filterFrame.showFilter("Posterize");
 		   		 filterFrame.setVisible(true);
 
-		   		showFilterFrameOnTop();
+		   	//	showFilterFrameOnTop();
 			}
 		});
 		
