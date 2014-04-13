@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -52,7 +53,6 @@ import processing.core.PImage;
 import aniExtraGUI.EInternalFrame;
 import aniExtraGUI.EPanel;
 import aniExtraGUI.EScrollPane;
-import aniExtraGUI.EScrollPane;
 import aniFilters.FilterFrame;
 
 /**
@@ -85,7 +85,7 @@ public class Main {
 	// RESTORE/dELETE temp files
 	// order algorithm for JFrames/layout
 	//tidy copy paste etc
-	boolean LOADED=false;
+	public boolean LOADED=false;
 	int layerIndex = 0;
 	int timelineButtonWidth;
 	int timelineButtonHeight;
@@ -193,8 +193,25 @@ TimelineControls timelineControls;
 	
 	public static void main(String[] args) {
 		
+
+		UIManager.put("TabbedPane.tabAreaBackground", new Color(67,67,67));
+		UIManager.put("TabbedPane.contentAreaColor ",new Color(67,67,67));
 		UIManager.put("TabbedPane.selected", (new Color(37,37,37)));
 		UIManager.put("TabbedPane.background", (new Color(57,57,57)));
+		UIManager.put("TabbedPane.border", (null));
+		UIManager.put("TabbedPane.contentBorderInsets", new Insets(0,0,0,0));
+		UIManager.put("TabbedPane.tabsOverlapBorder", true);
+		UIManager.put("TabbedPane.borderColor", new Color(67,67,67));
+		UIManager.put("TabbedPane.darkShadow", new Color(67,67,67));
+		UIManager.put("TabbedPane.light", new Color(67,67,67));
+		UIManager.put("TabbedPane.highlight", new Color(67,67,67));
+		UIManager.put("TabbedPane.focus", new Color(67,67,67));
+		UIManager.put("TabbedPane.unselectedBackground", new Color(67,67,67));
+		UIManager.put("TabbedPane.selectHighlight", new Color(67,67,67));
+		UIManager.put("TabbedPane.tabAreaBackground", new Color(67,67,67));
+		UIManager.put("TabbedPane.borderHightlightColor", new Color(67,67,67));
+		
+		
 		UIManager.put("ScrollBar.trackHighlightForeground", (new Color(157,157,157))); 
 		UIManager.put("scrollbar", (new Color(57,57,157))); 
 		UIManager.put("ScrollBar.thumb", new ColorUIResource(new Color(157,157,157))); 

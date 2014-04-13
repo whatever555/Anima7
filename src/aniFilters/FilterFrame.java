@@ -38,12 +38,12 @@ public class FilterFrame extends EInternalFrame {
 	int currentFilterIndex=0;
 	String currentFilter = "";
 	ArrayList<String> filters;
-	ArrayList<DefaultFilter> filterPanes;
+	ArrayList<FilterPane> filterPanes;
 	EPanel previewPanel;
 
 	EButton applyBut = new EButton();
 	ETabbedPane tabbedPane;
-	EPanel testp;
+	EPanel previewImageHolderBox;
 	public FilterFrame(final Main parent){
 		
 		 tabbedPane = new ETabbedPane();
@@ -52,7 +52,7 @@ public class FilterFrame extends EInternalFrame {
 		 mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 		 
 		filters = new ArrayList<String>();
-		filterPanes = new ArrayList<DefaultFilter>();
+		filterPanes = new ArrayList<FilterPane>();
 		this.setAlignmentX( Component.LEFT_ALIGNMENT );
 		this.setTitle("Filter");
 		this.setLayout(new BorderLayout());
@@ -64,44 +64,48 @@ public class FilterFrame extends EInternalFrame {
 		
 		this.parent=parent;
 	
+		
+		
 		filters.add("Blur");
-	
-		filterPanes.add(new DefaultFilter(parent,this,"Blur",0,100,0));
-		
-
+		filterPanes.add(new FilterPane(parent,this,new String[]{"Blur"},new int[]{0},new int[]{100},new int[]{0,0,0}));
 		filters.add("Posterize");
-		
-		filterPanes.add(new DefaultFilter(parent,this,"Posterize",2,255,24));
-
+		filterPanes.add(new FilterPane(parent,this,new String[]{"Posterize"},new int[]{2},new int[]{255},new int[]{25,0,0}));
 		filters.add("Threshold");
-		
-		filterPanes.add(new DefaultFilter(parent,this,"Threshold",0,100,50));
-		
-
+		filterPanes.add(new FilterPane(parent,this,new String[]{"Threshold"},new int[]{0},new int[]{100},new int[]{50,0,0}));
 		filters.add("Spherify");
-		filterPanes.add(new DefaultFilter(parent,this,"Spherify",1,100,20));
-
+		filterPanes.add(new FilterPane(parent,this,new String[]{"Spherify","Stroke"},new int[]{1,-1},new int[]{100,100},new int[]{20,0,1}));
 		filters.add("Boxify");
+		filterPanes.add(new FilterPane(parent,this,new String[]{"Boxify","Distortion","Stroke"},new int[]{1,0,-1},new int[]{100,360,100},new int[]{20,0,1}));
 		
-		filterPanes.add(new DefaultFilter(parent,this,"Boxify",1,100,20));
-		//tabbedPane.addTab("FUKC",new TButton("TEST"));
+		
+		
+		
 		for(int i=0;i<filters.size();i++){
 			JPanel jp = new JPanel();
 			jp.add(filterPanes.get(i));
 			filterPanes.get(i).setAlignmentX( Component.LEFT_ALIGNMENT );
 			tabbedPane.addTab(filters.get(i),jp);
-			//filterPanes.get(i).setVisible(true);
+			jp.setBackground(filterPanes.get(i).getBackground());
+			jp.setBorder(null);
 		}
 		mainPanel.add(tabbedPane);
 		tabbedPane.setMinimumSize(new Dimension(400,60));
 		
 		previewImageHolder = new EPanel();
 		previewImageHolder.setLayout(new FlowLayout(FlowLayout.LEADING));
+		previewImageHolderBox = new EPanel();
+		previewImageHolderBox = new EPanel();
+		previewImageHolder.add(previewImageHolderBox);
+
+		previewImageHolderBox.setPreferredSize(new Dimension(200,160));
+		previewImageHolderBox.setMaximumSize(new Dimension(200,160));
+		previewImageHolderBox.setBounds(0,0,200,160);
 		 previewImage = new ELabel();
-		previewImage.setPreferredSize(new Dimension(200,160));
+			previewImage.setPreferredSize(new Dimension(200,160));
+			previewImage.setMaximumSize(new Dimension(200,160));
 		previewImage.setAlignmentX( Component.LEFT_ALIGNMENT );
-		previewImageHolder.add(previewImage);
-		previewImageHolder.setBackground(new Color(parent.canvas.bgColor));
+		previewImageHolderBox.add(previewImage);
+		previewImageHolderBox.setBackground(new Color(parent.canvas.bgColor));
 		mainPanel.add(previewImageHolder);
 		
 		applyBut.setText("Apply");
@@ -160,7 +164,7 @@ this.add(mainPanel);
 		for(int i=0;i<filters.size();i++){
 		//	filterPanes.get(i).setVisible(false);
 			if(filters.get(i).equals(name)){
-				filterPanes.get(i).setVisible(true);
+				//filterPanes.get(i).setVisible(true);
 				this.setTitle(name+" Filter");
 				if(i>0)
 					tabbedPane.setSelectedIndex(i-1);
@@ -182,27 +186,29 @@ this.add(mainPanel);
 	  
 	  public void updatePreviewImage(){
 		  if(parent.canvas.previewImageBuffered!=null){
-
-				previewImageHolder.setBackground(new Color(parent.canvas.bgColor));
+			 
+			  previewImageHolderBox.setBackground(new Color(parent.canvas.bgColor));
+				
+			//	previewImageHolder.setBackground(new Color(parent.canvas.bgColor));
 		     previewImage.setIcon(new ImageIcon(parent.canvas.previewImageBuffered));
 		   
 		     
 		  }
 			
 			previewImage.repaint();
-		//	previewImage.revalidate();
-		//	revalidate();
-		//	repaint();
+		
 	  }
 	  
 	  int changeIntCount = 0;
+	  
 	  public void actionChangeEvent(int x){
 		  if(changeIntCount == x){
 		  if(parent.canvas.previewImageBuffered!=null){
-		  parent.canvas.defaultFilters(intVal1,true,filters.get(tabbedPane.getSelectedIndex())); 
+			  String name = filterPanes.get(tabbedPane.getSelectedIndex()).names[0];
+			
+		  parent.canvas.defaultFilters(filterPanes.get(tabbedPane.getSelectedIndex()).vals,true,name); 
 
-		 // intVal1 = (Integer) filterPanes.get(tabbedPane.getSelectedIndex()).filterSpinber.getValue();
-	        
+
 	        parent.canvas.finaliseFrame(parent.CURRENTLAYER,parent.CURRENTFRAME);
 	        parent.canvas.showNewFrame(parent.CURRENTLAYER,parent.CURRENTFRAME,-1);
 		  }
@@ -226,7 +232,7 @@ this.add(mainPanel);
 			    public void run() {
 			    	try {
 			    		final int x=changeIntCount;
-						Thread.sleep(300);
+						Thread.sleep(120);
 
 					      actionChangeEvent(x);
 					} catch (InterruptedException e) {
@@ -242,7 +248,7 @@ this.add(mainPanel);
 	        
 	        }
 	 
-	    
+	    int actionCount;
 	    private class MyChangeListener implements ChangeListener {
 
 	        String myActionName;
@@ -254,17 +260,33 @@ this.add(mainPanel);
 
 	        public void stateChanged(ChangeEvent e) {
 	        	 
-	        		 int d=(int) filterPanes.get(tabbedPane.getSelectedIndex()).defaultValue;
-	        		 int x=(int) filterPanes.get(tabbedPane.getSelectedIndex()).filterSpinber.getValue();
-		        		if(x==d){d+=1;}
-		        				
-		        		
-	        		 filterPanes.get(tabbedPane.getSelectedIndex()).filterSpinber.setValue(d);
-	        		 filterPanes.get(tabbedPane.getSelectedIndex()).filterSpinber.setValue(x);
-	        	//actionChangeEvent();
+	        	doAction();
 	        	 
 	    			}
 	        
 	        }
+	    
+	    public void doAction(){
+	    	actionCount++;
+	    	new Thread() {
+				public void run() {
+					try {
+				
+        		 int x=actionCount;
+    				Thread.sleep(120);
+    			applyPrev(x);
+    		} catch (InterruptedException es) {
+    			// TODO Auto-generated catch block
+    			es.printStackTrace();
+    		}
+	    
+	    }
+				}.start();
+	    }
+	    public void applyPrev(int x){
+	    	if(x==actionCount)
+	    	filterPanes.get(tabbedPane.getSelectedIndex()).applyPreviewFilter();
+        	
+	    }
 	 
 }

@@ -12,6 +12,7 @@ public class ETabbedPane extends JTabbedPane{
 	}
 	
 	public void styleMe(){
+		//this.getViewportView().setBackground(67,67,67);
 		setForeground(new Color(202,202,202));
 		setFont(new Font("Verdana", Font.BOLD, 10)); 
 	}

@@ -1036,7 +1036,10 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 				}
 		}
 		noTint();
-		PImage tmp =loadImageFromDisk(parent.CURRENTLAYER, parent.CURRENTFRAME);
+		PImage tmp=null;
+		int maxTriesCount = 0;
+		while(tmp==null && maxTriesCount <4){
+		tmp =loadImageFromDisk(parent.CURRENTLAYER, parent.CURRENTFRAME);
 		if(parent.timeline.layers.get(getLayerIndex(parent.CURRENTLAYER)).visible)
 		if(tmp!=null){
 		if( parent.CURRENTLAYER!=hiddenLayer && !parent.timeline.layers.get(getLayerIndex(parent.CURRENTLAYER)).activeMask)
@@ -1046,16 +1049,27 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 				tmp=drawMaskedAdvanced(tmp,maskImage);
 				
 			}
+		if(tmp!=null){
 		image(tmp, 0, 0);
 
 		currentFrameGraphic.beginDraw();
 		
-		currentFrameGraphic.image(tmp, 0,
-				0);
+		currentFrameGraphic.image(tmp, 0,0);
 		currentFrameGraphic.endDraw();
 		}
+		}else{
+		maxTriesCount++;
+		System.out.println("NULL YA");
+		try {
+			Thread.sleep(300);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
+		}
 		getTempDispImage();
-
+		
 	}
 	
 	
@@ -1579,24 +1593,25 @@ tempDispImage2 = currentFrameGraphic.get();
 		}
 	}
 
-	public void defaultFilters(int amount, boolean apply,String filterName) {
+	public void defaultFilters(int[] amounts, boolean apply,String filterName) {
 		
 
+		
 		if (!apply) {
 			//refreshPreviewThumb();
 			previewThumb = currentFrameGraphic.get();
 			
 			previewThumb.resize(190, 160);
 			if(filterName.equals("Blur"))
-			previewThumb.filter(BLUR,amount);
+			previewThumb.filter(BLUR,(int)(amounts[0]/2));
 			else if(filterName.equals("Threshold"))
-			previewThumb.filter(THRESHOLD,(float)(amount/100));
+			previewThumb.filter(THRESHOLD,(float)(amounts[0]/100));
 			else if(filterName.equals("Posterize"))
-			previewThumb.filter(POSTERIZE,amount);
+			previewThumb.filter(POSTERIZE,Math.max(2,amounts[0]));
 			else if(filterName.equals("Spherify"))
-			previewThumb = spherifyFilter(previewThumb,(int)(amount));
+			previewThumb = spherifyFilter(previewThumb,(int)(amounts[0]/2),amounts[1]);
 			else if(filterName.equals("Boxify"))
-			previewThumb = boxifyFilter(previewThumb,(int)(amount));
+			previewThumb = boxifyFilter(previewThumb,(int)(amounts[0]/2),amounts[1],amounts[2]);
 			previewImageBuffered = (BufferedImage) (previewThumb.getNative());
 			
 		}else
@@ -1607,15 +1622,15 @@ tempDispImage2 = currentFrameGraphic.get();
 			currentFrameGraphic.beginDraw();
 			currentFrameGraphic.clear();
 			if(filterName.equals("Blur"))
-			tmp.filter(BLUR, amount);
+			tmp.filter(BLUR, amounts[0]);
 			else if(filterName.equals("Threshold"))
-			tmp.filter(THRESHOLD, (float)(amount/100));
+			tmp.filter(THRESHOLD, (float)(amounts[0]/100));
 			else if(filterName.equals("Posterize"))
-			tmp.filter(POSTERIZE,amount);
+			tmp.filter(POSTERIZE,amounts[0]);
 			else if(filterName.equals("Spherify"))
-			tmp = spherifyFilter(tmp,(int)(amount));
+			tmp = spherifyFilter(tmp,(int)(amounts[0]),amounts[1]);
 			else if(filterName.equals("Boxify"))
-			tmp = boxifyFilter(tmp,(int)(amount));
+			tmp = boxifyFilter(tmp,(int)(amounts[0]),amounts[1],amounts[2]);
 			currentFrameGraphic.image(tmp, 0, 0);
 			currentFrameGraphic.endDraw();
 
@@ -1631,24 +1646,26 @@ tempDispImage2 = currentFrameGraphic.get();
 	}
 	
 	
-	public PImage spherifyFilter(PImage img, int amount){
+	public PImage spherifyFilter(PImage img, int amount,int amount2){
 		if(amount<=1)
 			amount=1;
 		img.loadPixels();
 		PGraphics tmp = new PGraphics();
 		tmp = createGraphics(img.width,img.height);
-
+tmp.noStroke();
 		tmp.beginDraw();
 		tmp.background(0,0);
-		tmp.strokeWeight(0);
+		if(amount2>-1)
+		tmp.strokeWeight(amount2);
 		for(int x=0;x<img.width;x+=amount)
 			for(int y=0;y<img.height;y+=amount){
 			
 				int loc = (y*img.width)+x;
 				int c = img.pixels[loc];
-				tmp.stroke(c);
+				if(amount2>-1)
+					tmp.stroke(c);
 				tmp.fill(red(c),green(c),blue(c),alpha(c));
-				tmp.ellipse(x,y,amount,amount);
+				tmp.ellipse(x+amount/2,y+amount/2,amount,amount);
 			}
 		tmp.endDraw();
 		return tmp.get();
@@ -1656,24 +1673,34 @@ tempDispImage2 = currentFrameGraphic.get();
 	}
 	
 	
-	public PImage boxifyFilter(PImage img, int amount){
-		if(amount<=1)
-			amount=1;
+	public PImage boxifyFilter(PImage img, int boxSize,int rotDegrees,int stWeight){
+		println("BOXIFYING |||| BOXSIZE: "+boxSize+" :: ROTDEG: "+rotDegrees+" :: STROKEWEIGHT: "+stWeight);
+		if(boxSize<=1)
+			boxSize=1;
 		img.loadPixels();
 		PGraphics tmp = new PGraphics();
 		tmp = createGraphics(img.width,img.height);
-
+		rectMode(CENTER);
 		tmp.beginDraw();
 		tmp.background(0,0);
-		tmp.strokeWeight(0);
-		for(int x=0;x<img.width;x+=amount)
-			for(int y=0;y<img.height;y+=amount){
-				
+		tmp.noStroke();
+		if(stWeight>-1)
+		tmp.strokeWeight(stWeight);
+		for(int x=0;x<img.width;x+=boxSize)
+			for(int y=0;y<img.height;y+=boxSize){
+			float rand = (float) ((Math.random() * (rotDegrees - 0)));
+			
+		tmp.pushMatrix();
 				int loc = (y*img.width)+x;
 				int c = img.pixels[loc];
 				tmp.fill(red(c),green(c),blue(c),alpha(c));
-				tmp.stroke(c);
-				tmp.rect(x,y,amount,amount);
+				if(stWeight>-1)
+					tmp.stroke(c);
+				tmp.translate(x-(boxSize/2),y-(boxSize/2)); 
+				tmp.rotate(radians(rand));
+				tmp.rect(0,0,boxSize,boxSize);
+
+				tmp.popMatrix();
 			}
 		tmp.endDraw();
 		return tmp.get();
