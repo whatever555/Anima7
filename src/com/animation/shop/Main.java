@@ -53,6 +53,7 @@ import processing.core.PImage;
 import aniExtraGUI.EInternalFrame;
 import aniExtraGUI.EPanel;
 import aniExtraGUI.EScrollPane;
+import aniExtraGUI.LayerOptionsFrame;
 import aniFilters.FilterFrame;
 
 /**
@@ -692,7 +693,7 @@ public void saveText(String str,String txtFile){
 		canvas.initImages(false);
 
 		addFilterFrame();
-		
+		addLayerOptionsFrame();
 		addActions();
 		//this.pack();
 		
@@ -782,7 +783,11 @@ mainPanel.add(topPanel);
 		filterFrames.get(i).setBackground(new Color(255,255,255));
 		filterFrames.get(i).setVisible(false);
 		}
+		
 
+		LOF.setBounds(100,100,300,500);
+
+		LOF.setVisible(false);
 		canvasFrame.setVisible(true);
 		timelineControls.setVisible(true);
 		tlFrame.setVisible(true);
@@ -969,7 +974,11 @@ bug_workaround.setVisible(false);
 		toolBar.setVisible(false);
  
 	}
-	
+	LayerOptionsFrame LOF;
+	public void addLayerOptionsFrame(){
+		LOF = new LayerOptionsFrame(this);
+		mainPanel.add(LOF);
+	}
 	public ArrayList<FilterFrame> filterFrames = new ArrayList<FilterFrame>();
 	public ArrayList<String> filterFrameNames=new ArrayList<String>();
 	public void addFilterFrame(){
@@ -1101,8 +1110,6 @@ canvasPanel.setBackground(new Color(67,67,67));
 
 		
 		
-		
-	
 	
 		
 		

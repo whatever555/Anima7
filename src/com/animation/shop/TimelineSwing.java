@@ -26,7 +26,7 @@ int w,h;
 int lc,fc;//layer count, frame count
 int boxWidth = 30;
 int boxHeight=20;
-int xoff = 160;
+int xoff = 200;
 int yoff=boxHeight;
 int loopC = 1;
 PImage trans;

@@ -10,10 +10,15 @@ import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 
+import aniExtraGUI.EButton;
 import aniExtraGUI.EPanel;
 
 
 public class TimelineLayer extends EPanel {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	Main parent;
 	int layerID;
 	String layerName;
@@ -24,11 +29,12 @@ public class TimelineLayer extends EPanel {
 	int maskOf = -1;
 	int myMask = -1;
 	ArrayList<TimelineButton> jbs = new ArrayList<TimelineButton>();
-	TButton layerNameLabel;
+	public TButton layerNameLabel;
 	EPanel labelArea = new EPanel();
 	EPanel lineArea;
 	boolean activeMask = false;
 	boolean visible = true;
+	public String BLENDING = "Normal";
 	
 	public TimelineLayer(Main parent, int layerID, boolean isMask) {
 		this.isMask = isMask;
@@ -178,8 +184,15 @@ public class TimelineLayer extends EPanel {
 		labelArea.setBackground(null);
 		layerNameLabel.setBackground(null);
 		layerNameLabel.setBorder(null);
+		layerNameLabel.setMinimumSize(new Dimension(140,parent.timelineButtonHeight));
+		EButton optionsBut = new EButton();
+		optionsBut.setText("E");
+		optionsBut.setPreferredSize(new Dimension(15,parent.timelineButtonHeight));
+		optionsBut.setBorder(null);
+		optionsBut.addActionListener(new MyActionListener("Options"));
 		
 		if (!isMask){
+			
 			
 			TButton upBut = new TButton("");
 			TButton downBut = new TButton("");
@@ -208,6 +221,7 @@ public class TimelineLayer extends EPanel {
 		}
 		showHideButton.addActionListener(new MyActionListener("showHide"));
 		
+		labelArea.add(optionsBut);
 		labelArea.add(showHideButton);
 		labelArea.add(layerNameLabel);
 		labelArea.setPreferredSize(new Dimension(parent.timeline.xoff,
@@ -297,6 +311,10 @@ public void showHide(){
 	}
 }
 	
+public void showOptions(){
+	parent.LOF.setLayer(this);
+	parent.LOF.setVisible(true);
+}
 	public void updateFrameLength() {
 		while (jbs.size() > parent.MAXFRAMES)
 			jbs.remove(jbs.size());
@@ -320,6 +338,8 @@ public void showHide(){
 	        		moveDown();
 	        	else if(myActionName.equals("showHide"))
 	        		showHide();
+	        	else if(myActionName.equals("Options"))
+	        		showOptions();
 	        	parent.timeline.shiffleTable(parent.CURRENTFRAME,parent.CURRENTLAYER,-1,false);
 	        }
 	 }

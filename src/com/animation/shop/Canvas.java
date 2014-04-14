@@ -476,6 +476,7 @@ public PGraphics eraserMask;
 			//tmp.background(0,0);
 			tmp.background(bgColor);
 			for(int y=parent.MAXLAYERS-1;y>=0;y--){
+				setBlending(y);
 				if(parent.timeline.layers.get(y).visible )
 				if(!parent.timeline.layers.get(y).isMask ){
 				PImage img = loadImageFromDisk(parent.timeline.layers.get(y).layerID,x);
@@ -515,6 +516,9 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 		if(createAnimatedGIF)
 			aniGIF.finish();
 		parent.LOADED=true;
+		
+		blendMode(NORMAL);
+		currentFrameGraphic.blendMode(NORMAL);
 	}
 	
 	public void checkResize(int x, int y) {
@@ -992,8 +996,11 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 		tint(255, transValue);
 
 		// printFrameToImage(parent.CURRENTLAYER, parent.CURRENTFRAME);
-
+		
+		
+		
 		for (int i = parent.MAXLAYERS - 1; i > -1; i--) {
+			setBlending(i);
 			if (parent.timeline.layers.get(i).visible && !parent.timeline.layers.get(i).activeMask && parent.timeline.layers.get(i).layerID != parent.CURRENTLAYER && i!=hiddenLayer){
 			
 				PImage tmp =loadImageFromDisk(parent.timeline.layers.get(i).layerID, parent.CURRENTFRAME);
@@ -1022,6 +1029,7 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 		for (int i = Math.max(0, parent.CURRENTFRAME - parent.onionLeft); i <= Math
 				.min(parent.MAXFRAMES - 1, parent.CURRENTFRAME
 						+ parent.onionRight); i++) {
+			setBlending(parent.CURRENTLAYER);
 			if(parent.timeline.layers.get(getLayerIndex(parent.CURRENTLAYER)).visible)
 			if (getKeyFrame(i, getLayerIndex(parent.CURRENTLAYER)) != getKeyFrame(
 					parent.CURRENTFRAME, getLayerIndex(parent.CURRENTLAYER)))
@@ -1046,7 +1054,8 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 		while(tmp==null && maxTriesCount <4){
 		tmp =loadImageFromDisk(parent.CURRENTLAYER, parent.CURRENTFRAME);
 		if(parent.timeline.layers.get(getLayerIndex(parent.CURRENTLAYER)).visible)
-		if(tmp!=null){
+			setBlending(parent.CURRENTLAYER);
+			if(tmp!=null){
 		if( parent.CURRENTLAYER!=hiddenLayer && !parent.timeline.layers.get(getLayerIndex(parent.CURRENTLAYER)).activeMask)
 			if(parent.timeline.layers.get(getLayerIndex(parent.CURRENTLAYER)).hasMask){
 				PImage maskImage =loadImageFromDisk(parent.timeline.layers.get(parent.canvas.getLayerIndex(parent.timeline.layers.get(getLayerIndex(parent.CURRENTLAYER)).myMask)).layerID, parent.CURRENTFRAME);
@@ -1074,10 +1083,59 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 		}
 		}
 		getTempDispImage();
-		
+		blendMode(NORMAL);
+		currentFrameGraphic.blendMode(NORMAL);
 	}
 	
-	
+	public void setBlending(int x){
+		String b=parent.timeline.layers.get(x).BLENDING;
+		if(b.equals("Normal")){
+			blendMode(NORMAL);
+			currentFrameGraphic.blendMode(NORMAL);
+		}else
+			if(b.equals("Normal")){
+				blendMode(NORMAL);
+				currentFrameGraphic.blendMode(NORMAL);
+			}else
+				if(b.equals("Add")){
+					blendMode(ADD);
+					currentFrameGraphic.blendMode(ADD);
+				}else
+					if(b.equals("Subtract")){
+						blendMode(SUBTRACT);
+						currentFrameGraphic.blendMode(SUBTRACT);
+					}else
+						if(b.equals("Darkest")){
+							blendMode(DARKEST);
+							currentFrameGraphic.blendMode(DARKEST);
+						}else
+							if(b.equals("Lightest")){
+								blendMode(LIGHTEST);
+								currentFrameGraphic.blendMode(LIGHTEST);
+							}else
+								if(b.equals("Difference")){
+									blendMode(DIFFERENCE);
+									currentFrameGraphic.blendMode(DIFFERENCE);
+								}else
+									if(b.equals("Exclusion")){
+										blendMode(EXCLUSION);
+										currentFrameGraphic.blendMode(EXCLUSION);
+									}else
+										if(b.equals("Multiply")){
+											blendMode(MULTIPLY);
+											currentFrameGraphic.blendMode(MULTIPLY);
+										}else
+											if(b.equals("Screen")){
+												blendMode(SCREEN);
+												currentFrameGraphic.blendMode(SCREEN);
+											}else
+												if(b.equals("Replace")){
+													blendMode(REPLACE);
+													currentFrameGraphic.blendMode(REPLACE);
+												}
+		
+			
+	}
 
 PImage drawMaskedAdvanced(PImage img,PImage mask) {
 	PImage tmp=new PImage();
