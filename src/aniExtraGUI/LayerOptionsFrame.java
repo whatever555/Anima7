@@ -42,6 +42,8 @@ Main parent;
 		
 		ELabel layerNameLabel = new ELabel("Layer Name");
 		layerNameField = new JTextField(8);
+		layerNameField.addActionListener(new MyActionListener("Layer Name"));
+		
 		layerNameField.setDocument
         (new ETextFieldLimit(12));
 		EButton layerNameUpdate = new EButton();
@@ -98,6 +100,8 @@ Main parent;
 
 		if(myActionName.equals("Layer Name") && parent.LOADED){
 			currentLayer.layerNameLabel.setText(layerNameField.getText());
+			currentLayer.layerName=(layerNameField.getText());
+			
 			currentLayer.layerNameLabel.revalidate();
 		}
 		else

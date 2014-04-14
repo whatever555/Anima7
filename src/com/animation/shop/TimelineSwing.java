@@ -90,7 +90,19 @@ ArrayList<TimelineLayer> layers = new ArrayList<TimelineLayer>();
 		
 		
 	}
-	
+	/*public void cleanOutTimeline(){
+		
+		for(int x=0;x<parent.lastFrame;x++){
+			for(int y=0;y<parent.MAXLAYERS;y++){
+				layers.get(y).jbs.get(x).isKey=false;
+				
+					
+			}
+			
+		}
+		
+	}
+	*/
 	public void addNewLayer(int y, boolean maskBool){
 		
 		TimelineLayer tl = new TimelineLayer(parent,y,maskBool);

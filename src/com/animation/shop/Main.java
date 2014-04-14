@@ -63,12 +63,10 @@ import aniFilters.FilterFrame;
 public class Main {
 	
 	//TODO LIST
+	//MAKE SAVING AND LOADING MORE ELEGANT [NO MISSING FILES] CLEANING ETC
 	//SIMPLE BRUSHES
 	//Clean ICONS
 	//fix paste
-	//LAYER blending disolve etc
-	//Use disk files for Loaded File
-	//CLEAN UP UNUSED FILES *NB
 	// import images exceptions // stageholders
 	//rotate transforms
 	//add cut feature
@@ -83,7 +81,6 @@ public class Main {
 	// Styling and Skins
 	// fix undos
 	// Workspace memory
-	// RESTORE/dELETE temp files
 	// order algorithm for JFrames/layout
 	//tidy copy paste etc
 	public boolean LOADED=false;
@@ -175,6 +172,8 @@ TimelineControls timelineControls;
 	
 	EScrollPane scMain;
 
+	String workspaceFolder = null;
+	
 	   static String loadFile;
    JLabel messageTextArea;
 	boolean CTRL = false;
@@ -400,6 +399,13 @@ TimelineControls timelineControls;
         
         saveText(fileConfigString,file.getPath()+extension);
 	}
+	
+	public void forceRename(File source, File target) throws IOException
+	{
+	   if (target.exists()) target.delete();
+	   source.renameTo(target);
+	}
+	
 	public void saveData(String location){
 		
 		 File theDir = new File(location);
@@ -480,19 +486,22 @@ public void saveText(String str,String txtFile){
 	    }
 	}
 */
+
+
 	public void setLoadedFile(String filePath){
+
 		String[] strs = canvas.loadStrings(filePath);
 		if(strs.length>0){
-			timeline.mainLine.removeAll();
-			timeline.mainLine.revalidate();
-			timeline.mainLine.repaint();
-			
+
+			 cleanLocalFolder(); 
+			//timeline.cleanOutTimeline();
 			messageTextArea = new JLabel("Loading "+fileShortName);
-			//setTitle(fileShortName);
 			messagePanel.setVisible(true);
 			 fileName = filePath;
-	            fileShortName=file.getName();
-			setConfig(strs[0],file.getPath().replaceAll(extension,""));
+
+			fileShortName=file.getName();
+
+	    	setConfig(strs[0],file.getPath().replaceAll(extension,""));
 		}
 	}
 	
@@ -501,18 +510,24 @@ public void saveText(String str,String txtFile){
 	public void loadNewFile(){
 		LOADED=false;
 		
-		
 		setLoadedFile(getFilePath());
+
+		System.out.println("THE END");
 		LOADED=true;
 	}
 	public void setConfig(String line,String folderName){
-		
-		
+
+
+		 
+		for(int i=0;i<timeline.layers.size();i++){
+		timeline.layers.get(i).setVisible(false);
+		}
+
 		initVars();
 		timeline.layers = new ArrayList<TimelineLayer>();
-		timeline.showMe();
-		
-		
+	
+
+
 		
 		 tmpName = ""+(System.currentTimeMillis() / 1000L)+"_loaded";
 		 String[] configs = line.split(":::");
@@ -520,6 +535,7 @@ public void saveText(String str,String txtFile){
 	        fileConfigString+="FPS::"+FPS+":::";
 	        fileConfigString+="FOLDER::"+file.getPath()+":::";
 	        */
+
 		  for(int i=0;i<configs.length;i++){
 		if(line!=null){
 	        String[] parts = configs[i].split("::");
@@ -568,16 +584,14 @@ public void saveText(String str,String txtFile){
  		        }else
 	        	  if(parts[0].equals("FOLDER")){
 	        	
-	        		  cleanLocalFolder(); 
 
-	  	        	canvas.loadNewFile(parts[1],MAXLAYERS,MAXFRAMES);
+	        		
+	        		canvas.loadNewFile(parts[1],MAXLAYERS,MAXFRAMES);
 	  	        }
 		}
 		}
 		  
-		  timeline.showMe();
-		  timeline.repaint();
-		  canvas.repaint();
+		
 //loadApplication();
 
 			messagePanel.setVisible(false);
@@ -587,30 +601,28 @@ public void saveText(String str,String txtFile){
 	
 	public void cleanLocalFolder(){
 		// Load the directory as a resource
-		  URL dir_url = getClass().getClassLoader().getResource("/data/images");
-		  // Turn the resource into a File object
-		  File dir = null;
-		  if(dir_url!=null){
-		try {
-			dir = new File(dir_url.toURI());
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		  // List the directory
-		
-		String files[] = dir.list();
 		 
-  	   for (String temp : files) {
-  	      //construct the file structure
-  	      File fileDelete = new File( temp);
-
-  	      //recursive delete
-  	      fileDelete.delete();
-  	   }
-  	   
-		  dir.delete();
-		  }
+		  // Turn the resource into a File object
+		  System.out.println("CLEANING IN PROGRESS");
+		  File file = null;
+		  
+		  for(int x=0;x<=lastFrame;x++){
+				for(int y=0;y<MAXLAYERS;y++){
+					if(timeline.layers.get(y).jbs.get(x).isKey){
+					
+						System.out.println("TRYING: "+workspaceFolder+"/images/"+tmpName+"/"+y+"_"+x+".png");
+						
+						file=new File(workspaceFolder+"/images/"+tmpName+"/"+y+"_"+x+".png");
+						file.delete();
+					
+					}
+					
+						
+				}
+				
+			}
+		  file = new File(workspaceFolder+"/images/"+tmpName);
+		  file.delete();
 	}
 	
 	public void loadApplication(){
@@ -836,8 +848,76 @@ bug_workaround.setVisible(false);
 
 
 	}
+	String[] userConfig;
+	public void loadUserConfig(){
+		basicPapplet bp = new basicPapplet();
+		String[] tmp = bp.loadStrings(".animaUserConfig.conf");
+userConfig=new String[200];
+if(tmp!=null)
+		for(int i=0;i<tmp.length;i++){
+			userConfig[i] = tmp[i];
+		}
+		tmp=null;
+		bp=null;
+	}
+	
+	
+	public void saveUserConfig(){
+		basicPapplet bp = new basicPapplet();
+		bp.saveStrings(".animaUserConfig.conf",userConfig);
+
+	}
+	
+	public String getWorkSpaceFolder(){
+		return userConfig[0];
+	}
+	public String getFolderPath(){
+		JFileChooser chooser;  
+		chooser = new JFileChooser(); 
+		    chooser.setCurrentDirectory(new java.io.File("."));
+		    chooser.setDialogTitle("Select workspace folder");
+		    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		   
+		    chooser.setAcceptAllFileFilterUsed(false);
+		    //    
+		    if (chooser.showOpenDialog(mainPanel) == JFileChooser.APPROVE_OPTION) { 
+		      System.out.println("getCurrentDirectory(): " 
+		         +  chooser.getCurrentDirectory());
+		     return chooser.getSelectedFile().getPath();
+		      }
+		    else {
+		   return "";
+		      }
+		     }
+	
+	
+	
 	public Main() {
 
+		loadUserConfig();
+		workspaceFolder = getWorkSpaceFolder();
+		if(workspaceFolder==null){
+		
+			workspaceFolder =System.getProperty("user.home");
+			
+			int selectedOption = JOptionPane.showConfirmDialog(null, 
+                    "Your Workspace Folder is set to "+workspaceFolder+". Do you want to select a different folder?", 
+                    "Choose", 
+                    JOptionPane.YES_NO_OPTION); 
+if (selectedOption == JOptionPane.YES_OPTION) {
+String tmp = getFolderPath();
+if(tmp!=null){
+	if(tmp.length()>1){
+		workspaceFolder=tmp;
+
+	}
+}}
+
+userConfig[0]=workspaceFolder;
+saveUserConfig();
+			
+		}
+		
 		canvasFrame = new EInternalFrame("Canvas");
 		LOADED=false;
 		initVars();
@@ -1454,6 +1534,51 @@ canvasPanel.setBackground(new Color(67,67,67));
 				String location = getFilePath();
 				
 				canvas.exportImages(true,false,"gif",location);
+			}
+		});
+		
+		mnExportGIF.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
+				canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
+				String location = getFilePath();
+				
+				canvas.exportImages(false,false,"gif",location);
+			}
+		});
+		
+		mnExportPNG.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
+				canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
+				String location = getFilePath();
+				
+				canvas.exportImages(false,false,"png",location);
+			}
+		});
+		
+		
+		mnExportTFF.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
+				canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
+				String location = getFilePath();
+				
+				canvas.exportImages(false,false,"tiff",location);
+			}
+		});
+		
+		mnExportJPG.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
+				canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
+				String location = getFilePath();
+				
+				canvas.exportImages(false,false,"jpg",location);
 			}
 		});
 		

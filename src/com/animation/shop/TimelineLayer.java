@@ -21,7 +21,7 @@ public class TimelineLayer extends EPanel {
 	private static final long serialVersionUID = 1L;
 	Main parent;
 	int layerID;
-	String layerName;
+	public String layerName;
 	int xoff;
 	int yoff;
 	boolean isMask = false;

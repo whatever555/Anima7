@@ -248,27 +248,29 @@ public PGraphics eraserMask;
 		parent.historicImages=new ArrayList<PImage>();
 			for(int l=0;l<maxlayers;l++)
 				for(int f=0;f<=parent.lastFrame;f++){
-				URL uri =getClass().getClassLoader().getResource(folder+"/"+parent.timeline.layers.get(l).layerID+"_"+f+".png");
 				PImage tmp =loadImage(folder+"/"+parent.timeline.layers.get(l).layerID+"_"+f+".png");
 				if(tmp!=null){
 					
 					parent.timeline.layers.get(l).jbs.get(f).isKey=true;
-					String sp = savePath("src/data/images/" + parent.tmpName + "/"
+					String sp = savePath(parent.workspaceFolder+"/images/" + parent.tmpName + "/"
 							+ parent.timeline.layers.get(l).layerID + "_" + f + ".png");
-					if(l==0){
-						saveImageToDisk(tmp,parent.timeline.layers.get(l).layerID,f);
-					}
+					
 					tmp.save(sp);
 				}
 				else{
+					if(f==0){
+						saveImageToDisk(emptyImage,parent.timeline.layers.get(l).layerID,f);
+					}
 					parent.timeline.layers.get(l).jbs.get(f).isKey=false;
 				}
 				}
-			
 			initImages(true);
 
 			showNewFrame(parent.CURRENTLAYER,parent.CURRENTFRAME,-1);
+
 			parent.timeline.shiffleTable(parent.CURRENTLAYER,parent.CURRENTFRAME,1,true);
+
+			System.out.println("LOAD CANV DONE");
 	}
 
 	public void setBrush(String[] loc) {
@@ -476,7 +478,7 @@ public PGraphics eraserMask;
 			//tmp.background(0,0);
 			tmp.background(bgColor);
 			for(int y=parent.MAXLAYERS-1;y>=0;y--){
-				setBlending(y);
+				
 				if(parent.timeline.layers.get(y).visible )
 				if(!parent.timeline.layers.get(y).isMask ){
 				PImage img = loadImageFromDisk(parent.timeline.layers.get(y).layerID,x);
@@ -488,6 +490,7 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 					img = drawMaskedAdvanced(img,maskImage) ;
 					
 				}
+				setBlending(tmp,y);
 				tmp.image(img,0,0);
 				
 				
@@ -1136,7 +1139,44 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 		
 			
 	}
-
+	public void setBlending(PGraphics tmp,int x){
+		String b=parent.timeline.layers.get(x).BLENDING;
+		if(b.equals("Normal")){
+			tmp.blendMode(NORMAL);
+		}else
+			if(b.equals("Normal")){
+				tmp.blendMode(NORMAL);
+			}else
+				if(b.equals("Add")){
+					tmp.blendMode(ADD);
+				}else
+					if(b.equals("Subtract")){
+						tmp.blendMode(SUBTRACT);
+					}else
+						if(b.equals("Darkest")){
+							tmp.blendMode(DARKEST);
+						}else
+							if(b.equals("Lightest")){
+								tmp.blendMode(LIGHTEST);
+							}else
+								if(b.equals("Difference")){
+									tmp.blendMode(DIFFERENCE);
+								}else
+									if(b.equals("Exclusion")){
+										tmp.blendMode(EXCLUSION);
+									}else
+										if(b.equals("Multiply")){
+											tmp.blendMode(MULTIPLY);
+										}else
+											if(b.equals("Screen")){
+												tmp.blendMode(SCREEN);
+											}else
+												if(b.equals("Replace")){
+													tmp.blendMode(REPLACE);
+												}
+		
+			
+	}
 PImage drawMaskedAdvanced(PImage img,PImage mask) {
 	PImage tmp=new PImage();
 	
@@ -1166,9 +1206,7 @@ return true;
 		
 	}
 
-	public void copyImage(String location, int cl, int cf) {
-		loadImageFromDisk(cl, cf).save(location);
-	}
+	
 
 	public PImage loadImageFromDisk(int cl, int cf) {
 	
@@ -1180,7 +1218,7 @@ return true;
 			return loadImageFromCache(cl, ck);
 
 		} else {
-			return loadImage("src/data/images/" + parent.tmpName + "/" + cl
+			return loadImage(parent.workspaceFolder+"/images/" + parent.tmpName + "/" + cl
 					+ "_" + ck + ".png");
 
 		}
@@ -1191,7 +1229,10 @@ return true;
 		return parent.cachedImages.get(parent.cachedImagesNames.indexOf("image"
 				+ l + "_" + k));
 	}
-
+	public void copyImage(String location, int cl, int cf) {
+		loadImageFromDisk(cl, cf).save(location);
+	}
+	
 	public void deleteImageFromDisk(int cl, int ck) {
 		if (parent.cachedImagesNames.contains("" + cl + "_" + ck)) {
 			parent.cachedImages.remove(parent.cachedImagesNames.indexOf("image"
@@ -1234,7 +1275,7 @@ return true;
 				// Thread.currentThread().setPriority(1);
 				SAVING = true;
 
-				String sp = savePath("src/data/images/" + parent.tmpName + "/"
+				String sp = savePath(parent.workspaceFolder+"/images/" + parent.tmpName + "/"
 						+ cl + "_" + ck + ".png");
 				tmpImage.save(sp);
 
