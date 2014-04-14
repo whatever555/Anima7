@@ -31,7 +31,6 @@ public class FilterFrame extends EInternalFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	int intVal1 = 0, intVal2 =0, intVal3 = 0;
 	
 	Main parent;
 	EPanel previewImageHolder;
@@ -44,8 +43,9 @@ public class FilterFrame extends EInternalFrame {
 	EButton applyBut = new EButton();
 	ETabbedPane tabbedPane;
 	EPanel previewImageHolderBox;
-	public FilterFrame(final Main parent){
-		
+	int myIndex=0;
+	public FilterFrame(final Main parent,String options,int index){
+		this.myIndex=index;
 		 tabbedPane = new ETabbedPane();
 		  
 		 EPanel mainPanel = new EPanel();
@@ -59,24 +59,45 @@ public class FilterFrame extends EInternalFrame {
 		this.setClosable(true);
 		this.setResizable(true);
 		this.setDefaultCloseOperation(1);
-		this.setMinimumSize(new Dimension(400,200));
-		this.setPreferredSize(new Dimension(400,200));
+		this.setMinimumSize(new Dimension(500,200));
+		this.setPreferredSize(new Dimension(500,200));
 		
 		this.parent=parent;
+	if(options.equals("EFFECTS")){
+			filters.add("Posterize");
+			filterPanes.add(new FilterPane("Posterize",parent,this,new String[]{"Level"},new int[]{2},new int[]{255},new float[]{25,0,0,0}));
+			filters.add("Threshold");
+			filterPanes.add(new FilterPane("Threshold",parent,this,new String[]{"Level"},new int[]{0},new int[]{100},new float[]{50,0,0,0}));
+			}else
+				
+		if(options.equals("BLUR")){
+			filters.add("Blur");
+			filterPanes.add(new FilterPane("Blur",parent,this,new String[]{"Level"},new int[]{0},new int[]{100},new float[]{0,0,0,0}));
+			filters.add("Glow");
+			filterPanes.add(new FilterPane("Glow",parent,this,new String[]{"Level"},new int[]{0},new int[]{100},new float[]{0,0,0,0}));
+			filters.add("Motion Blur");
+			filterPanes.add(new FilterPane("Motion Blur",parent,this,new String[]{"Rotation","Distance","Angle"},new int[]{0,0,0},new int[]{360,360,360},new float[]{0,0,0,0}));
+			filters.add("Lens Blur");
+			filterPanes.add(new FilterPane("Lens Blur",parent,this,new String[]{"Radius","Bloom","Angle","Sides"},new int[]{0,0,0,0},new int[]{360,360,360,12},new float[]{0,0,0,0}));
+			filters.add("Sharpen");
+			filterPanes.add(new FilterPane("Sharpen",parent,this,new String[]{"Level"},new int[]{0},new int[]{100},new float[]{0,0,0,0}));
+			
+		}else
+			if(options.equals("SHADING")){
+				filters.add("Shadow");
+				filterPanes.add(new FilterPane("Shadow",parent,this,new String[]{"Radius","Offset X","Offset Y", "Opacity"},new int[]{0,0,0,0},new int[]{100,100,100,100},new float[]{0,0,0,50}));
+				filters.add("Rays");
+				filterPanes.add(new FilterPane("Rays",parent,this,new String[]{"Opacity","Threshold","Strength"},new int[]{0,0,0},new int[]{100,100,100},new float[]{100,0,50,0}));
+				
+			}else
+				
 	
-		
-		
-		filters.add("Blur");
-		filterPanes.add(new FilterPane(parent,this,new String[]{"Blur"},new int[]{0},new int[]{100},new int[]{0,0,0}));
-		filters.add("Posterize");
-		filterPanes.add(new FilterPane(parent,this,new String[]{"Posterize"},new int[]{2},new int[]{255},new int[]{25,0,0}));
-		filters.add("Threshold");
-		filterPanes.add(new FilterPane(parent,this,new String[]{"Threshold"},new int[]{0},new int[]{100},new int[]{50,0,0}));
+		if(options.equals("ARTISTIC")){
 		filters.add("Spherify");
-		filterPanes.add(new FilterPane(parent,this,new String[]{"Spherify","Stroke"},new int[]{1,-1},new int[]{100,100},new int[]{20,0,1}));
+		filterPanes.add(new FilterPane("Spherify",parent,this,new String[]{"Ellipse Size","Stroke"},new int[]{1,-1},new int[]{100,100},new float[]{20,0,1,0}));
 		filters.add("Boxify");
-		filterPanes.add(new FilterPane(parent,this,new String[]{"Boxify","Distortion","Stroke"},new int[]{1,0,-1},new int[]{100,360,100},new int[]{20,0,1}));
-		
+		filterPanes.add(new FilterPane("Boxify",parent,this,new String[]{"Box Size","Distortion","Stroke"},new int[]{1,0,-1},new int[]{100,360,100},new float[]{20,0,1,0}));
+		}
 		
 		
 		
@@ -120,24 +141,25 @@ this.add(mainPanel);
 		
 		 this.addInternalFrameListener(new javax.swing.event.InternalFrameAdapter() {
 		        public void internalFrameClosing(InternalFrameEvent e) {
-		        	  parent.filterFrame.setVisible(false);
-			         parent.canvasFrame.requestFocus();
+		        	  parent.filterFrames.get(myIndex).setVisible(false);
+			    /*     parent.canvasFrame.requestFocus();
 			         parent.canvasFrame.grabFocus();
 			     	parent.canvasFrame.revalidate();
 			         parent.canvasFrame.repaint();
 			         parent.canvas.validate();
 			         parent.canvas.repaint();
+			         */
 			          
-				         System.out.println("ITS IN HERE NOW");
 		         
 		        }
 		        
 		        public void internalFrameClosed(InternalFrameEvent e) {
-		        	  
+		        /*	  
 		    		parent.canvasFrame.revalidate();
 			         parent.canvasFrame.repaint();
 			         parent.canvas.validate();
 			         parent.canvas.repaint();
+			         */
 			    	 tabbedPane.removeChangeListener(new MyChangeListener("tabbed"));
 					 
 					 applyBut.removeActionListener(new MyActionListener("apply"));
@@ -166,11 +188,9 @@ this.add(mainPanel);
 			if(filters.get(i).equals(name)){
 				//filterPanes.get(i).setVisible(true);
 				this.setTitle(name+" Filter");
-				if(i>0)
-					tabbedPane.setSelectedIndex(i-1);
-				else
-					tabbedPane.setSelectedIndex(i+1);
+				
 				tabbedPane.setSelectedIndex(i);
+				updatePreviewImage();
 			}
 			
 		}
@@ -188,14 +208,11 @@ this.add(mainPanel);
 		  if(parent.canvas.previewImageBuffered!=null){
 			 
 			  previewImageHolderBox.setBackground(new Color(parent.canvas.bgColor));
-				
-			//	previewImageHolder.setBackground(new Color(parent.canvas.bgColor));
-		     previewImage.setIcon(new ImageIcon(parent.canvas.previewImageBuffered));
+			  previewImage.setIcon(new ImageIcon(parent.canvas.previewImageBuffered));
 		   
-		     
 		  }
 			
-			previewImage.repaint();
+			//previewImage.repaint();
 		
 	  }
 	  
@@ -204,7 +221,7 @@ this.add(mainPanel);
 	  public void actionChangeEvent(int x){
 		  if(changeIntCount == x){
 		  if(parent.canvas.previewImageBuffered!=null){
-			  String name = filterPanes.get(tabbedPane.getSelectedIndex()).names[0];
+			  String name = filterPanes.get(tabbedPane.getSelectedIndex()).name;
 			
 		  parent.canvas.defaultFilters(filterPanes.get(tabbedPane.getSelectedIndex()).vals,true,name); 
 

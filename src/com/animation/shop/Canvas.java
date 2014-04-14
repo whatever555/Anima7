@@ -13,9 +13,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.ImageIcon;
 
-import aniExports.AnimatedGifEncoder;
-import aniExports.SWFExport;
-
 import jpen.PButtonEvent;
 import jpen.PKind;
 import jpen.PLevel;
@@ -27,6 +24,14 @@ import jpen.event.PenAdapter;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PImage;
+import aniExports.AnimatedGifEncoder;
+import aniExports.SWFExport;
+import aniFilters.GlowFilter;
+import aniFilters.LensBlurFilter;
+import aniFilters.MotionBlur;
+import aniFilters.RaysFilter;
+import aniFilters.ShadowFilter;
+import aniFilters.UnsharpFilter;
 
 public class Canvas extends PApplet {
 
@@ -1593,7 +1598,7 @@ tempDispImage2 = currentFrameGraphic.get();
 		}
 	}
 
-	public void defaultFilters(int[] amounts, boolean apply,String filterName) {
+	public void defaultFilters(float[] amounts, boolean apply,String filterName) {
 		
 
 		
@@ -1604,6 +1609,18 @@ tempDispImage2 = currentFrameGraphic.get();
 			previewThumb.resize(190, 160);
 			if(filterName.equals("Blur"))
 			previewThumb.filter(BLUR,(int)(amounts[0]/2));
+			else if(filterName.equals("Motion Blur"))
+			previewThumb = motionBlurFilter(previewThumb,(float)(amounts[0]/10),(float)(amounts[1]/10),(float)(amounts[2]/360));
+			else if(filterName.equals("Lens Blur"))
+			previewThumb = lensnBlurFilter(previewThumb,(float)(amounts[0]/10),(float)(amounts[1]/10),(float)(amounts[2]/360),(float)(amounts[3]));
+			else if(filterName.equals("Sharpen"))
+				previewThumb = UnsharpFilter(previewThumb,(amounts[0]));
+			else if(filterName.equals("Glow"))
+				previewThumb = GlowBlur(previewThumb,(int)(amounts[0]));
+			else if(filterName.equals("Rays"))
+				previewThumb = RaysFilter(previewThumb,amounts[0],amounts[1],amounts[2]);
+				else if(filterName.equals("Shadow"))
+			previewThumb = ShadowFilter(previewThumb,(int)(amounts[0]),(int)(amounts[1]),(int)(amounts[2]),(float)(amounts[3]));
 			else if(filterName.equals("Threshold"))
 			previewThumb.filter(THRESHOLD,(float)(amounts[0]/100));
 			else if(filterName.equals("Posterize"))
@@ -1612,6 +1629,7 @@ tempDispImage2 = currentFrameGraphic.get();
 			previewThumb = spherifyFilter(previewThumb,(int)(amounts[0]/2),amounts[1]);
 			else if(filterName.equals("Boxify"))
 			previewThumb = boxifyFilter(previewThumb,(int)(amounts[0]/2),amounts[1],amounts[2]);
+			
 			previewImageBuffered = (BufferedImage) (previewThumb.getNative());
 			
 		}else
@@ -1623,6 +1641,18 @@ tempDispImage2 = currentFrameGraphic.get();
 			currentFrameGraphic.clear();
 			if(filterName.equals("Blur"))
 			tmp.filter(BLUR, amounts[0]);
+			else if(filterName.equals("Motion Blur"))
+				tmp = motionBlurFilter(tmp,(float)(amounts[0]/10),(float)(amounts[1]/10),(float)(amounts[2]/360));
+			else if(filterName.equals("Shadow"))
+				tmp = ShadowFilter(tmp,(int)(amounts[0]),(int)(amounts[1]),(int)(amounts[2]),(float)(amounts[3]));
+			else if(filterName.equals("Glow"))
+				tmp = GlowBlur(tmp,(int)(amounts[0]));
+			else if(filterName.equals("Sharpen"))
+				tmp = UnsharpFilter(tmp,(amounts[0]));
+			else if(filterName.equals("Rays"))
+				tmp = RaysFilter(tmp,amounts[0],amounts[1],amounts[2]);
+			else if(filterName.equals("Lens Blur"))
+			tmp = lensnBlurFilter(tmp,(float)(amounts[0]/10),(float)(amounts[1]/10),(float)(amounts[2]/360),(float)(amounts[3]));
 			else if(filterName.equals("Threshold"))
 			tmp.filter(THRESHOLD, (float)(amounts[0]/100));
 			else if(filterName.equals("Posterize"))
@@ -1645,8 +1675,44 @@ tempDispImage2 = currentFrameGraphic.get();
 
 	}
 	
+	public PImage ShadowFilter(PImage img, int radius, int xOffset, int yOffset, float opacity){
+		ShadowFilter sf = new ShadowFilter(radius,xOffset,yOffset,opacity/100);
+		PImage tmp = new PImage(sf.filter((BufferedImage)img.getNative(),null));
+	return tmp;
+	}
 	
-	public PImage spherifyFilter(PImage img, int amount,int amount2){
+	public PImage GlowBlur(PImage img,int amt){
+		GlowFilter gf = new GlowFilter(amt);
+		PImage tmp = new PImage(gf.filter((BufferedImage)img.getNative(),null));
+	return tmp;
+	}
+
+	public PImage RaysFilter(PImage img,float opacity,float threshold,float strength){
+		RaysFilter rf = new RaysFilter(opacity/100,threshold/100,strength/100);
+		PImage tmp = new PImage(rf.filter((BufferedImage)img.getNative(),null));
+	return tmp;
+	}
+	
+
+	public PImage UnsharpFilter(PImage img,float amt){
+		UnsharpFilter rf = new UnsharpFilter(amt/100,1);
+		PImage tmp = new PImage(rf.filter((BufferedImage)img.getNative(),null));
+	return tmp;
+	}
+
+	public PImage motionBlurFilter(PImage img, float f, float g, float angle){
+		MotionBlur mb = new MotionBlur(g,angle,f,0);
+		PImage tmp = new PImage(mb.filter((BufferedImage)img.getNative(),null));
+	return tmp;
+	}
+	
+	public PImage lensnBlurFilter(PImage img, float radius, float bloom, float angle,float sides){
+		LensBlurFilter lb = new LensBlurFilter(radius,bloom,angle,(int)sides);
+		PImage tmp = new PImage(lb.filter((BufferedImage)img.getNative(),null));
+	return tmp;
+	}
+	
+	public PImage spherifyFilter(PImage img, int amount,float amounts){
 		if(amount<=1)
 			amount=1;
 		img.loadPixels();
@@ -1655,14 +1721,14 @@ tempDispImage2 = currentFrameGraphic.get();
 tmp.noStroke();
 		tmp.beginDraw();
 		tmp.background(0,0);
-		if(amount2>-1)
-		tmp.strokeWeight(amount2);
+		if(amounts>-1)
+		tmp.strokeWeight(amounts);
 		for(int x=0;x<img.width;x+=amount)
 			for(int y=0;y<img.height;y+=amount){
 			
 				int loc = (y*img.width)+x;
 				int c = img.pixels[loc];
-				if(amount2>-1)
+				if(amounts>-1)
 					tmp.stroke(c);
 				tmp.fill(red(c),green(c),blue(c),alpha(c));
 				tmp.ellipse(x+amount/2,y+amount/2,amount,amount);
@@ -1673,7 +1739,7 @@ tmp.noStroke();
 	}
 	
 	
-	public PImage boxifyFilter(PImage img, int boxSize,int rotDegrees,int stWeight){
+	public PImage boxifyFilter(PImage img, float boxSize,float rotDegrees,float stWeight){
 		println("BOXIFYING |||| BOXSIZE: "+boxSize+" :: ROTDEG: "+rotDegrees+" :: STROKEWEIGHT: "+stWeight);
 		if(boxSize<=1)
 			boxSize=1;

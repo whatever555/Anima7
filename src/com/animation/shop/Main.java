@@ -158,7 +158,7 @@ public class Main {
 	
 	PreviousColours prevColPanel;
 
-	public FilterFrame filterFrame;
+	
 	public Canvas canvas;
 	EScrollPane canvasSc;
 	PenOptions penOps;
@@ -776,11 +776,12 @@ mainPanel.add(topPanel);
 		extraX+=5;
 		toolBar.setBounds((int) (CANVASWIDTH+extraX+(defaultPanelWidth*1.8)),extraY,(int) (defaultPanelWidth*.2),defaultPanelHeight*2);
 		
-		
-		filterFrame.setPreferredSize(new Dimension(400,260));
-		filterFrame.setBounds(200,200,400,300);
-		filterFrame.setBackground(new Color(255,255,255));
-		filterFrame.setVisible(false);
+		for(int i=0;i<filterFrames.size();i++){
+		filterFrames.get(i).setPreferredSize(new Dimension(400,260));
+		filterFrames.get(i).setBounds(200+i,200+i,400,300);
+		filterFrames.get(i).setBackground(new Color(255,255,255));
+		filterFrames.get(i).setVisible(false);
+		}
 
 		canvasFrame.setVisible(true);
 		timelineControls.setVisible(true);
@@ -792,9 +793,8 @@ mainPanel.add(topPanel);
 		historyPanel.setVisible(true);
 		historyPanel.update();
 		
-
-filterFrame.showFilter("Blur");
-mainPanel.add(filterFrame);
+for(int i=0;i<filterFrames.size();i++)
+mainPanel.add(filterFrames.get(i));
 mainPanel.add(tlFrame);
 
 		mainPanel.add(timelineControls);
@@ -967,12 +967,31 @@ bug_workaround.setVisible(false);
 	public void addToolsBar() {
 		toolBar = new ToolsBar(this);
 		toolBar.setVisible(false);
-
+ 
 	}
 	
+	public ArrayList<FilterFrame> filterFrames = new ArrayList<FilterFrame>();
+	public ArrayList<String> filterFrameNames=new ArrayList<String>();
 	public void addFilterFrame(){
-		filterFrame = new FilterFrame(this);
+
+
+		filterFrames.add(new FilterFrame(this,"EFFECTS",0));
+		filterFrameNames.add("EFFECTS");
+		filterFrames.add(new FilterFrame(this,"BLUR",1));
+		filterFrameNames.add("BLUR");
+		filterFrames.add(new FilterFrame(this,"ARTISTIC",2));
+		filterFrameNames.add("ARTISTIC");
+		filterFrames.add(new FilterFrame(this,"SHADING",3));
+		filterFrameNames.add("SHADING");
 		
+	}
+	public int getFilterFrameIndex(String str){
+		for(int i=0;i<filterFrames.size();i++){
+			if(filterFrameNames.get(i).equals(str)){
+				return i;
+			}
+		}
+		return 0;
 	}
 
 	public void addPreviousColourList() {
@@ -1251,25 +1270,68 @@ canvasPanel.setBackground(new Color(67,67,67));
 		JMenuItem mntmChangeBGColor = new JMenuItem("Change Background Color..");
 		mnView.add(mntmChangeBGColor);
 
+	
+		
+		
 		final JMenu mnFilters = new JMenu("Filters");
 		menuBar.add(mnFilters);
 
-		final JMenuItem mntmBlur = new JMenuItem("Blur..");
+	//mnFile.addSeparator();
+		
+		JMenu mntmBlur = new JMenu("Blur ..");
 		mnFilters.add(mntmBlur);
+		
+		
+		 JMenuItem mnBasicBlur = new JMenuItem("Blur..");
+		mntmBlur.add(mnBasicBlur);
+		
+		 JMenuItem mnMotionBlur = new JMenuItem("Motion Blur..");
+		mntmBlur.add(mnMotionBlur);
 
-		final JMenuItem mntmPosterize = new JMenuItem("Posterize..");
-		mnFilters.add(mntmPosterize);
+
+		 JMenuItem mnLensBlur = new JMenuItem("Lens Blur..");
+		mntmBlur.add(mnLensBlur);
+
+		 JMenuItem mnGlowBlur = new JMenuItem("Glow Blur..");
+			mntmBlur.add(mnGlowBlur);
+
+			 JMenuItem mnUnsharpen = new JMenuItem("Sharpen..");
+				mntmBlur.add(mnUnsharpen);
+
 		
 
-		final JMenuItem mntmThreshold = new JMenuItem("Threshold..");
-		mnFilters.add(mntmThreshold);
-
-		final JMenuItem mntmSpherify = new JMenuItem("Spherify..");
-		mnFilters.add(mntmSpherify);
+		
+		
+		
+		JMenu mntmEffects = new JMenu("Effects ..");
+		mnFilters.add(mntmEffects);
+		
+		final JMenuItem mnPosterize = new JMenuItem("Posterize..");
+		mntmEffects.add(mnPosterize);
 		
 
-		final JMenuItem mntmBoxify = new JMenuItem("Boxify..");
-		mnFilters.add(mntmBoxify);
+		final JMenuItem mnThreshold = new JMenuItem("Threshold..");
+		mntmEffects.add(mnThreshold);
+
+		JMenu mntmArtistic = new JMenu("Artistic ..");
+		mnFilters.add(mntmArtistic);
+		
+		final JMenuItem mnSpherify = new JMenuItem("Spherify..");
+		mntmArtistic.add(mnSpherify);
+		
+
+		final JMenuItem mnBoxify = new JMenuItem("Boxify..");
+		mntmArtistic.add(mnBoxify);
+		
+		JMenu mntmShading = new JMenu("Shading ..");
+		mnFilters.add(mntmShading);
+
+		JMenuItem mnShadow= new JMenuItem("Shadow..");
+		mntmShading.add(mnShadow);
+		
+
+		JMenuItem mnRays=  new JMenuItem("Rays..");
+		mntmShading.add(mnRays);
 
 		final JMenu mnBrush = new JMenu("Brush");
 		menuBar.add(mnBrush);
@@ -1460,14 +1522,56 @@ canvasPanel.setBackground(new Color(67,67,67));
 			}
 		});
 
-		mntmBlur.addActionListener(new ActionListener() {
+		mnBasicBlur.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
 
 		   		 canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
 			
-		   		 filterFrame.showFilter("Blur");
-		   		 filterFrame.setVisible(true);
+		   		filterFrames.get(getFilterFrameIndex("BLUR")).showFilter("Blur");
+		   		filterFrames.get(getFilterFrameIndex("BLUR")).setVisible(true);
+
+		   	//	filterFrame.setBounds(201,201,200,300);
+		   	//showFilterFrameOnTop();
+			}
+		});
+		
+		mnMotionBlur.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
+
+		   		 canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
+			
+		   		filterFrames.get(getFilterFrameIndex("BLUR")).showFilter("Motion Blur");
+		   		filterFrames.get(getFilterFrameIndex("BLUR")).setVisible(true);
+
+		   	//	filterFrame.setBounds(201,201,200,300);
+		   	//showFilterFrameOnTop();
+			}
+		});
+		
+		mnGlowBlur.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
+
+		   		 canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
+			
+		   		filterFrames.get(getFilterFrameIndex("BLUR")).showFilter("Glow Blur");
+		   		filterFrames.get(getFilterFrameIndex("BLUR")).setVisible(true);
+
+		   	//	filterFrame.setBounds(201,201,200,300);
+		   	//showFilterFrameOnTop();
+			}
+		});
+		
+		mnLensBlur.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
+
+		   		 canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
+			
+		   		filterFrames.get(getFilterFrameIndex("BLUR")).showFilter("Lens Blur");
+		   		filterFrames.get(getFilterFrameIndex("BLUR")).setVisible(true);
 
 		   	//	filterFrame.setBounds(201,201,200,300);
 		   	//showFilterFrameOnTop();
@@ -1475,53 +1579,89 @@ canvasPanel.setBackground(new Color(67,67,67));
 		});
 		
 
-		mntmSpherify.addActionListener(new ActionListener() {
+		mnSpherify.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
 
 		   		 canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
 			
-		   		 filterFrame.showFilter("Spherify");
-		   		 filterFrame.setVisible(true);
+		   		filterFrames.get(getFilterFrameIndex("ARTISTIC")).showFilter("Spherify");
+		   		filterFrames.get(getFilterFrameIndex("ARTISTIC")).setVisible(true);
 
 		   		//showFilterFrameOnTop();
 			}
 		});
 		
-		mntmBoxify.addActionListener(new ActionListener() {
+		mnBoxify.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
 
 		   		 canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
 			
-		   		 filterFrame.showFilter("Boxify");
-		   		 filterFrame.setVisible(true);
+		   		filterFrames.get(getFilterFrameIndex("ARTISTIC")).showFilter("Boxify");
+		   		filterFrames.get(getFilterFrameIndex("ARTISTIC")).setVisible(true);
 
 		   		//showFilterFrameOnTop();
 			}
 		});
 		
-		mntmThreshold.addActionListener(new ActionListener() {
+		mnShadow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
 
 		   		 canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
 			
-		   		 filterFrame.showFilter("Threshold");
-		   		 filterFrame.setVisible(true);
+		   		filterFrames.get(getFilterFrameIndex("SHADING")).showFilter("Shadow");
+		   		filterFrames.get(getFilterFrameIndex("SHADING")).setVisible(true);
+
+		   		//showFilterFrameOnTop();
+			}
+		});
+		mnRays.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
+
+		   		 canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
+			
+		   		filterFrames.get(getFilterFrameIndex("SHADING")).showFilter("Rays");
+		   		filterFrames.get(getFilterFrameIndex("SHADING")).setVisible(true);
+
+		   		//showFilterFrameOnTop();
+			}
+		});
+		mnUnsharpen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
+
+		   		 canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
+			
+		   		filterFrames.get(getFilterFrameIndex("BLUR")).showFilter("Sharpen");
+		   		filterFrames.get(getFilterFrameIndex("BLUR")).setVisible(true);
+
+		   		//showFilterFrameOnTop();
+			}
+		});
+		mnThreshold.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
+
+		   		 canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
+			
+		   		filterFrames.get(getFilterFrameIndex("EFFECTS")).showFilter("Threshold");
+		   		filterFrames.get(getFilterFrameIndex("EFFECTS")).setVisible(true);
 
 		   	//	showFilterFrameOnTop();
 			}
 		});
 		
-		mntmPosterize.addActionListener(new ActionListener() {
+		mnPosterize.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
 
 		   		 canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
 			
-		   		 filterFrame.showFilter("Posterize");
-		   		 filterFrame.setVisible(true);
+		   		filterFrames.get(getFilterFrameIndex("EFFECTS")).showFilter("Posterize");
+		   		filterFrames.get(getFilterFrameIndex("EFFECTS")).setVisible(true);
 
 		   	//	showFilterFrameOnTop();
 			}
@@ -1626,16 +1766,18 @@ canvasPanel.setBackground(new Color(67,67,67));
 	
 	public void showFilterFrameOnTop(){
 		
-
+/*
  		canvasFrame.revalidate();
  		canvasFrame.repaint();
 		mainPanel.revalidate();
- 		filterFrame.revalidate();
+ 		//filterFrame.revalidate();
    		canvas.invalidate();
    		canvas.validate();
  		mainPanel.repaint();
    		canvas.repaint();
- 		filterFrame.repaint();
+ 		//filterFrame.repaint();
+ 		 * */
+ 		
 	}
 	public void getLastFrame(){
 		lastFrame=0;
