@@ -41,6 +41,10 @@ ColorButton colorButton;
 	ESlider brushSizeSlider;
 	ESlider brushAlphaSlider;
 	EScrollPane sc;
+	
+	 public String translate(String str){
+		 return parent.translate(str);
+	 }
 	public void showMe(){
 
 		int WIDTH = 260;
@@ -51,7 +55,7 @@ ColorButton colorButton;
 		sc.setBounds(0,0,WIDTH,HEIGHT);
 		//sc.setHorizontalScrollBarPolicy(EScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		//sc.setVerticalScrollBarPolicy(EScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		this.setTitle("Brush Options");
+		this.setTitle(translate("Brush Options"));
 		this.setLayout(new BorderLayout());
 		this.setVisible(false);
 		
@@ -95,11 +99,11 @@ ColorButton colorButton;
 		//#### BRUSH OPTIONS PANEL ###############################################################	
 		
 		
-		ELabel brushSizeLabel = new ELabel("Brush Size");
+		ELabel brushSizeLabel = new ELabel(translate("Brush Size"));
 		brushSizeLabel.setBounds(2,5,100,30);
 		brushSizePanel.add(brushSizeLabel);
 		
-		brushSizeLabel2 = new ELabel("Brush Size");
+		brushSizeLabel2 = new ELabel(translate("Brush Size"));
 		brushSizeLabel2.setBounds(120,5,100,30);
 		brushSizePanel.add(brushSizeLabel2);
 		
@@ -119,11 +123,11 @@ ColorButton colorButton;
 		brushSizePanel.add(brushSizeSlider);
 		
 		
-		ELabel brushAlphaLabel = new ELabel("Brush Alpha");
+		ELabel brushAlphaLabel = new ELabel(translate("Brush Alpha"));
 		brushAlphaLabel.setBounds(2,60,100,30);
 		brushSizePanel.add(brushAlphaLabel);
 		
-		brushAlphaLabel2 = new ELabel("Brush Alpha");
+		brushAlphaLabel2 = new ELabel(translate("Brush Alpha"));
 		brushAlphaLabel2.setBounds(120,60,100,30);
 		brushSizePanel.add(brushAlphaLabel2);
 		
@@ -155,7 +159,7 @@ ColorButton colorButton;
 				
 		colorButton.setBounds(2,5,20,20);
 		
-		ELabel changeColorButLabel = new ELabel("Selected Color");
+		ELabel changeColorButLabel = new ELabel(translate("Selected Color"));
 		changeColorButLabel.setBounds(32,5,180,20);
 		colorOptionsPanel.add(changeColorButLabel);
 		

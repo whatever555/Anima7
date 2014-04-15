@@ -43,9 +43,9 @@ public class TimelineLayer extends EPanel {
 		//lineArea.setBackground(parent.timeline.bgCol);
 		lineArea.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		this.parent = parent;
-		this.layerName = "Layer " + (layerID + 1);
+		this.layerName = translate("Layer")+" " + (layerID + 1);
 		if (isMask)
-			this.layerName = "Mask for " + (parent.CURRENTLAYER + 1);
+			this.layerName = translate("Mask for")+" " + (parent.CURRENTLAYER + 1);
 		this.layerID = layerID;
 		this.layerNameLabel = new TButton();
 		layerNameLabel.setText(this.layerName + ":");
@@ -132,6 +132,10 @@ public class TimelineLayer extends EPanel {
 		}
 	}
 
+
+	 public String translate(String str){
+		 return parent.translate(str);
+	 }
 	public void deleteMe() {
 		if (hasMask) {
 			parent.timeline.layers.get(parent.canvas.getLayerIndex(myMask))

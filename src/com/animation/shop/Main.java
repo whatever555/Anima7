@@ -23,9 +23,9 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -66,6 +66,7 @@ public class Main {
 	//MAKE SAVING AND LOADING MORE ELEGANT [NO MISSING FILES] CLEANING ETC
 	//SIMPLE BRUSHES
 	//Clean ICONS
+	//DRAG / MOVE KEYS
 	//fix paste
 	// import images exceptions // stageholders
 	//rotate transforms
@@ -93,6 +94,8 @@ public class Main {
 	boolean pasting = false;
 	boolean ISLOADED = false;
 
+	String language="EN";
+	boolean SAVEDTODISK=true;
 	int rotationOfTransformingBlock=0;
 	
 	ArrayList<String> layerNames = new ArrayList<String>();
@@ -141,8 +144,10 @@ public class Main {
 	ArrayList<String> cachedImagesNames = new ArrayList<String>();
 	int CACHEMAX = 50;
 	
-	
 
+	//translations.put("Key Frame" , "");
+	Map<String, String> translations = new HashMap<String, String>();
+	
 	
 	int frameIsEmpty = 0, frameIsEmptySelected = 1, frameIsKey = 2,
 			frameIsKeySelected = 3;
@@ -182,6 +187,8 @@ TimelineControls timelineControls;
 	
 	
 	public void initVars(){
+
+		initTranslations();
 		cachedImagesNames=new ArrayList<String>();
 		cachedImages=new ArrayList<PImage>();
 		CTRL=false;
@@ -190,10 +197,66 @@ TimelineControls timelineControls;
 		layerIndex=0;
 		
 	}
+	String[] EN_TRANS;
+	String fontName = "Verdana";
+	public void initTranslations(){
+		if(language.equals("CHI") ){
+			fontName="MS Song";
+			
+		}else
+			if(language.equals("JP")){
+				fontName="MS Mincho";
+			}
+		
+		UIManager.put("OptionPane.font", new Font(fontName, Font.BOLD, 12));
+		UIManager.put("Label.font", new Font(fontName, Font.BOLD, 12));
+		UIManager.put("Panel.font", new Font(fontName, Font.BOLD, 12));
+		UIManager.put("Button.font", new Font(fontName, Font.BOLD, 12));
+		UIManager.put("Slider.font", new Font(fontName, Font.BOLD, 12));
+		UIManager.put("Spinner.font", new Font(fontName, Font.BOLD, 12));
+		UIManager.put("ComboBox.font", new Font(fontName, Font.BOLD, 10));
+		UIManager.put("InternalFrame.font", new Font(fontName, Font.BOLD, 10));
+		UIManager.put("TextField.font", new Font(fontName, Font.BOLD, 10));
+		UIManager.put("InternalFrame.titleFont", new Font(fontName, Font.BOLD, 10));
+
+		basicPapplet bp = new basicPapplet();
+		
+		EN_TRANS = bp.loadStrings("data/translations/EN.txt");
+		
+		String[] transTemp = EN_TRANS;
+		transTemp=bp.loadStrings("data/translations/"+language+".txt");
+			
+		bp=null;
+		
+		for(int i=0;i<EN_TRANS.length;i++){
+translations.put(EN_TRANS[i] , transTemp[i]);
+		}
+		
+	}
 	
+	public String translate(String str){
+		if(translations.get(str)!=null)
+			return translations.get(str);
+		return str;
+	}
 	public static void main(String[] args) {
 		
-
+		
+		
+		UIManager.put("Button.font", new Font("Verdana", Font.BOLD, 10));
+		UIManager.put("Label.font", new Font("Verdana", Font.BOLD, 10));
+		UIManager.put("Panel.font", new Font("Verdana", Font.BOLD, 10));
+		UIManager.put("ComboBox.font", new Font("Verdana", Font.BOLD, 10));
+		UIManager.put("InternalFrame.font", new Font("Verdana", Font.BOLD, 10));
+		UIManager.put("Spinner.font", new Font("Verdana", Font.BOLD, 10));
+		UIManager.put("TextField.font", new Font("Verdana", Font.BOLD, 10));
+		
+		
+		UIManager.put("OptionPane.font", new Font("Verdana", Font.BOLD, 12));
+		UIManager.put("OptionPane.foreground", new Color(202,202,202));
+		UIManager.put("OptionPane.background", new Color(67,67,67));
+		UIManager.put("OptionPane.border", null);
+		
 		UIManager.put("TabbedPane.tabAreaBackground", new Color(67,67,67));
 		UIManager.put("TabbedPane.contentAreaColor ",new Color(67,67,67));
 		UIManager.put("TabbedPane.selected", (new Color(37,37,37)));
@@ -361,7 +424,7 @@ TimelineControls timelineControls;
 	            file = fc.getSelectedFile();
 	            fileName = file.getPath();
 	            fileShortName=file.getName();
-	            saveFile(file);
+	            saveFile(file,false);
 	        } else {
 	        	System.out.println("Open command cancelled by user.");
 	        }
@@ -372,14 +435,15 @@ TimelineControls timelineControls;
 		if(fileName==null)
 			saveNewFile();
 		else
-			saveFile(file);
+			saveFile(file,true);
 	
 	}
 	
-	public void saveFile(File file){
-		saveData(file.getPath());
+	public void saveFile(File file,boolean overwrite){
+		saveData(file.getPath(),overwrite);
         fileConfigString+="BGCOL::"+canvas.bgColor+":::";
         fileConfigString+="FPS::"+FPS+":::";
+     
         fileConfigString+="MAXLAYERS::"+MAXLAYERS+":::";
         fileConfigString+="MAXFRAMES::"+MAXFRAMES+":::";
         fileConfigString+="CURRENTLAYER::"+CURRENTLAYER+":::";
@@ -394,6 +458,17 @@ TimelineControls timelineControls;
         }
         
         fileConfigString+=":::";
+        
+        fileConfigString+="KEYFRAMES::";
+        for(int x=0;x<=lastFrame;x++)
+        	for(int y=0;y<MAXLAYERS;y++){
+        		if(timeline.layers.get(y).jbs.get(x).isKey){
+        			fileConfigString+=y+"_"+x+"-";	
+        		}
+        	}
+        		
+        fileConfigString+=":::";
+        
         fileConfigString+="FOLDER::"+file.getPath()+":::";
        
         
@@ -406,21 +481,34 @@ TimelineControls timelineControls;
 	   source.renameTo(target);
 	}
 	
-	public void saveData(String location){
+	public void saveData(String location,boolean overwrite){
 		
 		 File theDir = new File(location);
 		 
 		  // if the directory does not exist, create it
 		 boolean result = true;
 		  if (!theDir.exists()) {
+		
 		    result = theDir.mkdir();  
+		  }else{
+			  int selectedOption=1;
+			  if(overwrite == false){
+			   selectedOption = JOptionPane.showConfirmDialog(null, 
+	                    translate("File Already Exists. Overwrite?"), 
+	                    translate("Overwrite?"), 
+	                    JOptionPane.YES_NO_OPTION); 
+			  }
+	if (selectedOption == JOptionPane.YES_OPTION||overwrite) {
+	deleteDirectory(theDir);
+	 result = theDir.mkdir(); 
+	}
 		  }
 		     if(result) {    
 		       for(int y=0;y<MAXLAYERS;y++)
 		    	   for(int x=0;x<=lastFrame;x++)
 		    		   if(timeline.layers.get(y).jbs.get(x).isKey)
 		    			   canvas.copyImage(location+"/"+timeline.layers.get(y).layerID+"_"+x+".png", timeline.layers.get(y).layerID, x);
-		  
+		       SAVEDTODISK=true;
 		     }else{
 		    	 JOptionPane.showMessageDialog(mainPanel, "Could Not Save");
 		     }
@@ -490,12 +578,23 @@ public void saveText(String str,String txtFile){
 
 	public void setLoadedFile(String filePath){
 
+		if(!SAVEDTODISK){
+			int selectedOption = JOptionPane.showConfirmDialog(null, 
+                    translate("Do you want to save changes to current file before closing?"), 
+                    translate("Changes will be Discarded."), 
+                    JOptionPane.YES_NO_OPTION); 
+if (selectedOption == JOptionPane.YES_OPTION) {
+	saveInit();
+}
+		}
+		
 		String[] strs = canvas.loadStrings(filePath);
 		if(strs.length>0){
-
+		
+		
 			 cleanLocalFolder(); 
 			//timeline.cleanOutTimeline();
-			messageTextArea = new JLabel("Loading "+fileShortName);
+			messageTextArea = new JLabel(translate("Loading")+" "+fileShortName);
 			messagePanel.setVisible(true);
 			 fileName = filePath;
 
@@ -522,6 +621,12 @@ public void saveText(String str,String txtFile){
 		for(int i=0;i<timeline.layers.size();i++){
 		timeline.layers.get(i).setVisible(false);
 		}
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		initVars();
 		timeline.layers = new ArrayList<TimelineLayer>();
@@ -540,10 +645,10 @@ public void saveText(String str,String txtFile){
 		if(line!=null){
 	        String[] parts = configs[i].split("::");
 	        if(parts.length>1)
-	        	 if(parts[0].equals("FPS")){
-	 	        	FPS = Integer.parseInt(parts[1]);
-	 	        	timelineControls.fpsSpinber.setValue(FPS);
-	 	        }else
+	         	 if(parts[0].equals("FPS")){
+		 	 	        	FPS = Integer.parseInt(parts[1]);
+		 	 	        	timelineControls.fpsSpinber.setValue(FPS);
+		 	 	        }else
 	 	        	 if(parts[0].equals("MAXLAYERS")){
 		 		        	MAXLAYERS = Integer.parseInt(parts[1]);
 		 		        }else
@@ -582,6 +687,20 @@ public void saveText(String str,String txtFile){
 	        		}
 	        		
  		        }else
+ 		        	 if(parts[0].equals("KEYFRAMES")){
+ 		 	        	String[] keys = (parts[1]).split("-");
+ 		 	        	for(int z=0;z<keys.length;z++){
+ 		 	        		if(keys[z].length()>1){
+ 		 	        			String[] vvs = keys[z].split("_");
+ 		 	        			int tempY = Integer.parseInt(vvs[0]);
+ 		 	        			int tempX = Integer.parseInt(vvs[1]);
+ 		 	        			timeline.layers.get(tempY).jbs.get(tempX).isKey=true;
+ 		 	        			timeline.layers.get(tempY).jbs.get(tempX).setBackground(timeline.active);
+ 		 	        		
+ 		 	        		}
+ 		 	        	}
+ 		 	        	timelineControls.fpsSpinber.setValue(FPS);
+ 		 	        }else
 	        	  if(parts[0].equals("FOLDER")){
 	        	
 
@@ -599,18 +718,33 @@ public void saveText(String str,String txtFile){
 		
 	}
 	
+	public static boolean deleteDirectory(File directory) {
+	    if(directory.exists()){
+	        File[] files = directory.listFiles();
+	        if(null!=files){
+	            for(int i=0; i<files.length; i++) {
+	                if(files[i].isDirectory()) {
+	                    deleteDirectory(files[i]);
+	                }
+	                else {
+	                    files[i].delete();
+	                }
+	            }
+	        }
+	    }
+	    return(directory.delete());
+	}
+	
 	public void cleanLocalFolder(){
 		// Load the directory as a resource
 		 
 		  // Turn the resource into a File object
-		  System.out.println("CLEANING IN PROGRESS");
 		  File file = null;
 		  
 		  for(int x=0;x<=lastFrame;x++){
 				for(int y=0;y<MAXLAYERS;y++){
 					if(timeline.layers.get(y).jbs.get(x).isKey){
 					
-						System.out.println("TRYING: "+workspaceFolder+"/images/"+tmpName+"/"+y+"_"+x+".png");
 						
 						file=new File(workspaceFolder+"/images/"+tmpName+"/"+y+"_"+x+".png");
 						file.delete();
@@ -871,18 +1005,22 @@ if(tmp!=null)
 	public String getWorkSpaceFolder(){
 		return userConfig[0];
 	}
+	public void getLanguage(){
+		if(userConfig[1]!=null)
+			language=userConfig[1];
+	}
+	
 	public String getFolderPath(){
 		JFileChooser chooser;  
 		chooser = new JFileChooser(); 
 		    chooser.setCurrentDirectory(new java.io.File("."));
-		    chooser.setDialogTitle("Select workspace folder");
+		    chooser.setDialogTitle(translate("Select workspace folder"));
 		    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		   
 		    chooser.setAcceptAllFileFilterUsed(false);
 		    //    
 		    if (chooser.showOpenDialog(mainPanel) == JFileChooser.APPROVE_OPTION) { 
-		      System.out.println("getCurrentDirectory(): " 
-		         +  chooser.getCurrentDirectory());
+		    
 		     return chooser.getSelectedFile().getPath();
 		      }
 		    else {
@@ -893,16 +1031,16 @@ if(tmp!=null)
 	
 	
 	public Main() {
-
 		loadUserConfig();
+		getLanguage();
 		workspaceFolder = getWorkSpaceFolder();
 		if(workspaceFolder==null){
 		
 			workspaceFolder =System.getProperty("user.home");
 			
 			int selectedOption = JOptionPane.showConfirmDialog(null, 
-                    "Your Workspace Folder is set to "+workspaceFolder+". Do you want to select a different folder?", 
-                    "Choose", 
+                   translate("Your Workspace Folder is set to")+" "+workspaceFolder+". "+translate("Do you want to select a different folder?"), 
+                    "Workspace", 
                     JOptionPane.YES_NO_OPTION); 
 if (selectedOption == JOptionPane.YES_OPTION) {
 String tmp = getFolderPath();
@@ -918,7 +1056,7 @@ saveUserConfig();
 			
 		}
 		
-		canvasFrame = new EInternalFrame("Canvas");
+		canvasFrame = new EInternalFrame(translate("Canvas"));
 		LOADED=false;
 		initVars();
 		loadApplication();
@@ -1126,7 +1264,7 @@ saveUserConfig();
 		timelineControls = new TimelineControls(this);
 	}
 	public void addTimeline() {
-		tlFrame = new EInternalFrame("Timeline");
+		tlFrame = new EInternalFrame(translate("Timeline"));
 		 timeline = new TimelineSwing(MAXLAYERS, MAXFRAMES, this);
 		
 		EScrollPane timelineScrollPane = new EScrollPane();
@@ -1205,30 +1343,30 @@ canvasPanel.setBackground(new Color(67,67,67));
 	public void addMenu(JMenuBar menuBar) {
 		KeyStroke tmpKey;
 		
-		final JMenu mnFile = new JMenu("File");
+		final JMenu mnFile = new JMenu(translate("File"));
 		menuBar.add(mnFile);
 
-		final JMenuItem mntmNew = new JMenuItem("New..");
+		final JMenuItem mntmNew = new JMenuItem(translate("New")+"..");
 		mnFile.add(mntmNew);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK);
 		mntmNew.setAccelerator(tmpKey);
 		
-		final JMenuItem mntmOpen = new JMenuItem("Open..");
+		final JMenuItem mntmOpen = new JMenuItem(translate("Open")+"..");
 		mnFile.add(mntmOpen);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK);
 		mntmOpen.setAccelerator(tmpKey);
 
-		mntmSave = new JMenuItem("Save..");
+		mntmSave = new JMenuItem(translate("Save.."));
 		mnFile.add(mntmSave);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK);
 		mntmSave.setAccelerator(tmpKey);
 		
-		mnSaveAs = new JMenuItem("Save As..");
+		mnSaveAs = new JMenuItem(translate("Save As.."));
 		mnFile.add(mnSaveAs);
 		
 		mnFile.addSeparator();
 		
-		mnImportImage = new JMenuItem("Import Image To Stage..");
+		mnImportImage = new JMenuItem(translate("Import Image To Stage.."));
 		mnFile.add(mnImportImage);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK);
 		mnImportImage.setAccelerator(tmpKey);
@@ -1236,153 +1374,153 @@ canvasPanel.setBackground(new Color(67,67,67));
 		
 		mnFile.addSeparator();
 		
-		JMenu mntmExport = new JMenu("Export to ..");
+		JMenu mntmExport = new JMenu(translate("Export to .."));
 		mnFile.add(mntmExport);
 		
 
-		JMenuItem mnExportSWF = new JMenuItem("SWF");
+		JMenuItem mnExportSWF = new JMenuItem(translate("SWF"));
 		mntmExport.add(mnExportSWF);
 
-		JMenuItem mnExportAnimatedGIF = new JMenuItem("Animated GIF");
+		JMenuItem mnExportAnimatedGIF = new JMenuItem(translate("Animated GIF"));
 		mntmExport.add(mnExportAnimatedGIF);
 
-		JMenuItem mnExportPNG = new JMenuItem("PNG Images");
+		JMenuItem mnExportPNG = new JMenuItem("PNG "+translate("Images"));
 		mntmExport.add(mnExportPNG);
 
-		JMenuItem mnExportGIF = new JMenuItem("GIF Images");
+		JMenuItem mnExportGIF = new JMenuItem("GIF "+translate("Images"));
 		mntmExport.add(mnExportGIF);
 
-		JMenuItem mnExportJPG = new JMenuItem("JPG Images");
+		JMenuItem mnExportJPG = new JMenuItem("JPG "+translate("Images"));
 		mntmExport.add(mnExportJPG);
 
-		JMenuItem mnExportTFF = new JMenuItem("TIFF Images");
+		JMenuItem mnExportTFF = new JMenuItem("TIFF "+translate("Images"));
 		mntmExport.add(mnExportTFF);
 		
 		mnFile.addSeparator();
 		
-		JMenuItem mnExit = new JMenuItem("Exit");
+		JMenuItem mnExit = new JMenuItem(translate("Exit"));
 		mnFile.add(mnExit);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_DOWN_MASK);
 		mnExit.setAccelerator(tmpKey);
 
-		JMenu mnLayers = new JMenu("Layers");
+		JMenu mnLayers = new JMenu(translate("Layers"));
 		menuBar.add(mnLayers);
 
-		JMenuItem mntmAddLayer = new JMenuItem("Add Layer");
+		JMenuItem mntmAddLayer = new JMenuItem(translate("Add Layer"));
 		mnLayers.add(mntmAddLayer);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK);
 		mntmAddLayer.setAccelerator(tmpKey);
 		
-		JMenuItem mntmAddMask = new JMenuItem("Add Mask To Current Layer");
+		JMenuItem mntmAddMask = new JMenuItem(translate("Add Mask To Current Layer"));
 		mnLayers.add(mntmAddMask);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK);
 		mntmAddMask.setAccelerator(tmpKey);
 
-		JMenuItem mntmDeleteLayer = new JMenuItem("Delete Current Layer");
+		JMenuItem mntmDeleteLayer = new JMenuItem(translate("Delete Current Layer"));
 		mnLayers.add(mntmDeleteLayer);
 		
 
-		JMenuItem mntmToggleKey = new JMenuItem("Toggle Keyframe");
+		JMenuItem mntmToggleKey = new JMenuItem(translate("Toggle Keyframe"));
 		mnLayers.add(mntmToggleKey);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_K, InputEvent.CTRL_DOWN_MASK);
 		mntmToggleKey.setAccelerator(tmpKey);
 		
-		JMenuItem mntmMoveRightOne = new JMenuItem("Go Forward 1 Frame");
+		JMenuItem mntmMoveRightOne = new JMenuItem(translate("Go Forward 1 Frame"));
 		mnLayers.add(mntmMoveRightOne);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,InputEvent.CTRL_DOWN_MASK);
 		mntmMoveRightOne.setAccelerator(tmpKey);
 		
-		JMenuItem mntmMoveLeftOne = new JMenuItem("Go Back 1 Frame");
+		JMenuItem mntmMoveLeftOne = new JMenuItem(translate("Go Back 1 Frame"));
 		mnLayers.add(mntmMoveLeftOne);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_LEFT,InputEvent.CTRL_DOWN_MASK);
 		mntmMoveLeftOne.setAccelerator(tmpKey);
 
-		JMenuItem mntmMoveDownOne = new JMenuItem("Move Down 1 Layer");
+		JMenuItem mntmMoveDownOne = new JMenuItem(translate("Move Down 1 Layer"));
 		mnLayers.add(mntmMoveDownOne);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN,InputEvent.CTRL_DOWN_MASK);
 		mntmMoveDownOne.setAccelerator(tmpKey);
 		
-		JMenuItem mntmMoveUpOne = new JMenuItem("Move Up 1 Layer");
+		JMenuItem mntmMoveUpOne = new JMenuItem(translate("Move Up 1 Layer"));
 		mnLayers.add(mntmMoveUpOne);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_UP,InputEvent.CTRL_DOWN_MASK);
 		mntmMoveUpOne.setAccelerator(tmpKey);
 
 		
-		JMenu mnEdit = new JMenu("Edit");
+		JMenu mnEdit = new JMenu(translate("Edit"));
 		menuBar.add(mnEdit);
 
-		JMenuItem mntmUndo = new JMenuItem("Undo");
+		JMenuItem mntmUndo = new JMenuItem(translate("Undo"));
 		mnEdit.add(mntmUndo);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK);
 		mntmUndo.setAccelerator(tmpKey);
 		
-		JMenuItem mntmRedo = new JMenuItem("Redo");
+		JMenuItem mntmRedo = new JMenuItem(translate("Redo"));
 		mnEdit.add(mntmRedo);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_DOWN_MASK);
 		mntmRedo.setAccelerator(tmpKey);
 		
-		JMenuItem mntmCut = new  JMenuItem("Cut");
+		JMenuItem mntmCut = new  JMenuItem(translate("Cut"));
 		mnEdit.add(mntmCut);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK);
 		mntmCut.setAccelerator(tmpKey);
 
-		JMenuItem mntmCopy = new  JMenuItem("Copy");
+		JMenuItem mntmCopy = new  JMenuItem(translate("Copy"));
 		mnEdit.add(mntmCopy);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK);
 		mntmCopy.setAccelerator(tmpKey);
 
-		JMenuItem mntmPaste = new JMenuItem("Paste");
+		JMenuItem mntmPaste = new JMenuItem(translate("Paste"));
 		mnEdit.add(mntmPaste);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_DOWN_MASK);
 		mntmPaste.setAccelerator(tmpKey);
 		
-		JMenuItem mntmClear = new JMenuItem("Clear");
+		JMenuItem mntmClear = new JMenuItem(translate("Clear"));
 		mnEdit.add(mntmClear);
 
-		final JMenu mnView = new JMenu("View");
+		final JMenu mnView = new JMenu(translate("View"));
 		menuBar.add(mnView);
 
-		final JMenuItem mntmToggleTimeline = new JMenuItem("Hide Timeline");
+		final JMenuItem mntmToggleTimeline = new JMenuItem(translate("Hide Timeline"));
 		mnView.add(mntmToggleTimeline);
 
-		final JMenuItem mntmToggleTools = new JMenuItem("Hide Tools");
+		final JMenuItem mntmToggleTools = new JMenuItem(translate("Hide Tools"));
 		mnView.add(mntmToggleTools);
 
-		JMenuItem mntmToggleBrush = new JMenuItem("Show Brush Options");
+		JMenuItem mntmToggleBrush = new JMenuItem(translate("Show Brush Options"));
 		mnView.add(mntmToggleBrush);
 
-		JMenuItem mntmToggleOnion = new JMenuItem("Toggle Onion Skin");
+		JMenuItem mntmToggleOnion = new JMenuItem(translate("Toggle")+" Onion Skin");
 		mnView.add(mntmToggleOnion);
 
-		JMenuItem mntmChangeBGColor = new JMenuItem("Change Background Color..");
+		JMenuItem mntmChangeBGColor = new JMenuItem(translate("Change Background Color.."));
 		mnView.add(mntmChangeBGColor);
 
 	
 		
 		
-		final JMenu mnFilters = new JMenu("Filters");
+		final JMenu mnFilters = new JMenu(translate("Filters"));
 		menuBar.add(mnFilters);
 
 	//mnFile.addSeparator();
 		
-		JMenu mntmBlur = new JMenu("Blur ..");
+		JMenu mntmBlur = new JMenu(translate("Blur .."));
 		mnFilters.add(mntmBlur);
 		
 		
-		 JMenuItem mnBasicBlur = new JMenuItem("Blur..");
+		 JMenuItem mnBasicBlur = new JMenuItem(translate("Blur.."));
 		mntmBlur.add(mnBasicBlur);
 		
-		 JMenuItem mnMotionBlur = new JMenuItem("Motion Blur..");
+		 JMenuItem mnMotionBlur = new JMenuItem(translate("Motion Blur.."));
 		mntmBlur.add(mnMotionBlur);
 
 
-		 JMenuItem mnLensBlur = new JMenuItem("Lens Blur..");
+		 JMenuItem mnLensBlur = new JMenuItem(translate("Lens Blur.."));
 		mntmBlur.add(mnLensBlur);
 
-		 JMenuItem mnGlowBlur = new JMenuItem("Glow Blur..");
+		 JMenuItem mnGlowBlur = new JMenuItem(translate("Glow Blur.."));
 			mntmBlur.add(mnGlowBlur);
 
-			 JMenuItem mnUnsharpen = new JMenuItem("Sharpen..");
+			 JMenuItem mnUnsharpen = new JMenuItem(translate("Sharpen.."));
 				mntmBlur.add(mnUnsharpen);
 
 		
@@ -1390,45 +1528,165 @@ canvasPanel.setBackground(new Color(67,67,67));
 		
 		
 		
-		JMenu mntmEffects = new JMenu("Effects ..");
+		JMenu mntmEffects = new JMenu(translate("Effects .."));
 		mnFilters.add(mntmEffects);
 		
-		final JMenuItem mnPosterize = new JMenuItem("Posterize..");
+		final JMenuItem mnPosterize = new JMenuItem(translate("Posterize.."));
 		mntmEffects.add(mnPosterize);
 		
 
-		final JMenuItem mnThreshold = new JMenuItem("Threshold..");
+		final JMenuItem mnThreshold = new JMenuItem(translate("Threshold.."));
 		mntmEffects.add(mnThreshold);
 
-		JMenu mntmArtistic = new JMenu("Artistic ..");
+		JMenu mntmArtistic = new JMenu(translate("Artistic.."));
 		mnFilters.add(mntmArtistic);
 		
-		final JMenuItem mnSpherify = new JMenuItem("Spherify..");
+		final JMenuItem mnSpherify = new JMenuItem(translate("Spherify.."));
 		mntmArtistic.add(mnSpherify);
 		
 
-		final JMenuItem mnBoxify = new JMenuItem("Boxify..");
+		final JMenuItem mnBoxify = new JMenuItem(translate("Boxify.."));
 		mntmArtistic.add(mnBoxify);
 		
-		JMenu mntmShading = new JMenu("Shading ..");
+		JMenu mntmShading = new JMenu(translate("Shading.."));
 		mnFilters.add(mntmShading);
 
-		JMenuItem mnShadow= new JMenuItem("Shadow..");
+		JMenuItem mnShadow= new JMenuItem(translate("Shadow.."));
 		mntmShading.add(mnShadow);
 		
 
-		JMenuItem mnRays=  new JMenuItem("Rays..");
+		JMenuItem mnRays=  new JMenuItem(translate("Light Rays.."));
 		mntmShading.add(mnRays);
 
-		final JMenu mnBrush = new JMenu("Brush");
+		final JMenu mnBrush = new JMenu(translate("Brush"));
 		menuBar.add(mnBrush);
 
-		final JMenuItem mntmBrushColor = new JMenuItem("Brush Color..");
+		JMenuItem mntmBrushColor = new JMenuItem(translate("Brush Colour.."));
 		mnBrush.add(mntmBrushColor);
+	
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.CTRL_DOWN_MASK);
 		mntmBrushColor.setAccelerator(tmpKey);
 
+		
+		JMenu mntmHelp = new JMenu(translate("Help"));
+		menuBar.add(mntmHelp);
+		
+		JMenu mntmLanguage = new JMenu(translate("Set Language.."));
+		mntmHelp.add(mntmLanguage);
+		
+		
+
+		JMenuItem mntmLanguageAfrikaans= new JMenuItem(translate("Afrikaans"));
+		mntmLanguage.add(mntmLanguageAfrikaans);
+		
+		
+		JMenuItem mntmLanguageChinese= new JMenuItem(translate("Chinese"));
+		mntmLanguage.add(mntmLanguageChinese);
+		
+		JMenuItem mntmLanguageEnglish= new JMenuItem(translate("English"));
+		mntmLanguage.add(mntmLanguageEnglish);
+	
+		JMenuItem mntmLanguageEsperanto= new JMenuItem(translate("Esperanto"));
+		mntmLanguage.add(mntmLanguageEsperanto);
+		
+		
+		JMenuItem mntmLanguageFrench= new JMenuItem(translate("French"));
+		mntmLanguage.add(mntmLanguageFrench);
+	
+		JMenuItem mntmLanguageGerman= new JMenuItem(translate("German"));
+		mntmLanguage.add(mntmLanguageGerman);
+	
+		JMenuItem mntmLanguageIrish= new JMenuItem(translate("Irish"));
+		mntmLanguage.add(mntmLanguageIrish);
+
+		JMenuItem mntmLanguageItalian= new JMenuItem(translate("Italian"));
+		mntmLanguage.add(mntmLanguageItalian);
+		
+		JMenuItem mntmLanguageJapanese= new JMenuItem(translate("Japanese"));
+		mntmLanguage.add(mntmLanguageJapanese);
+		
+		
+		JMenuItem mntmLanguagePolish= new JMenuItem(translate("Polish"));
+		mntmLanguage.add(mntmLanguagePolish);
+
+		JMenuItem mntmLanguageSpanish= new JMenuItem(translate("Spanish"));
+		mntmLanguage.add(mntmLanguageSpanish);
+	
+		
+		mnFile.addSeparator();
+		JMenuItem mntmLanguageRestart = new JMenuItem(translate("Requires Restart"));
+		mntmLanguage.add(mntmLanguageRestart);
+	    mntmLanguageRestart.setEnabled(false);
+	    
 		// //#####ACTIONS#####////
+		
+	    mntmLanguageJapanese.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setDefaultLanguage("JP");
+			}
+		});
+	    
+	    mntmLanguageEsperanto.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setDefaultLanguage("Esperanto");
+			}
+		});
+	    
+	    mntmLanguageItalian.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setDefaultLanguage("Italian");
+			}
+		});
+	    
+	    mntmLanguageAfrikaans.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setDefaultLanguage("Afrikaans");
+			}
+		});
+	    
+	    
+	    mntmLanguageEnglish.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setDefaultLanguage("EN");
+			}
+		});
+	    
+	    mntmLanguagePolish.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setDefaultLanguage("PL");
+			}
+		});
+	    
+	    mntmLanguageChinese.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setDefaultLanguage("CHI");
+			}
+		});
+	    
+	    mntmLanguageSpanish.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setDefaultLanguage("ES");
+			}
+		});
+	    
+	    mntmLanguageFrench.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setDefaultLanguage("FR");
+			}
+		});
+	    
+	    mntmLanguageGerman.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setDefaultLanguage("DE");
+			}
+		});
+		
+	    mntmLanguageIrish.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setDefaultLanguage("IE");
+			}
+		});
+		
 		
 		mntmMoveUpOne.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -1895,22 +2153,6 @@ canvasPanel.setBackground(new Color(67,67,67));
 
 	}
 
-	
-	public void showFilterFrameOnTop(){
-		
-/*
- 		canvasFrame.revalidate();
- 		canvasFrame.repaint();
-		mainPanel.revalidate();
- 		//filterFrame.revalidate();
-   		canvas.invalidate();
-   		canvas.validate();
- 		mainPanel.repaint();
-   		canvas.repaint();
- 		//filterFrame.repaint();
- 		 * */
- 		
-	}
 	public void getLastFrame(){
 		lastFrame=0;
 		for(int y=0;y<MAXLAYERS;y++){
@@ -1972,6 +2214,13 @@ canvasPanel.setBackground(new Color(67,67,67));
 			return c;
 		}
 
+	}
+	
+	public void setDefaultLanguage(String lang){
+
+		language = lang;
+		userConfig[1] = lang;
+		saveUserConfig();
 	}
 	
 	public void updateColorBoxes(Color c){

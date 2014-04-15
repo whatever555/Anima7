@@ -19,6 +19,6 @@ public class ESpinner extends JSpinner{
 
 		setBackground(new Color(67,67,67));
 		setForeground(new Color(202,202,202));
-		setFont(new Font("Verdana", Font.BOLD, 10)); 
+		//setFont(new Font("Verdana", Font.BOLD, 10)); 
 	 }
 }

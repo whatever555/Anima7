@@ -30,13 +30,15 @@ public class BrushSelection extends EInternalFrame {
 		EScrollPane sc;
 		int WIDTH  = 260;
 		int HEIGHT = 240;
-		
+		 public String translate(String str){
+			 return parent.translate(str);
+		 }
 		public void showThis(){
 
 			bordPanel.setLayout(new BorderLayout());
 			this.setLayout(new BorderLayout());
 			this.setVisible(false);
-			this.setTitle("Brush Selection");
+			this.setTitle(translate("Brush Selection"));
 			this.setClosable(true); 
 			this.setResizable(true);
 			this.setDefaultCloseOperation(1);

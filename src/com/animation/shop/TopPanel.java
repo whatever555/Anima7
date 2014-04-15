@@ -164,7 +164,7 @@ minCanvas.setBounds(0,0,30,30);
 		
 		
 		
-		ELabel brushSizeLabel = new ELabel("Brush Size");
+		ELabel brushSizeLabel = new ELabel(translate("Brush Size"));
 
 		brushSizeLabel.setForeground(fCol);
 		
@@ -183,7 +183,7 @@ minCanvas.setBounds(0,0,30,30);
 
 		
 		
-		ELabel brushAlphaLabel = new ELabel("Brush Alpha");
+		ELabel brushAlphaLabel = new ELabel(translate("Brush Alpha"));
 		brushAlphaLabel.setForeground(fCol);
 		
 
@@ -236,7 +236,7 @@ minCanvas.setBounds(0,0,30,30);
 	
 	public void createFillOptions(){
 		
-		ELabel fillLabel = new ELabel("Fill Inaccuracy");
+		ELabel fillLabel = new ELabel(translate("Fill Inaccuracy"));
 
 		fillLabel.setForeground(fCol);
 		
@@ -255,13 +255,17 @@ minCanvas.setBounds(0,0,30,30);
 		
 		
 	}
+	
+	 public String translate(String str){
+		 return parent.translate(str);
+	 }
 	public void createSelectOptions(){
 		//this.removeAll();
 		
 		
 		squareSelectExtrasPanel.setBackground(bgCol);
-		ELabel featherLabel = new ELabel("Feather: ");
-		ELabel roundCornerLabel = new ELabel("Rounded Corners: ");
+		ELabel featherLabel = new ELabel(translate("Feather:"));
+		ELabel roundCornerLabel = new ELabel(translate("Rounded Corners:"));
 		
 		SpinnerNumberModel featherModel = new SpinnerNumberModel(parent.FEATHERSIZE,0, 99,
 				1);

@@ -37,7 +37,7 @@ EScrollPane sc = new EScrollPane();
 	}
 
 	public void showMe(){
-		this.setTitle("History");
+		this.setTitle(translate("History"));
 		this.setLayout(new BorderLayout());
 		this.setClosable(true);
 		this.setResizable(true);
@@ -52,6 +52,9 @@ EScrollPane sc = new EScrollPane();
 		
 		
 	}
+	 public String translate(String str){
+		 return parent.translate(str);
+	 }
 	Image img;
 	public void update(){
 		panelArea.removeAll();
@@ -60,7 +63,7 @@ EScrollPane sc = new EScrollPane();
 			for(int j = parent.ACTIONTYPE.size() - 1; j >= 0; j--){
 				
 				EButton jb = new EButton();
-				jb.setText(parent.ACTIONTYPE.get(j));
+				jb.setText(translate(parent.ACTIONTYPE.get(j)));
 				jb.setPreferredSize(new Dimension(this.getWidth(),28));
 				jb.setMaximumSize(new Dimension(this.getWidth(),28));
 				jb.setBounds(0,(y*30),this.getWidth(),28);

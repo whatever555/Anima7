@@ -27,7 +27,7 @@ public class ESpinnerPanel extends EPanel {
 		this.myIndex=index;
 		this.parent=parent;
 		this.setLayout(new FlowLayout(FlowLayout.LEADING));
-		this.label = new ELabel(labelStr+": ");
+		this.label = new ELabel(translate(labelStr)+": ");
 		 SpinnerNumberModel model = new SpinnerNumberModel(def, min, max,inc);
 		 spinner=new ESpinner(model);
 		 this.add(label);
@@ -36,6 +36,9 @@ public class ESpinnerPanel extends EPanel {
 		 fp.mainPanel.add(this);
 	}
 	
+	 public String translate(String str){
+		 return parent.translate(str);
+	 }
 	  int updateCount=0;
 	  private class MyChangeListener implements ChangeListener {
 	  

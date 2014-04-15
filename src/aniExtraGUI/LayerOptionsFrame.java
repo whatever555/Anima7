@@ -28,7 +28,7 @@ Main parent;
 	 mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
 	 this.parent=parent;
 	 this.setAlignmentX( Component.LEFT_ALIGNMENT );
-		this.setTitle("Layer Options");
+		this.setTitle(translate("Layer Options"));
 		this.setLayout(new BorderLayout());
 		this.setClosable(true);
 		this.setResizable(true);
@@ -40,7 +40,7 @@ Main parent;
 		EPanel renameLayerPanel = new EPanel();
 		renameLayerPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 		
-		ELabel layerNameLabel = new ELabel("Layer Name");
+		ELabel layerNameLabel = new ELabel(translate("Layer Name"));
 		layerNameField = new JTextField(8);
 		layerNameField.addActionListener(new MyActionListener("Layer Name"));
 		
@@ -48,7 +48,7 @@ Main parent;
         (new ETextFieldLimit(12));
 		EButton layerNameUpdate = new EButton();
 		layerNameUpdate.setPreferredSize(new Dimension(60,20));
-		layerNameUpdate.setText("Update");
+		layerNameUpdate.setText(translate("Update"));
 		layerNameUpdate.setBorder(null);
 		layerNameUpdate.setPreferredSize(new Dimension(60,20));
 		layerNameUpdate.addActionListener(new MyActionListener("Layer Name"));
@@ -61,7 +61,7 @@ Main parent;
 		EPanel blendingOptionsLayer = new EPanel();
 		blendingOptionsLayer.setLayout(new FlowLayout(FlowLayout.LEADING));
 		
-		ELabel blendingLabel = new ELabel("Blending Mode");
+		ELabel blendingLabel = new ELabel(translate("Blending Mode"));
 		String[] opStrings = { "Normal", "Blend", "Add", "Subtract", "Darkest","Lightest","Difference","Exclusion","Multiply","Screen","Replace" };
 
 		 blendList = new EComboBox(opStrings);
@@ -78,6 +78,9 @@ Main parent;
 		 this.add(mainPanel);
 		 this.setVisible(false);
 	 
+ }
+ public String translate(String str){
+	 return parent.translate(str);
  }
  public void setLayer(TimelineLayer layer){
 	 this.currentLayer = layer;

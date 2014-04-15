@@ -248,21 +248,7 @@ public PGraphics eraserMask;
 		parent.historicImages=new ArrayList<PImage>();
 			for(int l=0;l<maxlayers;l++)
 				for(int f=0;f<=parent.lastFrame;f++){
-				PImage tmp =loadImage(folder+"/"+parent.timeline.layers.get(l).layerID+"_"+f+".png");
-				if(tmp!=null){
-					
-					parent.timeline.layers.get(l).jbs.get(f).isKey=true;
-					String sp = savePath(parent.workspaceFolder+"/images/" + parent.tmpName + "/"
-							+ parent.timeline.layers.get(l).layerID + "_" + f + ".png");
-					
-					tmp.save(sp);
-				}
-				else{
-					if(f==0){
-						saveImageToDisk(emptyImage,parent.timeline.layers.get(l).layerID,f);
-					}
-					parent.timeline.layers.get(l).jbs.get(f).isKey=false;
-				}
+					actionLoadFromFile(l,f,folder);
 				}
 			initImages(true);
 
@@ -270,7 +256,26 @@ public PGraphics eraserMask;
 
 			parent.timeline.shiffleTable(parent.CURRENTLAYER,parent.CURRENTFRAME,1,true);
 
-			System.out.println("LOAD CANV DONE");
+	}
+	
+	public void actionLoadFromFile(int l, int f,String folder){
+		if(parent.timeline.layers.get(l).jbs.get(f).isKey || f==0){
+			PImage tmp =loadImage(folder+"/"+parent.timeline.layers.get(l).layerID+"_"+f+".png");
+			if(tmp!=null){
+				
+				parent.timeline.layers.get(l).jbs.get(f).isKey=true;
+				String sp = savePath(parent.workspaceFolder+"/images/" + parent.tmpName + "/"
+						+ parent.timeline.layers.get(l).layerID + "_" + f + ".png");
+				
+				tmp.save(sp);
+			}
+			else{
+				if(f==0){
+					saveImageToDisk(emptyImage,parent.timeline.layers.get(l).layerID,f);
+				}
+				parent.timeline.layers.get(l).jbs.get(f).isKey=false;
+			}
+				}
 	}
 
 	public void setBrush(String[] loc) {
@@ -760,12 +765,16 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 
 	}
 
+	 public String translate(String str){
+		 return parent.translate(str);
+	 }
 	boolean saving = false;
 
 	// OK
 	public void saveAction(int cl, int cf, String label) {
 		int ck = getKeyFrame(cf, getLayerIndex(cl));
 		if (!saving) {
+			parent.SAVEDTODISK=false;
 			keyEdited = true;
 			saving = true;
 			unsaved = false;

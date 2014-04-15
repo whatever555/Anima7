@@ -129,7 +129,7 @@ public class FilterFrame extends EInternalFrame {
 		previewImageHolderBox.setBackground(new Color(parent.canvas.bgColor));
 		mainPanel.add(previewImageHolder);
 		
-		applyBut.setText("Apply");
+		applyBut.setText(translate("Apply"));
 	   applyBut.setPreferredSize(new Dimension(200,26));
 	   mainPanel.add(applyBut);
 	   
@@ -174,7 +174,9 @@ this.add(mainPanel);
 	}
 	
 
-	
+	 public String translate(String str){
+		 return parent.translate(str);
+	 }
 	public void showFilter(String name){
 		
 	 tabbedPane.addChangeListener(new MyChangeListener("tabbed"));

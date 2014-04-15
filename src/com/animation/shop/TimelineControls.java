@@ -44,9 +44,12 @@ public class TimelineControls extends EInternalFrame {
 		showMe();
 	}
 
+	 public String translate(String str){
+		 return parent.translate(str);
+	 }
 	public void showMe() {
 
-		this.setTitle("Timeline Controls");
+		this.setTitle(translate("Timeline Controls"));
 		this.setLayout(new BorderLayout());
 		this.setClosable(true);
 		this.setResizable(true);
@@ -89,10 +92,10 @@ public class TimelineControls extends EInternalFrame {
 				1);
 		onRightSpinner = new ESpinner(onRightModel);
 
-		onionSkinArea2.add(new ELabel("Left: "));
+		onionSkinArea2.add(new ELabel(translate("Left")+": "));
 		onionSkinArea2.add(onLeftSpinner);
 
-		onionSkinArea2.add(new ELabel("Right: "));
+		onionSkinArea2.add(new ELabel(translate("Right")+": "));
 		onionSkinArea2.add(onRightSpinner);
 
 		SpinnerNumberModel fpsModel = new SpinnerNumberModel(parent.FPS, 1, 120,
@@ -224,7 +227,6 @@ parent.FPS = (Integer)(fpsSpinber.getValue());
 
    		 parent.canvas.finaliseFrame(parent.CURRENTLAYER,parent.CURRENTFRAME);
         	if(myActionName.equals("transToggle")){
-        		System.out.println("its a hit");
         		if(parent.canvas.transValue==255){
         			parent.canvas.transValue = 125;
         			toggleTrans.setBackground(activeCol);
