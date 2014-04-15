@@ -320,10 +320,18 @@ public void showOptions(){
 	parent.LOF.setVisible(true);
 }
 	public void updateFrameLength() {
-		while (jbs.size() > parent.MAXFRAMES)
-			jbs.remove(jbs.size());
-		while (jbs.size() < parent.MAXFRAMES)
+		while (jbs.size() > parent.MAXFRAMES){
+			jbs.get(jbs.size()-1).setVisible(false);
+			jbs.remove(jbs.size()-1);
+			
+			
+		}
+		while (jbs.size() < parent.MAXFRAMES){
 			jbs.add(new TimelineButton(parent, this, jbs.size()));
+			lineArea.add(jbs.get(jbs.size()-1));
+			
+			
+		}
 	}
 
 	 private class MyActionListener implements ActionListener {

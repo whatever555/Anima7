@@ -1,8 +1,6 @@
 package com.animation.shop;
 
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.SwingConstants;
 
@@ -26,7 +24,8 @@ public TimelineButton(Main parent,TimelineLayer myLayer,int frameID){
 	this.h=parent.timelineButtonHeight;
 	fixMe();
 	myLayer.add(this);
-	this.addActionListener(new MyActionListener(myLayer.layerID,frameID));
+	this.addActionListener(parent.timelineButtonActionListener);
+	this.setActionCommand(myLayer.layerID+"-"+frameID);
 }
 
 public void fixMe(){
@@ -41,21 +40,6 @@ public void fixMe(){
 	
 }
 
-private class MyActionListener implements ActionListener {
-
-	 int x,y;
-       public MyActionListener(int y,int x) {
-       	  this.y = y;
-       	  this.x = x;
-       }
-       
-
-       public void actionPerformed(ActionEvent e) {
-    	   
-    	 	parent.timeline.shiffleTable(x,y,1,false);
-       	
-       }
-   }
 
 
 	

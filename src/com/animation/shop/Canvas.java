@@ -254,7 +254,7 @@ public PGraphics eraserMask;
 
 			showNewFrame(parent.CURRENTLAYER,parent.CURRENTFRAME,-1);
 
-			parent.timeline.shiffleTable(parent.CURRENTLAYER,parent.CURRENTFRAME,1,true);
+			parent.timeline.shiffleTable(parent.CURRENTFRAME,parent.CURRENTLAYER,0,true);
 
 	}
 	
@@ -1084,15 +1084,16 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 		currentFrameGraphic.endDraw();
 		}
 		}else{
-		maxTriesCount++;
+		
 		System.out.println("NULL YA");
 		try {
-			Thread.sleep(300);
+			Thread.sleep(20);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		}
+			maxTriesCount++;
 		}
 		getTempDispImage();
 		blendMode(NORMAL);
@@ -1306,19 +1307,21 @@ return true;
 			saveAction(layer, frame, "Paint");
 
 		}
-
+		
+		
+		
 		int lk = getKeyFrame(frame, getLayerIndex(layer));
 
 		if (keyEdited) {
 
 			tempImg = currentFrameGraphic.get();
 			saveImageToDisk(tempImg.get(), layer, lk);
-			tempImg.resize(parent.timeline.boxWidth, parent.timeline.boxHeight);
+			tempImg.resize(parent.timelineButtonWidth, parent.timelineButtonHeight);
 			BufferedImage tmp = (BufferedImage) (tempImg.getNative());
 			parent.timeline.layers.get(getLayerIndex(layer)).jbs.get(lk).setIcon(new ImageIcon(tmp));
 
-		}
 
+		}
 		/*
 		 * if(parent.currentTool.equals("move")){
 		 * 

@@ -55,7 +55,7 @@ import aniExtraGUI.EPanel;
 import aniExtraGUI.EScrollPane;
 import aniExtraGUI.LayerOptionsFrame;
 import aniFilters.FilterFrame;
-
+import listeners.TimelineButtonActionListener;
 /**
  * @author eddie
  * 
@@ -112,7 +112,7 @@ public class Main {
 	Font smallFont = new Font("Verdana", Font.ITALIC, 8);
 	
 	int MAXLAYERS = 5;
-	int MAXFRAMES = 600;
+	int MAXFRAMES = 120;
 	public int CURRENTFRAME = 0;
 	public int CURRENTLAYER = 0;
 	int CANVASWIDTH = 620;
@@ -166,8 +166,8 @@ public class Main {
 	EScrollPane canvasSc;
 	PenOptions penOps;
 	History historyPanel;
-
-	TimelineSwing timeline;
+public TimelineButtonActionListener timelineButtonActionListener;
+	public TimelineSwing timeline;
 	static EInternalFrame tlFrame;
 TimelineControls timelineControls;
 
@@ -187,12 +187,12 @@ TimelineControls timelineControls;
 	
 	
 	public void initVars(){
-
+		timelineButtonActionListener = new TimelineButtonActionListener(this);
 		initTranslations();
 		cachedImagesNames=new ArrayList<String>();
 		cachedImages=new ArrayList<PImage>();
 		CTRL=false;
-		timelineButtonWidth=30;
+		timelineButtonWidth=10;
 		timelineButtonHeight=20;
 		layerIndex=0;
 		
@@ -443,12 +443,12 @@ translations.put(EN_TRANS[i] , transTemp[i]);
 		saveData(file.getPath(),overwrite);
         fileConfigString+="BGCOL::"+canvas.bgColor+":::";
         fileConfigString+="FPS::"+FPS+":::";
-     
+        fileConfigString+="LASTFRAME::"+lastFrame+":::"; 
+        
         fileConfigString+="MAXLAYERS::"+MAXLAYERS+":::";
         fileConfigString+="MAXFRAMES::"+MAXFRAMES+":::";
         fileConfigString+="CURRENTLAYER::"+CURRENTLAYER+":::";
         fileConfigString+="CURRENTFRAME::"+CURRENTFRAME+":::";
-        fileConfigString+="LASTFRAME::"+lastFrame+":::"; 
         
         fileConfigString+="LAYERS::";
         
@@ -592,8 +592,8 @@ if (selectedOption == JOptionPane.YES_OPTION) {
 		if(strs.length>0){
 		
 		
-			 cleanLocalFolder(); 
-			//timeline.cleanOutTimeline();
+			// cleanLocalFolder(); 
+			timeline.cleanOutTimeline();
 			messageTextArea = new JLabel(translate("Loading")+" "+fileShortName);
 			messagePanel.setVisible(true);
 			 fileName = filePath;
@@ -617,10 +617,11 @@ if (selectedOption == JOptionPane.YES_OPTION) {
 	public void setConfig(String line,String folderName){
 
 
-		 
+		/* 
 		for(int i=0;i<timeline.layers.size();i++){
 		timeline.layers.get(i).setVisible(false);
 		}
+		*/
 		try {
 			Thread.sleep(10);
 		} catch (InterruptedException e) {
@@ -629,7 +630,7 @@ if (selectedOption == JOptionPane.YES_OPTION) {
 		}
 
 		initVars();
-		timeline.layers = new ArrayList<TimelineLayer>();
+	//	timeline.layers = new ArrayList<TimelineLayer>();
 	
 
 
@@ -656,8 +657,11 @@ if (selectedOption == JOptionPane.YES_OPTION) {
 			 		        	lastFrame = Integer.parseInt(parts[1]);
 			 		        }else
 			 		        	 if(parts[0].equals("MAXFRAMES")){
-				 		        		MAXFRAMES = Integer.parseInt(parts[1]);
-				 	 		        }else
+			 		        		 if(lastFrame>MAXFRAMES || Integer.parseInt(parts[1])<MAXFRAMES){
+			 		        			 MAXFRAMES	 = Integer.parseInt(parts[1]);
+			 		        		timeline.setFramesLength();
+			 		        		 }
+			 		        	 }else
 					 		        	 if(parts[0].equals("BGCOL")){
 						 		        		canvas.bgColor = Integer.parseInt(parts[1]);
 						 	 		        }else
@@ -669,7 +673,9 @@ if (selectedOption == JOptionPane.YES_OPTION) {
 										 	 		        }else
         	 if(parts[0].equals("LAYERS")){
 	        		String[] layerData = (parts[1].split("8q3b5R1ZMINDEX8q3b5R1ZM"));
+	        		int zz=0;
 	        		for(int z=0;z<layerData.length;z++){
+	        			zz=z;
 	        			if(layerData[z].length()>3){
 	        				String key  ="8q3b5R1ZMz0";
 	        				String[] dt = layerData[z].split(key);
@@ -678,25 +684,40 @@ if (selectedOption == JOptionPane.YES_OPTION) {
 	        					boolean mask = (dt[4].equals("true"));
 	        					int maskof = Integer.parseInt(dt[6]);
 	        					String label = dt[8];
+	        					System.out.println("ADDING L "+dt[8]);
+	        					if(z<timeline.layers.size()){
+	        						timeline.layers.get(z).layerID=id;
+	        						timeline.layers.get(z).layerName=label;
+	        						timeline.layers.get(z).layerNameLabel.setText(label);
+	        						timeline.layers.get(z).isMask = mask;
+	        						if(mask){
+	        							timeline.layers.get(z).maskOf = maskof;
+	        						}
 	        					
+	        					}else{
 	        					timeline.addNewLayer(id,mask,maskof,label);
+	        					}
 	        					
 	        					
 	        				
 	        			}
 	        		}
-	        		
+	        		for(int iz=zz+1;iz<timeline.layers.size();iz++){
+	        			timeline.layers.get(iz).setVisible(false);
+	        			timeline.layers.get(iz).deleteMe();
+	        		}
  		        }else
  		        	 if(parts[0].equals("KEYFRAMES")){
  		 	        	String[] keys = (parts[1]).split("-");
  		 	        	for(int z=0;z<keys.length;z++){
  		 	        		if(keys[z].length()>1){
  		 	        			String[] vvs = keys[z].split("_");
+ 		 	        			if(vvs[0].length()>0){
  		 	        			int tempY = Integer.parseInt(vvs[0]);
  		 	        			int tempX = Integer.parseInt(vvs[1]);
  		 	        			timeline.layers.get(tempY).jbs.get(tempX).isKey=true;
  		 	        			timeline.layers.get(tempY).jbs.get(tempX).setBackground(timeline.active);
- 		 	        		
+ 		 	        			}
  		 	        		}
  		 	        	}
  		 	        	timelineControls.fpsSpinber.setValue(FPS);
@@ -1445,6 +1466,11 @@ canvasPanel.setBackground(new Color(67,67,67));
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_UP,InputEvent.CTRL_DOWN_MASK);
 		mntmMoveUpOne.setAccelerator(tmpKey);
 
+		JMenuItem mntmAppendFrames = new JMenuItem(translate("Append 40 Frames"));
+		mnLayers.add(mntmAppendFrames);
+		
+		JMenuItem mntmRemoveFrames = new JMenuItem(translate("Remove 40 Frames"));
+		mnLayers.add(mntmRemoveFrames);
 		
 		JMenu mnEdit = new JMenu(translate("Edit"));
 		menuBar.add(mnEdit);
@@ -1687,7 +1713,33 @@ canvasPanel.setBackground(new Color(67,67,67));
 			}
 		});
 		
+	    mntmRemoveFrames.addActionListener(new ActionListener() {
+	 			public void actionPerformed(ActionEvent arg0) {
+
+					canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
+					MAXFRAMES-=40;
+					//canvas.saveAction(CURRENTLAYER,MAXFRAMES-1, "Delete Frames");
+	 				
+					CURRENTFRAME = MAXFRAMES;
+					
+					canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
+
+
+	 				timeline.setFramesLength();
+	 			}
+	 		});
 		
+	    mntmAppendFrames.addActionListener(new ActionListener() {
+ 			public void actionPerformed(ActionEvent arg0) {
+ 				
+ 				MAXFRAMES+=40;
+ 				timeline.setFramesLength();
+ 			}
+ 		});
+	
+
+		
+
 		mntmMoveUpOne.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import processing.core.PImage;
@@ -24,10 +25,8 @@ public class TimelineSwing extends EPanel{
 Main parent;
 int w,h;
 int lc,fc;//layer count, frame count
-int boxWidth = 30;
-int boxHeight=20;
 int xoff = 200;
-int yoff=boxHeight;
+int yoff;
 int loopC = 1;
 PImage trans;
 
@@ -56,6 +55,7 @@ ArrayList<TimelineLayer> layers = new ArrayList<TimelineLayer>();
 
 	public TimelineSwing(int lc, int fc,Main parent){
 
+		 yoff=parent.timelineButtonHeight;
 		Image eyeImage =null;
 		Image maskImage =null;
 		Image downImage =null;
@@ -77,8 +77,8 @@ ArrayList<TimelineLayer> layers = new ArrayList<TimelineLayer>();
 		this.parent=parent;
 		this.lc=lc;
 		this.fc=fc;
-		this.w = ((fc*boxWidth)+xoff)+100;
-		this.h=((lc*boxHeight)+yoff)+50;
+		this.w = ((fc*=parent.timelineButtonWidth)+xoff)+100;
+		this.h=((lc*=parent.timelineButtonHeight)+yoff)+50;
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
 		try {
@@ -90,11 +90,26 @@ ArrayList<TimelineLayer> layers = new ArrayList<TimelineLayer>();
 		
 		
 	}
-	/*public void cleanOutTimeline(){
+	
+	public void setFramesLength(){
+		parent.canvas.finaliseFrame(parent.CURRENTLAYER,parent.CURRENTFRAME);
+		
+			for(int y=0;y<parent.MAXLAYERS;y++){
+				layers.get(y).updateFrameLength();
+		
+			
+		}
+		
+	}
+	public void cleanOutTimeline(){
 		
 		for(int x=0;x<parent.lastFrame;x++){
 			for(int y=0;y<parent.MAXLAYERS;y++){
+				if(layers.get(y).jbs.get(x).isKey){
 				layers.get(y).jbs.get(x).isKey=false;
+				layers.get(y).jbs.get(x).setBackground(inactive);
+				layers.get(y).jbs.get(x).setIcon(null);
+				}
 				
 					
 			}
@@ -102,7 +117,7 @@ ArrayList<TimelineLayer> layers = new ArrayList<TimelineLayer>();
 		}
 		
 	}
-	*/
+	
 	public void addNewLayer(int y, boolean maskBool){
 		
 		TimelineLayer tl = new TimelineLayer(parent,y,maskBool);
@@ -137,7 +152,7 @@ public void addNewLayer(int y, boolean maskBool,int maskOf, String label){
 		addNewLayerBut.setFont(f2);
 		
 		topBar.add(addNewLayerBut);
-		for(int x=0;x<parent.MAXFRAMES;x++){
+		for(int x=0;x<600;x++){
 			EButton  frameNumberLabel = new EButton();
 			frameNumberLabel.setText(""+(x+1));
 			frameNumberLabel.setPreferredSize(new Dimension(parent.timelineButtonWidth,parent.timelineButtonHeight));
@@ -214,7 +229,7 @@ public void addNewLayer(int y, boolean maskBool,int maskOf, String label){
 		
 		int lastFrame =parent.CURRENTFRAME;
 		int lastLayer =parent.CURRENTLAYER;
-		
+	
 
     	if(y==-1)
     		y=parent.CURRENTLAYER;
@@ -223,7 +238,7 @@ public void addNewLayer(int y, boolean maskBool,int maskOf, String label){
     	
 		if(x<parent.MAXFRAMES&&x>=0&&y>=0){
 
-if(!newFile)
+			if(!newFile)
 			 parent.canvas.finaliseFrame(lastLayer,lastFrame);
 			 
 			if(clickBut==2){
