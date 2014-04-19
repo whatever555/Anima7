@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -111,6 +112,8 @@ public PGraphics eraserMask;
 		
 		size(cw, ch);
 
+
+		  frameRate(200);
 		initInk();
 
 		
@@ -147,7 +150,7 @@ public PGraphics eraserMask;
 	}
 
 	public void draw() {
-		
+		//parent.canvasFrame.setTitle((frameRate) + " fps");
 		if (parent.currentTool.equals("move")) {
 
 			parent.pasting = true;
@@ -237,7 +240,23 @@ public PGraphics eraserMask;
 		}
 	}
 	
-	
+	public void addImagesToNewKeyFrames(File[] files){
+	int cf = parent.CURRENTFRAME;
+	parent.LOADED=false;
+			for(int i=0;i<files.length;i++){
+				if(!parent.timeline.layers.get(parent.CURRENTLAYER).jbs.get(parent.CURRENTFRAME).isKey){
+					parent.timeline.toggleKeyFrame(parent.CURRENTLAYER,parent.CURRENTFRAME);
+				}
+				PImage tmp = loadImage(files[i].getPath());
+				tmp.resize(parent.CANVASWIDTH,parent.CANVASHEIGHT);
+				saveImageToDisk(tmp,parent.CURRENTLAYER,parent.CURRENTFRAME);
+				parent.CURRENTFRAME++;
+			}
+			parent.CURRENTFRAME=cf;
+			parent.canvas.showNewFrame(parent.CURRENTLAYER, cf, -1);
+		parent.LOADED=true;
+		parent.messagePanel.setVisible(false);
+	}
 	public void loadNewFile(String folder,int maxlayers,int maxframes){
 		
 
@@ -260,12 +279,12 @@ public PGraphics eraserMask;
 	
 	public void actionLoadFromFile(int l, int f,String folder){
 		if(parent.timeline.layers.get(l).jbs.get(f).isKey || f==0){
-			PImage tmp =loadImage(folder+"/"+parent.timeline.layers.get(l).layerID+"_"+f+".png");
+			PImage tmp =loadImage(folder+"/"+parent.timeline.layers.get(l).layerID+"_"+f+".tga");
 			if(tmp!=null){
 				
 				parent.timeline.layers.get(l).jbs.get(f).isKey=true;
 				String sp = savePath(parent.workspaceFolder+"/images/" + parent.tmpName + "/"
-						+ parent.timeline.layers.get(l).layerID + "_" + f + ".png");
+						+ parent.timeline.layers.get(l).layerID + "_" + f + ".tga");
 				
 				tmp.save(sp);
 			}
@@ -375,8 +394,9 @@ public PGraphics eraserMask;
 						localPenColor, parent.PENALPHA));
 				
 				mylineBasic((int) prevXPos, (int) prevYPos, (int) xPos,
-						(int) yPos, new Color(localPenColor), parent.PENALPHA,
-						parent.PENSIZE, false);
+						(int) yPos);	
+				//mylineSuperBasic((int) prevXPos, (int) prevYPos, (int) xPos,
+					//	(int) yPos);
 
 				
 				prevXPos = xPos;
@@ -495,6 +515,8 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 					img = drawMaskedAdvanced(img,maskImage) ;
 					
 				}
+			
+				tmp.tint(255,parent.timeline.layers.get(y).alphaLevel);
 				setBlending(tmp,y);
 				tmp.image(img,0,0);
 				
@@ -605,7 +627,11 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 
 		else if (parent.currentTool.equals("brush")) {
 			tempInkGraphic.beginDraw();
-
+			
+				tempInkGraphic.tint(parent.PENCOLOR.getRGB(), parent.PENALPHA);
+				tint(parent.PENCOLOR.getRGB(), parent.PENALPHA);
+				
+				
 			strokeWeight(parent.PENSIZE);
 			localPenColor = parent.PENCOLOR.getRGB();
 			stroke(localPenColor);
@@ -676,6 +702,9 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 		} else
 
 			if (parent.currentTool.equals("brush")) {
+				tempInkGraphic.noTint();
+
+				noTint();
 				tempInkGraphic.endDraw();
 				printInkToGraphic();
 				unsaved = true;
@@ -904,17 +933,9 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 		}
 
 	}
-
-	public void mylineBasic(int x, int y, int x2, int y2, Color c, int alpha,
-			int siz, boolean g) {
-
-
-		if(parent.currentTool.equals("brush")){
-		tempInkGraphic.tint(c.getRGB(), alpha);
-		tint(c.getRGB(), alpha);
-		}
+  
 		
-		
+	public void mylineBasic(int x, int y, int x2, int y2) {
 
 		int w = x2 - x;
 		int h = y2 - y;
@@ -943,23 +964,22 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 			dx2 = 0;
 		}
 
-		int pp = -abs(siz / 2);
+		int pp = -abs(parent.PENSIZE / 2);
 		int numerator = longest >> 1;
-		
+
 		for (int i = 0; i <= longest && brush.size() > 0; i += max(1,
-				abs(siz / 14))) {
+				abs(parent.PENSIZE / 14))) {
 
 
-			
 			if(parent.currentTool.equals("brush")){
-				tempInkGraphic.image(brush.get(brushIndex), x + pp, y + pp, siz,
-						siz);
+				tempInkGraphic.image(brush.get(brushIndex), x + pp, y + pp, parent.PENSIZE ,
+						parent.PENSIZE );
 
-				image(brush.get(brushIndex), x + pp, y + pp, siz, siz);
+				image(brush.get(brushIndex), x + pp, y + pp, parent.PENSIZE , parent.PENSIZE );
 			
 				}
 			else if(parent.currentTool.equals("Eraser")){
-				eraserMask.image(brush.get(brushIndex), x + pp, y + pp, siz, siz);
+				eraserMask.image(brush.get(brushIndex), x + pp, y + pp, parent.PENSIZE , parent.PENSIZE );
 				
 			
 				}
@@ -983,12 +1003,63 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 	
 		
 		
-		if(parent.currentTool.equals("brush")){
-			tempInkGraphic.noTint();
+	
 
-			noTint();
-		
+	}
+	
+	
+	
+	public void mylineSuperBasic(int x, int y, int x2, int y2) {
+
+		int w = x2 - x;
+		int h = y2 - y;
+		int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0;
+		if (w < 0)
+			dx1 = -1;
+		else if (w > 0)
+			dx1 = 1;
+		if (h < 0)
+			dy1 = -1;
+		else if (h > 0)
+			dy1 = 1;
+		if (w < 0)
+			dx2 = -1;
+		else if (w > 0)
+			dx2 = 1;
+		int longest = Math.abs(w);
+		int shortest = Math.abs(h);
+		if (!(longest > shortest)) {
+			longest = Math.abs(h);
+			shortest = Math.abs(w);
+			if (h < 0)
+				dy2 = -1;
+			else if (h > 0)
+				dy2 = 1;
+			dx2 = 0;
+		}
+
+		int pp = -abs(parent.PENSIZE / 2);
+		int numerator = longest >> 1;
+
+		for (int i = 0; i <= longest; i ++) {
+
+			ellipse(x + pp, y + pp, parent.PENSIZE , parent.PENSIZE);
+
+			numerator += shortest;
+			if (!(numerator < longest)) {
+				numerator -= longest;
+				x += dx1;
+				y += dy1;
+			} else {
+				x += dx2;
+				y += dy2;
 			}
+		}
+
+	
+		
+		
+	
 
 	}
 
@@ -1004,19 +1075,26 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 	}
 
 	public void layDownFrames(int hiddenLayer) {
-		background(bgColor, 255);
-		tint(255, transValue);
-
+		
 		// printFrameToImage(parent.CURRENTLAYER, parent.CURRENTFRAME);
+		PGraphics tmpG = createGraphics(parent.CANVASWIDTH,parent.CANVASHEIGHT);
+		tmpG.beginDraw();
 		
-		
+		tmpG.background(0,0);
 		
 		for (int i = parent.MAXLAYERS - 1; i > -1; i--) {
-			setBlending(i);
+		
 			if (parent.timeline.layers.get(i).visible && !parent.timeline.layers.get(i).activeMask && parent.timeline.layers.get(i).layerID != parent.CURRENTLAYER && i!=hiddenLayer){
 			
 				PImage tmp =loadImageFromDisk(parent.timeline.layers.get(i).layerID, parent.CURRENTFRAME);
 				if(tmp!=null){
+					setBlending(tmpG,i);
+					setBlending(currentFrameGraphic,i);
+					float fx = (float)((float)((float)transValue/255))*parent.timeline.layers.get(i).alphaLevel;
+					if(parent.timeline.layers.get(i).alphaLevel<200){
+						parent.pout("TRANS: "+parent.timeline.layers.get(i).alphaLevel+ "   FX: "+fx );
+					}
+					tmpG.tint(255, fx);
 					if(parent.timeline.layers.get(i).hasMask){
 						if(parent.timeline.layers.get(parent.canvas.getLayerIndex(parent.timeline.layers.get(i).myMask)).activeMask){
 
@@ -1028,7 +1106,7 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 					
 					}
 					
-				image(tmp, 0, 0);
+				tmpG.image(tmp, 0, 0);
 				}
 			}
 		}
@@ -1036,16 +1114,18 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 		 * if(trans!=null){ tint(bgColor); image(trans,0,0,cw,ch); }
 		 */
 
-		tint(255, onionTransValue);
 		ArrayList<Integer> shownKeys = new ArrayList<Integer>();
 		for (int i = Math.max(0, parent.CURRENTFRAME - parent.onionLeft); i <= Math
 				.min(parent.MAXFRAMES - 1, parent.CURRENTFRAME
 						+ parent.onionRight); i++) {
-			setBlending(parent.CURRENTLAYER);
 			if(parent.timeline.layers.get(getLayerIndex(parent.CURRENTLAYER)).visible)
 			if (getKeyFrame(i, getLayerIndex(parent.CURRENTLAYER)) != getKeyFrame(
 					parent.CURRENTFRAME, getLayerIndex(parent.CURRENTLAYER)))
 				if (!shownKeys.contains(getKeyFrame(i, getLayerIndex(parent.CURRENTLAYER)))  && parent.CURRENTLAYER!=hiddenLayer) {
+					setBlending(tmpG,parent.CURRENTLAYER);
+					setBlending(currentFrameGraphic,parent.CURRENTLAYER);
+					float fx = (float)((float)((float)onionTransValue/255))*parent.timeline.layers.get(parent.CURRENTLAYER).alphaLevel;
+					tmpG.tint(255, fx);
 					shownKeys.add((getKeyFrame(i, getLayerIndex(parent.CURRENTLAYER))));
 					
 					PImage tmp =loadImageFromDisk(parent.CURRENTLAYER, i);
@@ -1056,18 +1136,24 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 						tmp=drawMaskedAdvanced(tmp,maskImage);
 						
 					}
-					image(tmp, 0, 0);
+					tmpG.image(tmp, 0, 0);
 					
 				}
 		}
-		noTint();
+		
+		tmpG.noTint();
 		PImage tmp=null;
 		int maxTriesCount = 0;
 		while(tmp==null && maxTriesCount <4){
 		tmp =loadImageFromDisk(parent.CURRENTLAYER, parent.CURRENTFRAME);
 		if(parent.timeline.layers.get(getLayerIndex(parent.CURRENTLAYER)).visible)
-			setBlending(parent.CURRENTLAYER);
-			if(tmp!=null){
+			setBlending(tmpG,parent.CURRENTLAYER);
+		setBlending(currentFrameGraphic,parent.CURRENTLAYER);
+		
+		if(tmp!=null){
+
+				tmpG.tint(255,parent.timeline.layers.get(parent.CURRENTLAYER).alphaLevel);
+	
 		if( parent.CURRENTLAYER!=hiddenLayer && !parent.timeline.layers.get(getLayerIndex(parent.CURRENTLAYER)).activeMask)
 			if(parent.timeline.layers.get(getLayerIndex(parent.CURRENTLAYER)).hasMask){
 				PImage maskImage =loadImageFromDisk(parent.timeline.layers.get(parent.canvas.getLayerIndex(parent.timeline.layers.get(getLayerIndex(parent.CURRENTLAYER)).myMask)).layerID, parent.CURRENTFRAME);
@@ -1076,7 +1162,7 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 				
 			}
 		if(tmp!=null){
-		image(tmp, 0, 0);
+		tmpG.image(tmp, 0, 0);
 
 		currentFrameGraphic.beginDraw();
 		
@@ -1095,9 +1181,16 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 		}
 			maxTriesCount++;
 		}
-		getTempDispImage();
-		blendMode(NORMAL);
+		tmpG.blendMode(NORMAL);
 		currentFrameGraphic.blendMode(NORMAL);
+
+tmpG.endDraw();
+		image(tmpG,0,0);
+		background(bgColor, 255);
+		image(tmpG,0,0);
+		
+		tempDispImage=tmpG.get();
+		tmpG=null;
 	}
 	
 	public void setBlending(int x){
@@ -1229,7 +1322,7 @@ return true;
 
 		} else {
 			return loadImage(parent.workspaceFolder+"/images/" + parent.tmpName + "/" + cl
-					+ "_" + ck + ".png");
+					+ "_" + ck + ".tga");
 
 		}
 
@@ -1286,7 +1379,7 @@ return true;
 				SAVING = true;
 
 				String sp = savePath(parent.workspaceFolder+"/images/" + parent.tmpName + "/"
-						+ cl + "_" + ck + ".png");
+						+ cl + "_" + ck + ".tga");
 				tmpImage.save(sp);
 
 				SAVING = false;
@@ -1722,6 +1815,12 @@ tempDispImage2 = currentFrameGraphic.get();
 			previewThumb.filter(BLUR,(int)(amounts[0]/2));
 			else if(filterName.equals("Motion Blur"))
 			previewThumb = motionBlurFilter(previewThumb,(float)(amounts[0]/10),(float)(amounts[1]/10),(float)(amounts[2]/360));
+			else if(filterName.equals("Painting Style 1"))
+				previewThumb = paintingSytle1(previewThumb,(int)(amounts[0]),(int)(amounts[1]),(int)(amounts[2]),(int)(amounts[3]));
+			else if(filterName.equals("Polar Filter"))
+				previewThumb = polarFilter(previewThumb,(float)(amounts[0]/100),(float)(amounts[1]));
+			else if(filterName.equals("Arcy Filter"))
+				previewThumb = arcyFilter(previewThumb,(int)(amounts[0]),(int)(amounts[1]),(int)(amounts[1]));
 			else if(filterName.equals("Lens Blur"))
 			previewThumb = lensnBlurFilter(previewThumb,(float)(amounts[0]/10),(float)(amounts[1]/10),(float)(amounts[2]/360),(float)(amounts[3]));
 			else if(filterName.equals("Sharpen"))
@@ -1754,6 +1853,12 @@ tempDispImage2 = currentFrameGraphic.get();
 			tmp.filter(BLUR, amounts[0]);
 			else if(filterName.equals("Motion Blur"))
 				tmp = motionBlurFilter(tmp,(float)(amounts[0]/10),(float)(amounts[1]/10),(float)(amounts[2]/360));
+			else if(filterName.equals("Painting Style 1"))
+				tmp = paintingSytle1(tmp,(int)(amounts[0]),(int)(amounts[1]),(int)(amounts[2]),(int)(amounts[3]));
+			else if(filterName.equals("Polar Filter"))
+				tmp = polarFilter(tmp,(float)(amounts[0]/100),(float)(amounts[1]));
+			else if(filterName.equals("Arcy Filter"))
+				tmp = arcyFilter(tmp,((int)amounts[0]),(int)(amounts[1]),(int)(amounts[1]));
 			else if(filterName.equals("Shadow"))
 				tmp = ShadowFilter(tmp,(int)(amounts[0]),(int)(amounts[1]),(int)(amounts[2]),(float)(amounts[3]));
 			else if(filterName.equals("Glow"))
@@ -1785,6 +1890,64 @@ tempDispImage2 = currentFrameGraphic.get();
 		}
 
 	}
+
+	public PImage arcyFilter(PImage img,int ringDensity,int rings,int number){
+		int w1 = img.width;
+		int h1=img.height;
+		img.loadPixels();
+		PGraphics tmp = new PGraphics();
+		tmp = createGraphics(img.width,img.height);
+tmp.fill(0,0);
+		int r=(img.width/rings);
+        tmp.strokeWeight(r);
+        if(r<1)r=1;
+        
+        int j=0;
+       // tmp.translate(img.width/2,img.height/2);
+		  for (int x=0; x<(w1/2)-r; x+=r) {
+		
+		    for (int y=0; y<(h1/2); y+=h1/4) {
+		    	j+=r;
+
+			   // tmp.rotate(radians((float) number));
+		        tmp.stroke(img.pixels[y*w1+x]);
+		        tmp.arc(x, y, w1-x,h1-y , radians(j*(360)), radians((j*5)*(360/number)));
+		      if(j>=360)
+		    	  j=0;
+		    }
+		   
+		  }
+		  return tmp.get();
+	}
+	public PImage polarFilter(PImage input, float factor, float density) {
+		density = (int)density;
+		if(density<1)
+			density=1;
+		if(density>input.width/4){
+			density = (int)(input.width/4);
+		}
+		  PImage output = createImage(input.width, input.height, ARGB);
+		  int black = color(0,0);
+		  for (int y=0; y<output.height; y+=density) {
+		    for (int x=0; x<output.width; x++) {
+		      int my = y-output.height/2;
+		      int mx = x-output.width/2;
+		      float angle = atan2(my, mx) - HALF_PI ;
+		      float radius = sqrt(mx*mx+my*my) / factor;
+		      float ix = map(angle,-PI,PI,input.width,0);
+		      float iy = map(radius,0,height,0,input.height);
+		      int inputIndex = (int) ((ix) + (iy) * input.width);
+		      int outputIndex = x + y * output.width;
+		      if (inputIndex <= input.pixels.length-1) {
+		        output.pixels[outputIndex] = input.pixels[inputIndex];
+		      } else {
+		        output.pixels[outputIndex] = black;
+		      }
+		    }
+		  }
+		  return output;
+		}
+
 	
 	public PImage ShadowFilter(PImage img, int radius, int xOffset, int yOffset, float opacity){
 		ShadowFilter sf = new ShadowFilter(radius,xOffset,yOffset,opacity/100);
@@ -1849,9 +2012,110 @@ tmp.noStroke();
 		
 	}
 	
-	
+
+public PImage paintingSytle1(PImage img, int inaccuracy,int brush_hairs,int hairyness,int intensity){
+
+    int bristle = hairyness;
+ PGraphics pg = createGraphics(img.width,img.height);
+  pg.loadPixels();
+  img.loadPixels();
+  pg.fill(0,0);
+  strokeWeight(1);
+pg.noFill();
+  int lc =img.pixels[0];
+   int rad =(int)random(0,360);
+   pg.beginDraw();
+  // pg.fill(0,0);
+  pg.image(img,0,0);
+   pg.ellipseMode(CENTER);
+   int siz=250;
+   pg.noFill();
+   int yy=0;
+  for(int y=0;y<img.height;y+=inaccuracy){
+  yy = y;
+  int count=0;
+  for(int x=0;x<img.width;x+=(int)random(1,1)){
+ 
+   siz = (int)random(siz-2,siz+2);
+    int loc = yy*img.width+x;
+    
+    int c = img.pixels[loc];
+    int csum = (int)(red(c)+green(c)+blue(c));
+  if(alpha(pg.pixels[loc])<100){
+     int dif = abs(lc-csum);
+     if(dif>intensity){
+     
+       if(y>0)
+       yy=((int)random(y-3,y+3));
+       yy=constrain(yy,0,img.height-1);
+      rad=0;
+      createNewCurve(20-(int)(red(c)+green(c)+blue(c))/40);
+      
+  bristle = (int)random(0,hairyness);
+     count=0;
+     }else{
+       count++;
+       if(count>(int)random(30,45)){
+       
+  bristle = (int)random(0,hairyness);  
+    //  createNewCurve(20-(int)(red(c)+green(c)+blue(c))/40);
+       }
+      bristle--; 
+     }
+     int dr = (int)random(red(c)-brush_hairs,red(c)+brush_hairs);
+     int db = (int)random(blue(c)-brush_hairs,blue(c)+brush_hairs);
+     int dg = (int)random(green(c)-brush_hairs,green(c)+brush_hairs);
+
+   
+     pg.stroke(dr,dg,db,alpha(c));
+   //  pg.strokeWeight((int)random(1,2));
+  pg.translate(x,yy);
+  bristle = (int)random(bristle-1,bristle+1);
+bristle=constrain(bristle,0,hairyness);
+  drawCurve(pg,bristle);
+  pg.translate(-x,-yy);
+   
+  }
+    lc=csum;
+  }
+  }
+  pg.endDraw();
+  pg.filter(BLUR,1);
+  return pg.get();
+
+}
+int[][] cv;
+public void createNewCurve(int top){ 
+ int sz = 9; 
+cv = new int[(int) (random(4,max(4,top)))][2];
+cv[0][0] = 0;
+cv[0][1] = 0;
+cv[1][0] =0;
+cv[1][1]=0;
+Point lp = new Point(0,0);
+for(int i=2;i<cv.length-1;i++){
+	Point np = new Point((int)random(lp.x-sz,lp.x+sz),(int)random(lp.y-sz,lp.y+sz));
+   cv[i][0] = np.x; 
+   cv[i][1] = np.y; 
+   lp=new Point(np.x,np.y);
+}
+cv[cv.length-1][0] = cv[cv.length-2][0];
+cv[cv.length-1][1] = cv[cv.length-2][1];
+  
+}
+public void drawCurve(PGraphics pg, int bristle){
+  
+bristle = constrain(bristle,0,cv.length-2);
+ pg.beginShape();
+  for(int i=0;i<cv.length-(bristle);i++){
+  pg.curveVertex(cv[i][0], cv[i][1]); // is also the start point of curve
+
+  }
+  pg.endShape(); 
+}
+
+
 	public PImage boxifyFilter(PImage img, float boxSize,float rotDegrees,float stWeight){
-		println("BOXIFYING |||| BOXSIZE: "+boxSize+" :: ROTDEG: "+rotDegrees+" :: STROKEWEIGHT: "+stWeight);
 		if(boxSize<=1)
 			boxSize=1;
 		img.loadPixels();

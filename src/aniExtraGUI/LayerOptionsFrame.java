@@ -9,6 +9,9 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.animation.shop.Main;
 import com.animation.shop.TimelineLayer;
@@ -23,6 +26,9 @@ Main parent;
  EComboBox blendList;
  EPanel mainPanel;
  JTextField layerNameField;
+ ESpinner transparencySpinner;
+ 
+ 
  public LayerOptionsFrame(Main parent){
 	 mainPanel=new EPanel();
 	 mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
@@ -71,10 +77,23 @@ Main parent;
 		 blendingOptionsLayer.add(blendingLabel);
 		 blendingOptionsLayer.add(blendList);
 
+		 EPanel transparencyPanel = new EPanel();
+		 transparencyPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+		 
+		 ELabel transparencyLabel;
+		 transparencyLabel = new ELabel(translate("Alpha")+": ");
+		 SpinnerNumberModel transparencyModel = new SpinnerNumberModel(255, 0, 255,1);
+		 transparencySpinner=new ESpinner(transparencyModel);
+		 transparencySpinner.addChangeListener(new MyChangeListener("alpha"));
+
+		 transparencyPanel.add(transparencyLabel);
+		 transparencyPanel.add(transparencySpinner);
+		 
 		 renameLayerPanel.setMaximumSize(new Dimension(300,40));
 		 blendingOptionsLayer.setMaximumSize(new Dimension(300,40));
 		 mainPanel.add(renameLayerPanel);
 		 mainPanel.add(blendingOptionsLayer);
+		 mainPanel.add(transparencyPanel);
 		 this.add(mainPanel);
 		 this.setVisible(false);
 	 
@@ -89,7 +108,18 @@ Main parent;
 		
  }
  
-
+private class MyChangeListener implements ChangeListener{
+	String myName;
+	public MyChangeListener(String myname){
+		this.myName=myname;
+	}
+	public void stateChanged(ChangeEvent e){
+		if(myName.equals("alpha")){
+			currentLayer.alphaLevel = (int) transparencySpinner.getValue();
+			 refreshCanvasStepOne();
+		}
+	}
+}
  private class MyActionListener implements ActionListener {
 
      String myActionName;
@@ -110,11 +140,34 @@ Main parent;
 		else
 		if(myActionName.equals("BLEND") && parent.LOADED){
 		 currentLayer.BLENDING = (String) blendList.getSelectedItem();
-		parent.canvas.showNewFrame(parent.CURRENTLAYER,parent.CURRENTFRAME,-1);
+		 refreshCanvasStepOne();
 	 }
 
 		}
 }
+ 
+ int myCount = 0;
+ public void refreshCanvasStepOne(){
+myCount++;
+final int x = myCount;
+		new Thread() {
+			public void run() {
+				try {
+					Thread.sleep(120);
 
+					 refreshCanvasStepTwo(x);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			
+
+			}
+		}.start();
+ }
+ public void refreshCanvasStepTwo(int x){
+ if(x == myCount)
+		parent.canvas.showNewFrame(parent.CURRENTLAYER,parent.CURRENTFRAME,-1);
+ }
 }
 

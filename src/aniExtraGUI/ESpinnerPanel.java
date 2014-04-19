@@ -1,6 +1,7 @@
 package aniExtraGUI;
 
 import java.awt.FlowLayout;
+import java.awt.Font;
 
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
@@ -22,7 +23,7 @@ public class ESpinnerPanel extends EPanel {
 	ELabel   label;
 	public FilterPane fp;
 	int myIndex = 0;
-	public ESpinnerPanel(int index,FilterPane fp,Main parent,int min, int max, float def, int inc, String labelStr){
+	public ESpinnerPanel(int index,EPanel addMeTo,FilterPane fp,Main parent,int min, int max, float def, int inc, String labelStr){
 	this.fp=fp;
 		this.myIndex=index;
 		this.parent=parent;
@@ -30,10 +31,12 @@ public class ESpinnerPanel extends EPanel {
 		this.label = new ELabel(translate(labelStr)+": ");
 		 SpinnerNumberModel model = new SpinnerNumberModel(def, min, max,inc);
 		 spinner=new ESpinner(model);
+		 spinner.setFont(new Font("Verdana", Font.PLAIN, 8));
+		 label.setFont(new Font("Verdana", Font.PLAIN, 8));
 		 this.add(label);
 		 this.add(spinner);
 		 spinner.addChangeListener(new MyChangeListener());
-		 fp.mainPanel.add(this);
+		 addMeTo.add(this);
 	}
 	
 	 public String translate(String str){

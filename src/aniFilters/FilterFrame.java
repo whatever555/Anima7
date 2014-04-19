@@ -22,6 +22,7 @@ import aniExtraGUI.EInternalFrame;
 import aniExtraGUI.ELabel;
 import aniExtraGUI.EPanel;
 import aniExtraGUI.ETabbedPane;
+import aniExtraGUI.WrapLayout;
 
 import com.animation.shop.Main;
 
@@ -63,7 +64,23 @@ public class FilterFrame extends EInternalFrame {
 		this.setPreferredSize(new Dimension(500,200));
 		
 		this.parent=parent;
-	if(options.equals("EFFECTS")){
+
+		if(options.equals("PAINTING")){
+			filters.add("Painting Style 1");
+			filterPanes.add(new FilterPane("Painting Style 1",parent,this,new String[]{"Lossy","Density","Lossyness","Intensity"},new int[]{1,1,1,1},new int[]{100,100,100,100},new float[]{1,12,12,12}));
+			
+			
+		}else if(options.equals("AMNONP5")){
+			filters.add("Polar Filter");
+			filterPanes.add(new FilterPane("Polar Filter",parent,this,new String[]{"Factor","Density"},new int[]{0,1},new int[]{100,100},new float[]{0,1,0,0}));
+			
+			filters.add("Arcy Filter");
+			filterPanes.add(new FilterPane("Arcy Filter",parent,this,new String[]{"Density","Rings","Number"},new int[]{0,1,0},new int[]{100,100,100},new float[]{0,1,0,0}));
+			
+		}else
+			
+				
+		if(options.equals("EFFECTS")){
 			filters.add("Posterize");
 			filterPanes.add(new FilterPane("Posterize",parent,this,new String[]{"Level"},new int[]{2},new int[]{255},new float[]{25,0,0,0}));
 			filters.add("Threshold");
@@ -103,6 +120,8 @@ public class FilterFrame extends EInternalFrame {
 		
 		for(int i=0;i<filters.size();i++){
 			JPanel jp = new JPanel();
+
+			jp.setLayout(new WrapLayout());
 			jp.add(filterPanes.get(i));
 			filterPanes.get(i).setAlignmentX( Component.LEFT_ALIGNMENT );
 			tabbedPane.addTab(filters.get(i),jp);
@@ -110,7 +129,7 @@ public class FilterFrame extends EInternalFrame {
 			jp.setBorder(null);
 		}
 		mainPanel.add(tabbedPane);
-		tabbedPane.setMinimumSize(new Dimension(400,60));
+		tabbedPane.setMinimumSize(new Dimension(400,100));
 		
 		previewImageHolder = new EPanel();
 		previewImageHolder.setLayout(new FlowLayout(FlowLayout.LEADING));

@@ -20,9 +20,15 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,13 +55,13 @@ import javax.swing.event.ChangeListener;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 
+import listeners.TimelineButtonActionListener;
 import processing.core.PImage;
 import aniExtraGUI.EInternalFrame;
 import aniExtraGUI.EPanel;
 import aniExtraGUI.EScrollPane;
 import aniExtraGUI.LayerOptionsFrame;
 import aniFilters.FilterFrame;
-import listeners.TimelineButtonActionListener;
 /**
  * @author eddie
  * 
@@ -63,6 +69,7 @@ import listeners.TimelineButtonActionListener;
 public class Main {
 	
 	//TODO LIST
+	//frame + layer transparency
 	//MAKE SAVING AND LOADING MORE ELEGANT [NO MISSING FILES] CLEANING ETC
 	//SIMPLE BRUSHES
 	//Clean ICONS
@@ -112,7 +119,7 @@ public class Main {
 	Font smallFont = new Font("Verdana", Font.ITALIC, 8);
 	
 	int MAXLAYERS = 5;
-	int MAXFRAMES = 120;
+	int MAXFRAMES = 1200;
 	public int CURRENTFRAME = 0;
 	public int CURRENTLAYER = 0;
 	int CANVASWIDTH = 620;
@@ -197,6 +204,21 @@ TimelineControls timelineControls;
 		layerIndex=0;
 		
 	}
+	public void pout(String s){
+		System.out.println(s);
+	}
+	
+
+	public String[] loadTranslations(String trans){
+
+		String name = "data/translations/"+trans+".txt";
+		
+		 basicPapplet bp = new basicPapplet();
+		
+return  bp.loadStrings(name);
+	
+	}
+	
 	String[] EN_TRANS;
 	String fontName = "Verdana";
 	public void initTranslations(){
@@ -221,10 +243,11 @@ TimelineControls timelineControls;
 
 		basicPapplet bp = new basicPapplet();
 		
-		EN_TRANS = bp.loadStrings("data/translations/EN.txt");
+		EN_TRANS = loadTranslations("EN");
+		System.out.println("PAST IT: "+language);
 		
 		String[] transTemp = EN_TRANS;
-		transTemp=bp.loadStrings("data/translations/"+language+".txt");
+		transTemp=loadTranslations(language);
 			
 		bp=null;
 		
@@ -394,9 +417,19 @@ translations.put(EN_TRANS[i] , transTemp[i]);
 		 }
 		 
 	 }
+	 public File[] getFiles(){
+		 messagePanel.setVisible(true);
+		 JFileChooser chooser = new JFileChooser();
+		 chooser.setMultiSelectionEnabled(true);
+		 chooser.showOpenDialog(frame);
+		 File[] files = chooser.getSelectedFiles();
+		 
+		 return files;
+	 }
 	 public String getFilePath(){
 		 final JFileChooser fc = new JFileChooser();
 			
+		
 			//In response to a button click:
 			int returnVal = fc.showOpenDialog(mainPanel);
 			
@@ -1008,6 +1041,7 @@ bug_workaround.setVisible(false);
 		basicPapplet bp = new basicPapplet();
 		String[] tmp = bp.loadStrings(".animaUserConfig.conf");
 userConfig=new String[200];
+
 if(tmp!=null)
 		for(int i=0;i<tmp.length;i++){
 			userConfig[i] = tmp[i];
@@ -1029,6 +1063,9 @@ if(tmp!=null)
 	public void getLanguage(){
 		if(userConfig[1]!=null)
 			language=userConfig[1];
+		if(language.equals("null")){
+			language ="EN";
+		}
 	}
 	
 	public String getFolderPath(){
@@ -1222,15 +1259,19 @@ saveUserConfig();
 	public ArrayList<String> filterFrameNames=new ArrayList<String>();
 	public void addFilterFrame(){
 
-
-		filterFrames.add(new FilterFrame(this,"EFFECTS",0));
+		filterFrames.add(new FilterFrame(this,"AMNONP5",0));
+		filterFrameNames.add("AMNONP5");
+		filterFrames.add(new FilterFrame(this,"EFFECTS",1));
 		filterFrameNames.add("EFFECTS");
-		filterFrames.add(new FilterFrame(this,"BLUR",1));
+		filterFrames.add(new FilterFrame(this,"BLUR",2));
 		filterFrameNames.add("BLUR");
-		filterFrames.add(new FilterFrame(this,"ARTISTIC",2));
+		filterFrames.add(new FilterFrame(this,"ARTISTIC",3));
 		filterFrameNames.add("ARTISTIC");
-		filterFrames.add(new FilterFrame(this,"SHADING",3));
+		filterFrames.add(new FilterFrame(this,"SHADING",4));
 		filterFrameNames.add("SHADING");
+
+		filterFrames.add(new FilterFrame(this,"PAINTING",5));
+		filterFrameNames.add("PAINTING");
 		
 	}
 	public int getFilterFrameIndex(String str){
@@ -1392,6 +1433,11 @@ canvasPanel.setBackground(new Color(67,67,67));
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK);
 		mnImportImage.setAccelerator(tmpKey);
 		
+		JMenuItem mnImportImages = new JMenuItem(translate("Import Images To Stage.."));
+		mnFile.add(mnImportImages);
+		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK);
+		mnImportImages.setAccelerator(tmpKey);
+		
 		
 		mnFile.addSeparator();
 		
@@ -1465,13 +1511,13 @@ canvasPanel.setBackground(new Color(67,67,67));
 		mnLayers.add(mntmMoveUpOne);
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_UP,InputEvent.CTRL_DOWN_MASK);
 		mntmMoveUpOne.setAccelerator(tmpKey);
-
+/*
 		JMenuItem mntmAppendFrames = new JMenuItem(translate("Append 40 Frames"));
 		mnLayers.add(mntmAppendFrames);
 		
 		JMenuItem mntmRemoveFrames = new JMenuItem(translate("Remove 40 Frames"));
 		mnLayers.add(mntmRemoveFrames);
-		
+	*/	
 		JMenu mnEdit = new JMenu(translate("Edit"));
 		menuBar.add(mnEdit);
 
@@ -1497,7 +1543,7 @@ canvasPanel.setBackground(new Color(67,67,67));
 
 		JMenuItem mntmPaste = new JMenuItem(translate("Paste"));
 		mnEdit.add(mntmPaste);
-		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_DOWN_MASK);
+		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK);
 		mntmPaste.setAccelerator(tmpKey);
 		
 		JMenuItem mntmClear = new JMenuItem(translate("Clear"));
@@ -1528,6 +1574,17 @@ canvasPanel.setBackground(new Color(67,67,67));
 		menuBar.add(mnFilters);
 
 	//mnFile.addSeparator();
+		
+		
+
+		JMenu mntmAmnonp5Filters = new JMenu(translate("Amnonp5 .."));
+		mnFilters.add(mntmAmnonp5Filters);
+
+		JMenuItem mnPolarFilter = new JMenuItem(translate("Polar Filter.."));
+		mntmAmnonp5Filters.add(mnPolarFilter);
+		
+		JMenuItem mnArcyFilter = new JMenuItem(translate("Arcy Filter.."));
+		mntmAmnonp5Filters.add(mnArcyFilter);
 		
 		JMenu mntmBlur = new JMenu(translate("Blur .."));
 		mnFilters.add(mntmBlur);
@@ -1583,6 +1640,14 @@ canvasPanel.setBackground(new Color(67,67,67));
 
 		JMenuItem mnRays=  new JMenuItem(translate("Light Rays.."));
 		mntmShading.add(mnRays);
+		
+		JMenu mntmPainting = new JMenu(translate("Painting .."));
+		mnFilters.add(mntmPainting);
+		
+		JMenuItem mnPaintStyle1=  new JMenuItem(translate("Style 1.."));
+		mntmPainting.add(mnPaintStyle1);
+		
+		
 
 		final JMenu mnBrush = new JMenu(translate("Brush"));
 		menuBar.add(mnBrush);
@@ -1713,7 +1778,7 @@ canvasPanel.setBackground(new Color(67,67,67));
 			}
 		});
 		
-	    mntmRemoveFrames.addActionListener(new ActionListener() {
+	   /* mntmRemoveFrames.addActionListener(new ActionListener() {
 	 			public void actionPerformed(ActionEvent arg0) {
 
 					canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
@@ -1737,7 +1802,7 @@ canvasPanel.setBackground(new Color(67,67,67));
  			}
  		});
 	
-
+*/
 		
 
 		mntmMoveUpOne.addActionListener(new ActionListener() {
@@ -1963,7 +2028,43 @@ canvasPanel.setBackground(new Color(67,67,67));
 				
 			}
 		});
+		mnArcyFilter.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
 
+		   		 canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
+			
+		   		filterFrames.get(getFilterFrameIndex("AMNONP5")).showFilter("Arcy Filter");
+		   		filterFrames.get(getFilterFrameIndex("AMNONP5")).setVisible(true);
+
+			}
+		});
+		mnPolarFilter.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
+
+		   		 canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
+			
+		   		filterFrames.get(getFilterFrameIndex("AMNONP5")).showFilter("Polar Filter");
+		   		filterFrames.get(getFilterFrameIndex("AMNONP5")).setVisible(true);
+
+			}
+		});
+		
+		mnPaintStyle1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
+
+		   		 canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
+			
+		   		filterFrames.get(getFilterFrameIndex("PAINTING")).showFilter("Painting Style 1");
+		   		filterFrames.get(getFilterFrameIndex("PAINTING")).setVisible(true);
+
+		   	//	filterFrame.setBounds(201,201,200,300);
+		   	//showFilterFrameOnTop();
+			}
+		});
+		
 		mnBasicBlur.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
@@ -2134,6 +2235,14 @@ canvasPanel.setBackground(new Color(67,67,67));
 
 		   		 canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
 			importImage(getFilePath());
+			}
+		});
+		
+		mnImportImage.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
+				canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
+			canvas.addImagesToNewKeyFrames(getFiles());
 			}
 		});
 		

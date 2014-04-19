@@ -1,0 +1,107 @@
+Archivo ya existe . Sobrescribir ?
+Sobrescribir ?
+¿Quieres guardar los cambios en el archivo actual antes de cerrar ?
+Se descartarán los cambios .
+Seleccione una carpeta del espacio de trabajo
+loading
+Su carpeta de área de trabajo se establece en
+¿Usted desea seleccionar una carpeta diferente ?
+Espacio de trabajo
+lienzo
+Cronología
+expediente
+nuevo
+abierto
+Ahorra ..
+Guardar como ..
+Importar Imagen En escenario ..
+Exportar a ..
+Imágenes
+salida
+Capas
+Añadir capa
+Añadir máscara de capa actual A
+Eliminar capa actual
+Keyframe toggle
+editar
+deshacer
+rehacer
+cortada
+copia
+pasta
+claro
+vista
+Ocultar Cronología
+Ocultar herramientas
+Mostrar Opciones de pincel
+Activar papel cebolla
+Cambie el color de fondo ..
+palanca
+Filtros
+Desenfoque ..
+Desenfoque ..
+Motion Blur ..
+Desenfoque de lente ..
+Glow Desenfoque ..
+Enfocar ..
+Efectos ..
+Posterizar ..
+Umbral ..
+Artístico ..
+Spherify ..
+Boxify ..
+Shading ..
+Shadow ..
+Rayos de luz ..
+cepillo
+Cepille Color ..
+Hay que reiniciar
+Opciones de capa
+actualización
+Nombre de capa
+Modo de fusión
+Máscara para
+Keyframe Eliminado
+Keyframe Agregado
+pintar
+lienzo vacío
+goma de borrar
+Pincel de selección
+Opciones de pincel
+Tamaño de pincel
+Cepillo Alfa
+color seleccionado
+Esquinas redondeadas :
+pluma:
+Los controles de línea de tiempo
+historia
+izquierda
+derecho
+Ajustar transparencia Layer
+crear
+brillar
+Posterizar
+umbral
+mancha
+Motion Blur
+Desenfoque de lente
+afilar
+sombra
+Rays
+Spherify
+Boxify
+Tamaño de la caja
+distorsión
+carrera
+opacidad
+fuerza
+radio
+Offset X
+Offset Y
+opacidad
+nivel
+rotación
+distancia
+ángel
+lados
+floración

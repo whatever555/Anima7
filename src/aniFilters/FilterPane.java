@@ -5,6 +5,7 @@ import java.awt.FlowLayout;
 
 import aniExtraGUI.EPanel;
 import aniExtraGUI.ESpinnerPanel;
+import aniExtraGUI.WrapLayout;
 
 import com.animation.shop.Main;
 
@@ -39,18 +40,20 @@ this.vals=vals;
   
   public void show(){
 	  //mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.Y_AXIS));
-	  this.setLayout(new FlowLayout(FlowLayout.LEADING));
-	  //mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+	 // this.setLayout(new FlowLayout(FlowLayout.LEADING));
+	  this.setLayout(new WrapLayout());
 	  this.setPreferredSize(new Dimension(500, 70));
-	  this.setBounds(0,0,500,70);
-	
+	  //this.setBounds(0,0,400,70);
+
+mainPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 	  for(int i=0;i<varNames.length;i++){
-		  filterSpinnerPanels[i] = new ESpinnerPanel(i,this,parent,rangeLow[i],rangeHigh[i],vals[i],1,varNames[i]);
-		  
+		
+		  filterSpinnerPanels[i] = new ESpinnerPanel(i,mainPanel,this,parent,rangeLow[i],rangeHigh[i],vals[i],1,varNames[i]);
+		 
 		
 	  }
-this.add(mainPanel);
 
+this.add(mainPanel);
   }
   
   public void applyPreviewFilter(){

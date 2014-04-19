@@ -35,6 +35,7 @@ public class TimelineLayer extends EPanel {
 	boolean activeMask = false;
 	boolean visible = true;
 	public String BLENDING = "Normal";
+	public int alphaLevel=255;
 	
 	public TimelineLayer(Main parent, int layerID, boolean isMask) {
 		this.isMask = isMask;
