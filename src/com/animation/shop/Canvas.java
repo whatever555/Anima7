@@ -1340,8 +1340,7 @@ PImage drawMaskedAdvanced(PImage img,PImage mask) {
 	PImage tmp=new PImage();
 	
    tmp = createImage(img.width,img.height,ARGB);
- // img.mask(mask);
-  int t = color(0, 0);
+
   for (int i=0; i<img.pixels.length; i++) {
     if ((alpha(img.pixels[i])>0) && (alpha(mask.pixels[i])>0)) {
       tmp.pixels[i] = color(red(img.pixels[i]),green(img.pixels[i]),
@@ -1710,24 +1709,16 @@ tempDispImage2 = currentFrameGraphic.get();
 			clipBoard = currentFrameGraphic.get(x, y, w, h);
 			
 			
-			PGraphics tmpG = createGraphics(w,h);
 			PGraphics tmpG2 = createGraphics(w,h);
 			tmpG2.beginDraw();
-			tmpG2.background(0);
+			tmpG2.background(0,0);
 			tmpG2.fill(255);
 			drawSelectCurve(parent.selectShapePoints,tmpG2,x,y);
 			tmpG2.endDraw();
 			
-		PImage tpim = createImage(w,h,ARGB);
-		tpim= tmpG2.get();
-			tmpG.beginDraw();
-			tmpG.background(0,0);
-			clipBoard.mask(tpim);
-			tmpG.image(clipBoard,0,0);
-			tmpG.endDraw();
-			clipBoard = tmpG.get();
-			
-			tmpG =null;
+		
+	    	clipBoard = myAlphaMask(clipBoard,tmpG2);
+			 
 			tmpG2=null;
 
 			addFeatherAndCorners(x,y,w,h);
@@ -1749,25 +1740,17 @@ tempDispImage2 = currentFrameGraphic.get();
 				
 			if (parent.currentTool.equals("selectCirc")) 
 			{
-				PGraphics tmpG = createGraphics(w,h);
 				PGraphics tmpG2 = createGraphics(w,h);
 				tmpG2.beginDraw();
-				tmpG2.background(0);
+				tmpG2.background(0,0);
 				tmpG2.fill(255);
 				tmpG2.ellipseMode(CORNER);
 				tmpG2.ellipse(0,0,w,h);
 				tmpG2.endDraw();
 				
-				PImage tpim = createImage(w,h,ARGB);
-				tpim= tmpG2.get();
-				tmpG.beginDraw();
-				tmpG.background(0,0);
-				clipBoard.mask(tpim);
-				tmpG.image(clipBoard,0,0);
-				tmpG.endDraw();
-				clipBoard = tmpG.get();
 				
-				tmpG =null;
+		    	clipBoard = myAlphaMask(clipBoard,tmpG2);
+				
 				tmpG2=null;
 			}
 		}
@@ -1775,6 +1758,25 @@ tempDispImage2 = currentFrameGraphic.get();
 		addFeatherAndCorners(x,y,w,h);
 		}
 
+	}
+	
+	/*Images must be the same size*/
+	
+	public PImage myAlphaMask(PImage img, PImage mask){
+		img.loadPixels();
+		int w = img.width;
+		int h=img.height;
+		
+		 for (int xx=0; xx < w; xx++) 
+			 for (int yy = 0; yy < h; yy++) {
+				 int loc1 = (xx)+(yy*w);
+				 int c2=mask.pixels[loc1] ;
+				 if(red(c2)==0)
+					 img.pixels[loc1]=color(0,0);		 
+			  }
+
+			img.updatePixels();
+			return img;
 	}
 
 	public void addFeatherAndCorners(int x, int y, int w, int h) {
