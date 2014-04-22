@@ -436,22 +436,32 @@ public PGraphics eraserMask;
 
 	public void mouseDragged() {
 		if (parent.currentTool.equals("selectRect")
-				|| parent.currentTool.equals("selectCirc")) {
+				|| parent.currentTool.equals("selectCirc")
+				|| parent.currentTool.equals("selectShape")) {
 
-			image(tempDispImage, 0, 0);
 			fill(0, 0);
 			stroke(100);
 			strokeWeight(2);
+
+			image(tempDispImage, 0, 0);
 			if (parent.currentTool.equals("selectRect")) {
+
 				rect(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
 						max(selectBeginX, mouseX) - min(selectBeginX, mouseX),
 						max(selectBeginY, mouseY) - min(selectBeginY, mouseY),
 						parent.ROUNDCORNERSIZE);
 			}
 			if (parent.currentTool.equals("selectCirc")) {
+
 				ellipse(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
 						max(selectBeginX, mouseX) - min(selectBeginX, mouseX),
 						max(selectBeginY, mouseY) - min(selectBeginY, mouseY));
+			}
+
+			if (parent.currentTool.equals("selectShape")) {
+				parent.selectShapePoints.add(new SimpleRow(mouseY,mouseX));
+				fill(255,50);
+				drawSelectCurve(parent.selectShapePoints);
 			}
 
 			stroke(200);
@@ -467,8 +477,40 @@ public PGraphics eraserMask;
 						max(selectBeginX, mouseX) - min(selectBeginX, mouseX),
 						max(selectBeginY, mouseY) - min(selectBeginY, mouseY));
 			}
+			if (parent.currentTool.equals("selectShape")) {
+				
+			}
 		}
 
+	}
+	
+	
+	public void drawSelectCurve(ArrayList<SimpleRow> curveShape){
+		beginShape();
+
+		curveVertex(curveShape.get(0).x,curveShape.get(0).y);
+		for(int i=1;i<curveShape.size()-1;i++){
+			curveVertex(curveShape.get(i).x,curveShape.get(i).y);
+		}
+	
+	curveVertex(curveShape.get(curveShape.size()-1).x,curveShape.get(curveShape.size()-1).y);
+
+	curveVertex(curveShape.get(curveShape.size()-1).x,curveShape.get(curveShape.size()-1).y);
+endShape();
+	}
+	
+	public void drawSelectCurve(ArrayList<SimpleRow> curveShape,PGraphics pg,int x,int y){
+		pg.beginShape();
+
+		pg.curveVertex(curveShape.get(0).x-x,curveShape.get(0).y-y);
+		for(int i=1;i<curveShape.size()-1;i++){
+			pg.curveVertex(curveShape.get(i).x-x,curveShape.get(i).y-y);
+		}
+	
+		pg.curveVertex(curveShape.get(curveShape.size()-1).x-x,curveShape.get(curveShape.size()-1).y-y);
+
+		pg.curveVertex(curveShape.get(curveShape.size()-1).x-x,curveShape.get(curveShape.size()-1).y-y);
+		pg.endShape();
 	}
 
 	public boolean overImage(int x, int y) {
@@ -623,10 +665,14 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 		}
 
 		if (parent.currentTool.equals("selectRect")
-				|| parent.currentTool.equals("selectCirc")) {
+				|| parent.currentTool.equals("selectCirc")
+				|| parent.currentTool.equals("selectShape")) {
+			parent.selectShapePoints = new ArrayList<SimpleRow>();
 
+			parent.selectShapePoints.add(new SimpleRow(mouseY,mouseX));
 			selectBeginX = mouseX;
 			selectBeginY = mouseY;
+			
 		}
 
 		else if (parent.currentTool.equals("brush")) {
@@ -700,7 +746,8 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 			parent.updateColorBoxes(c2);
 			parent.PENCOLOR = c2;
 		} else if (parent.currentTool.equals("selectRect")
-				|| parent.currentTool.equals("selectCirc")) {
+				|| parent.currentTool.equals("selectCirc") 
+			|| parent.currentTool.equals("selectShape")) {
 			selectEndX = mouseX;
 			selectEndY = mouseY;
 		} else
@@ -1595,7 +1642,13 @@ tempDispImage2 = currentFrameGraphic.get();
 		int y = min(selectBeginY, selectEndY);
 		int w = max(selectBeginX, selectEndX) - x;
 		int h = max(selectBeginY, selectEndY) - y;
-
+		if(parent.currentTool.equals("selectShape")){
+		int[] dims = getShapeDimensions(x,y,w,h);
+		x=dims[0];
+		y=dims[1];
+		w=dims[2];
+		h=dims[3];
+		}
 		currentFrameGraphic.loadPixels();
 		for(int xx = x;xx< x+w;xx++){
 			for(int yy = y;yy<y+h;yy++){
@@ -1614,23 +1667,82 @@ tempDispImage2 = currentFrameGraphic.get();
 
 		
 	}
+	public int[] getShapeDimensions(int x, int y, int w, int h){
+		 x=parent.selectShapePoints.get(0).x;
+		 y=parent.selectShapePoints.get(0).y;
+		 int farx =parent.selectShapePoints.get(0).x;
+		int fary=parent.selectShapePoints.get(0).y;
+		 w =0;
+		h=0;
+		for(int i=0;i<parent.selectShapePoints.size();i++){
+			if(parent.selectShapePoints.get(i).x<x)
+				x=parent.selectShapePoints.get(i).x;
+			if(parent.selectShapePoints.get(i).y<y)
+				y=parent.selectShapePoints.get(i).y;
+			if(parent.selectShapePoints.get(i).x>farx)
+				farx=parent.selectShapePoints.get(i).x;
+			if(parent.selectShapePoints.get(i).y>fary)
+				fary=parent.selectShapePoints.get(i).y;
+			
+		}
+		w=farx-x;
+		h=fary-y;
+		int[] ret = new int[4];
+		ret[0]=x;ret[1]=y;ret[2]=w;ret[3]=h;
+		return ret;
+	}
 	public void copyToClipBoard() {
 
-		int x = min(selectBeginX, selectEndX);
-		int y = min(selectBeginY, selectEndY);
-		int w = max(selectBeginX, selectEndX) - x;
-		int h = max(selectBeginY, selectEndY) - y;
+		int x=0,y=0,w=0,h=0;
+		
+		if(parent.currentTool.equals("selectShape")){
+			int[] dims = getShapeDimensions(x,y,w,h);
+			x=dims[0];
+			y=dims[1];
+			w=dims[2];
+			h=dims[3];
+			clipBoard = currentFrameGraphic.get(x, y, w, h);
+			
+			clipBoardWidth = clipBoard.width;
+			clipBoardHeight = clipBoard.height;
+			PGraphics tmpG = createGraphics(w,h);
+			PGraphics tmpG2 = createGraphics(w,h);
+			tmpG2.beginDraw();
+			tmpG2.background(0);
+			tmpG2.fill(255);
+			drawSelectCurve(parent.selectShapePoints,tmpG2,x,y);
+			tmpG2.endDraw();
+			
+		PImage tpim = tmpG2.get();	
+			tmpG.beginDraw();
+			tmpG.background(0,0);
+			clipBoard.mask(tpim);
+			tmpG.image(clipBoard,0,0);
+			tmpG.endDraw();
+			clipBoard = tmpG.get();
+			
+			tmpG =null;
+			tmpG2=null;
 
-		clipBoard = currentFrameGraphic.get(x, y, w, h);
-		clipBoardWidth = clipBoard.width;
-		clipBoardHeight = clipBoard.height;
+			addFeatherAndCorners(x,y,w,h);
+		}
+		else
+		{
+			 x = min(selectBeginX, selectEndX);
+			 y = min(selectBeginY, selectEndY);
+			w = max(selectBeginX, selectEndX) - x;
+			h = max(selectBeginY, selectEndY) - y;
+
+			clipBoard = currentFrameGraphic.get(x, y, w, h);
+			clipBoardWidth = clipBoard.width;
+			clipBoardHeight = clipBoard.height;
+		
 		
 		if (selectBeginX != selectEndX) {
 
 				
 			if (parent.currentTool.equals("selectCirc")) 
 			{
-				println("its in here");
 				PGraphics tmpG = createGraphics(w,h);
 				PGraphics tmpG2 = createGraphics(w,h);
 				tmpG2.beginDraw();
@@ -1651,8 +1763,11 @@ tempDispImage2 = currentFrameGraphic.get();
 				tmpG =null;
 				tmpG2=null;
 			}
-			addFeatherAndCorners(x,y,w,h);
 		}
+
+		addFeatherAndCorners(x,y,w,h);
+		}
+
 	}
 
 	public void addFeatherAndCorners(int x, int y, int w, int h) {

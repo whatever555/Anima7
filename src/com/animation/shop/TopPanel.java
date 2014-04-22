@@ -296,13 +296,17 @@ minCanvas.setBounds(0,0,30,30);
 		EButton squiggleButton = new EButton();
 		squiggleButton.setPreferredSize(new Dimension(20,20));
 		
+		selectRectButton.addActionListener(new MyActionListener("selectRect"));
+		selectCircButton.addActionListener(new MyActionListener("selectCirc"));
+		squiggleButton.addActionListener(new MyActionListener("selectShape"));
+		
 		try {
 			img = ImageIO.read(getClass().getResource("/data/icons/tools/selectRect.png"));
 			selectRectButton.setIcon(new ImageIcon(img));
 			img = ImageIO.read(getClass().getResource("/data/icons/tools/selectCirc.png"));
 			selectCircButton.setIcon(new ImageIcon(img));;
 			img = ImageIO.read(getClass().getResource("/data/icons/tools/squiggle.png"));
-			selectCircButton.setIcon(new ImageIcon(img));
+			squiggleButton.setIcon(new ImageIcon(img));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -322,7 +326,7 @@ minCanvas.setBounds(0,0,30,30);
 	}
 	
 	private class MyChangeListener implements ChangeListener {
-    
+	    
     	public MyChangeListener() {
          }
     	
@@ -353,6 +357,31 @@ minCanvas.setBounds(0,0,30,30);
 	    		parent.fillInaccuracy=0;
 	    	//parent.penOps.brushAlphaSlider.setValue(parent.PENALPHA);
 	    
+	}
+	
+	}
+	
+	
+	private class MyActionListener implements ActionListener {
+	    String myAction;
+    	public MyActionListener(String myAction) {
+    		this.myAction=myAction;
+         }
+    
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		if(myAction.equals("selectRect")){
+			parent.currentTool = "selectRect";
+		}else
+			if(myAction.equals("selectCirc")){
+				parent.currentTool = "selectCirc";
+			}else
+
+				if(myAction.equals("selectShape")){
+					parent.currentTool = "selectShape";
+				}
+		
 	}
 	
 	}

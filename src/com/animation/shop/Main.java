@@ -140,6 +140,7 @@ public class Main {
 	int currentActionIndex = 0;
 	ArrayList<PImage> historicImages = new ArrayList<PImage>();
 	ArrayList<SimpleRow> historicChanges = new ArrayList<SimpleRow>();
+	ArrayList<SimpleRow> selectShapePoints = new ArrayList<SimpleRow>();
 	boolean UNDOKEYCHECK = false;
 	// ##
 
@@ -2392,6 +2393,9 @@ if(str.indexOf('.')>0){
 			return "select";
 		}
 		if (str.equals("selectPen")) {
+			return "select";
+		}
+		if (str.equals("selectShape")) {
 			return "select";
 		}
 		return str;
