@@ -106,6 +106,8 @@ public PGraphics eraserMask;
 	}
 
 	public void setup() {
+		tempDispImage = createImage(cw,ch,ARGB);
+		
 		brush = new CopyOnWriteArrayList<PImage>();
 		brush.add(loadImage("brushes/1/1.png"));
 
@@ -155,6 +157,7 @@ public PGraphics eraserMask;
 		if (parent.currentTool.equals("move")) {
 
 			parent.pasting = true;
+			background(bgColor);
 			image(tempDispImage, 0, 0, width, height);
 			image(currentFrameGraphic, 0, 0, width, height);
 
@@ -443,6 +446,7 @@ public PGraphics eraserMask;
 			stroke(100);
 			strokeWeight(2);
 
+			background(bgColor);
 			image(tempDispImage, 0, 0);
 			if (parent.currentTool.equals("selectRect")) {
 
@@ -1541,12 +1545,13 @@ return true;
 
 		if(clipBoard!=null){
 		
-		if (parent.currentTool.equals("move")){
-		//	pasteClipBoardToTempGraphic(clearClipBoard, saveMessage);
+			//if (parent.currentTool.equals("move")){
+				if (parent.pasting){
+					//	pasteClipBoardToTempGraphic(clearClipBoard, saveMessage);
 
 			finalisePaste();
 		}
-
+				parent.pasting=true;
 		floatingClipBoard = clipBoard;
 		
 		clipBoardWidth = clipBoard.width;
@@ -1563,6 +1568,7 @@ return true;
 			clipBoardY = (height / 2 - clipBoard.height / 2);
 		}
 
+		background(bgColor);
 		image(tempDispImage, 0, 0);
 		image(floatingClipBoard, clipBoardX, clipBoardY);
 		
@@ -1625,9 +1631,9 @@ tempDispImage2 = currentFrameGraphic.get();
 		floatingClipBoard=emptyImage;
 		
 		keyEdited = true;
-		parent.topPanel.setBrushOptions();
-		parent.currentTool = "brush";
-		parent.canvas.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+		//parent.topPanel.setBrushOptions();
+		//parent.currentTool = "brush";
+		//parent.canvas.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 
 		currentFrameGraphic.endDraw();
 
@@ -1703,8 +1709,7 @@ tempDispImage2 = currentFrameGraphic.get();
 			h=dims[3];
 			clipBoard = currentFrameGraphic.get(x, y, w, h);
 			
-			clipBoardWidth = clipBoard.width;
-			clipBoardHeight = clipBoard.height;
+			
 			PGraphics tmpG = createGraphics(w,h);
 			PGraphics tmpG2 = createGraphics(w,h);
 			tmpG2.beginDraw();
@@ -1713,7 +1718,8 @@ tempDispImage2 = currentFrameGraphic.get();
 			drawSelectCurve(parent.selectShapePoints,tmpG2,x,y);
 			tmpG2.endDraw();
 			
-		PImage tpim = tmpG2.get();	
+		PImage tpim = createImage(w,h,ARGB);
+		tpim= tmpG2.get();
 			tmpG.beginDraw();
 			tmpG.background(0,0);
 			clipBoard.mask(tpim);
@@ -1752,7 +1758,8 @@ tempDispImage2 = currentFrameGraphic.get();
 				tmpG2.ellipse(0,0,w,h);
 				tmpG2.endDraw();
 				
-			PImage tpim = tmpG2.get();	
+				PImage tpim = createImage(w,h,ARGB);
+				tpim= tmpG2.get();
 				tmpG.beginDraw();
 				tmpG.background(0,0);
 				clipBoard.mask(tpim);

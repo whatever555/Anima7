@@ -73,17 +73,16 @@ public class Main {
 	//SIMPLE BRUSHES
 	//Clean ICONS
 	//DRAG / MOVE KEYS
-	//fix paste
-	// import images exceptions // stageholders
+	//IMPORT EXPORT SVGS
+	//stageholders
 	//rotate transforms
-	//add cut feature
 	//dashed lines on select rect
-	//ellipse + pologon select
 	//dashed/resizing ink
 	//layer properties (blending options)
 	//TWEENS + expand drawing area larger than stage +ZOOM
 	// CURSORS
 	// AUDIO
+	//fix ALPHA issue ON paste MASK
 	// ERASER (done as polygon select maybe?)
 	// Styling and Skins
 	// fix undos
@@ -2390,9 +2389,6 @@ if(str.indexOf('.')>0){
 		if (str.equals("selectRect")) {
 			return "select";
 		} else if (str.equals("selectCirc")) {
-			return "select";
-		}
-		if (str.equals("selectPen")) {
 			return "select";
 		}
 		if (str.equals("selectShape")) {
