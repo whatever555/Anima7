@@ -69,7 +69,6 @@ import aniFilters.FilterFrame;
 public class Main {
 	
 	//TODO LIST
-	//frame + layer transparency
 	//MAKE SAVING AND LOADING MORE ELEGANT [NO MISSING FILES] CLEANING ETC
 	//SIMPLE BRUSHES
 	//Clean ICONS
@@ -411,7 +410,7 @@ translations.put(EN_TRANS[i] , transTemp[i]);
 	 
 	 
 	 public void importImage(String imagePath){
-		 if(!imagePath.equals("")){
+		 if(isImageFile(imagePath)){
 			 canvas.clipBoard = canvas.loadImage(imagePath).get();
 			 canvas.pasteFromClipBoard(false,"Paste");
 		 }
@@ -2238,13 +2237,23 @@ canvasPanel.setBackground(new Color(67,67,67));
 			}
 		});
 		
-		mnImportImage.addActionListener(new ActionListener() {
+		mnImportImages.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
 				canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
 			canvas.addImagesToNewKeyFrames(getFiles());
 			}
 		});
+		
+		mntmCut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (currentToolType(currentTool).equals("select")) {
+					canvas.cut();
+
+				}
+			}
+		});
+		
 		
 		mntmCopy.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -2314,6 +2323,37 @@ canvasPanel.setBackground(new Color(67,67,67));
 
 	}
 
+	public String getExtension(String str){
+		String extension = "";
+if(str.indexOf('.')>0){
+		int i = str.lastIndexOf('.');
+		if (i > 0) {
+		    extension = str.substring(i+1);
+		}
+}
+		return extension;
+	}
+	public boolean isImageFile(String fileName) {
+	   
+
+	    String extension = getExtension(fileName);
+	    if (extension != null) {
+	        if (extension.equals("tif") ||
+	            extension.equals("tiff") ||
+	            extension.equals("gif") ||
+	            extension.equals("jpeg") ||
+	            extension.equals("jpg") ||
+	            extension.equals("png")||
+	            extension.equals("tga")) {
+	                return true;
+	        } else {
+	            return false;
+	        }
+	    }
+
+	    return false;
+	}
+	
 	public void getLastFrame(){
 		lastFrame=0;
 		for(int y=0;y<MAXLAYERS;y++){

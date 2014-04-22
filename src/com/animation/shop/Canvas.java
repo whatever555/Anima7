@@ -89,6 +89,7 @@ public PGraphics eraserMask;
 	float prevXPos = -1, prevYPos = -1;
 
 	PImage clipBoard;
+	PImage floatingClipBoard;
 
 	PImage tempDispImage;
 	boolean drawBool = false;
@@ -200,7 +201,7 @@ public PGraphics eraserMask;
 				scale(-1, -1);
 				rect(-clipBoardX, -clipBoardY, -clipBoardWidth,
 						-clipBoardHeight);
-				image(clipBoard, -clipBoardX, -clipBoardY, -clipBoardWidth,
+				image(floatingClipBoard, -clipBoardX, -clipBoardY, -clipBoardWidth,
 						-clipBoardHeight);
 				popMatrix();
 			} else if (clipBoardWidth < 0) {
@@ -208,7 +209,7 @@ public PGraphics eraserMask;
 				scale(-1, 1);
 				rect(-clipBoardX, clipBoardY, -clipBoardWidth, clipBoardHeight);
 
-				image(clipBoard, -clipBoardX, clipBoardY, -clipBoardWidth,
+				image(floatingClipBoard, -clipBoardX, clipBoardY, -clipBoardWidth,
 						clipBoardHeight);
 				popMatrix();
 
@@ -216,13 +217,13 @@ public PGraphics eraserMask;
 				pushMatrix();
 				scale(1, -1);
 				rect(clipBoardX, -clipBoardY, clipBoardWidth, -clipBoardHeight);
-				image(clipBoard, clipBoardX, -clipBoardY, clipBoardWidth,
+				image(floatingClipBoard, clipBoardX, -clipBoardY, clipBoardWidth,
 						-clipBoardHeight);
 				popMatrix();
 
 			} else {
 				rect(clipBoardX, clipBoardY, clipBoardWidth, clipBoardHeight);
-				image(clipBoard, clipBoardX, clipBoardY, clipBoardWidth,
+				image(floatingClipBoard, clipBoardX, clipBoardY, clipBoardWidth,
 						clipBoardHeight);
 
 			}
@@ -247,10 +248,13 @@ public PGraphics eraserMask;
 				if(!parent.timeline.layers.get(parent.CURRENTLAYER).jbs.get(parent.CURRENTFRAME).isKey){
 					parent.timeline.toggleKeyFrame(parent.CURRENTLAYER,parent.CURRENTFRAME);
 				}
-				PImage tmp = loadImage(files[i].getPath());
+				String fileName = files[i].getPath();
+				if(parent.isImageFile(fileName)){
+				PImage tmp = loadImage(fileName);
 				tmp.resize(parent.CANVASWIDTH,parent.CANVASHEIGHT);
 				saveImageToDisk(tmp,parent.CURRENTLAYER,parent.CURRENTFRAME);
 				parent.CURRENTFRAME++;
+				}
 			}
 			parent.CURRENTFRAME=cf;
 			parent.canvas.showNewFrame(parent.CURRENTLAYER, cf, -1);
@@ -1188,8 +1192,9 @@ tmpG.endDraw();
 		image(tmpG,0,0);
 		background(bgColor, 255);
 		image(tmpG,0,0);
+		getTempDispImage();
 		
-		tempDispImage=tmpG.get();
+		//tempDispImage=tmpG.get();
 		tmpG=null;
 	}
 	
@@ -1392,8 +1397,9 @@ return true;
 	public void finaliseFrame(int layer, int frame) {
 
 		if (parent.pasting) {
-			parent.canvas.pasteClipBoardToTempGraphic(false, "Paste");
+			parent.canvas.finalisePaste();
 			keyEdited = true;
+			unsaved=true;
 		}
 
 		if (unsaved) {
@@ -1486,11 +1492,18 @@ return true;
 
 	public void pasteFromClipBoard(boolean clearClipBoard, String saveMessage) {
 
+		if(clipBoard!=null){
+		
+		if (parent.currentTool.equals("move")){
+		//	pasteClipBoardToTempGraphic(clearClipBoard, saveMessage);
+
+			finalisePaste();
+		}
+
+		floatingClipBoard = clipBoard;
+		
 		clipBoardWidth = clipBoard.width;
 		clipBoardHeight = clipBoard.height;
-		if (parent.currentTool.equals("move"))
-			pasteClipBoardToTempGraphic(clearClipBoard, saveMessage);
-
 		parent.pasting = true;
 		if (mouseX > 0 && mouseX < width - 1 && mouseY > 0
 				&& mouseY < height - 1 && !clearClipBoard) {
@@ -1504,11 +1517,14 @@ return true;
 		}
 
 		image(tempDispImage, 0, 0);
-		image(clipBoard, clipBoardX, clipBoardY);
+		image(floatingClipBoard, clipBoardX, clipBoardY);
+		
 		parent.currentTool = "move";
 		parent.setCursor("move");
 		keyEdited = true;
 		unsaved = true;
+		currentFrameGraphic.beginDraw();
+		}
 	}
 
 
@@ -1527,70 +1543,115 @@ tempDispImage2 = currentFrameGraphic.get();
 
 		
 		
-	public void pasteClipBoardToTempGraphic(boolean clearClipBoard,
-			String saveMessage) {
-
+	public void finalisePaste() {
 		parent.pasting = false;
-
+		currentFrameGraphic.beginDraw();
+	//	showNewFrame(parent.CURRENTLAYER,parent.CURRENTFRAME,-1);
 		if (clipBoardWidth < 0 && clipBoardHeight < 0) {
 			currentFrameGraphic.pushMatrix();
 			currentFrameGraphic.scale(-1, -1);
-			currentFrameGraphic.image(clipBoard, -clipBoardX, -clipBoardY,
+			currentFrameGraphic.image(floatingClipBoard, -clipBoardX, -clipBoardY,
 					-clipBoardWidth, -clipBoardHeight);
 			currentFrameGraphic.popMatrix();
 		} else if (clipBoardWidth < 0) {
 			currentFrameGraphic.pushMatrix();
 			currentFrameGraphic.scale(-1, 1);
-			currentFrameGraphic.image(clipBoard, -clipBoardX, clipBoardY,
+			currentFrameGraphic.image(floatingClipBoard, -clipBoardX, clipBoardY,
 					-clipBoardWidth, clipBoardHeight);
 			currentFrameGraphic.popMatrix();
 
 		} else if (clipBoardHeight < 0) {
 			currentFrameGraphic.pushMatrix();
 			currentFrameGraphic.scale(1, -1);
-			currentFrameGraphic.image(clipBoard, clipBoardX, -clipBoardY,
+			currentFrameGraphic.image(floatingClipBoard, clipBoardX, -clipBoardY,
 					clipBoardWidth, -clipBoardHeight);
 			currentFrameGraphic.popMatrix();
 
 		} else {
-			currentFrameGraphic.image(clipBoard, clipBoardX, clipBoardY,
+			currentFrameGraphic.image(floatingClipBoard, clipBoardX, clipBoardY,
 					clipBoardWidth, clipBoardHeight);
 
 		}
 
-		saveAction(parent.CURRENTLAYER, parent.CURRENTFRAME, saveMessage);
-
-		// parent.timeline.shiffleTable(parent.CURRENTFRAME,parent.CURRENTLAYER,0);
-
-		if (clearClipBoard) {
-			clipBoard = emptyImage;
-		} else {
-			clipBoardWidth = clipBoard.width;
-			clipBoardHeight = clipBoard.height;
-		}
-
+		
+			
+		floatingClipBoard=emptyImage;
+		
 		keyEdited = true;
 		parent.topPanel.setBrushOptions();
 		parent.currentTool = "brush";
 		parent.canvas.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+
+		currentFrameGraphic.endDraw();
+
+		saveAction(parent.CURRENTLAYER, parent.CURRENTFRAME, "Paste");
+		
 	}
 
+	public void cut(){
+		copyToClipBoard();
+		unsaved=true;
+		int x = min(selectBeginX, selectEndX);
+		int y = min(selectBeginY, selectEndY);
+		int w = max(selectBeginX, selectEndX) - x;
+		int h = max(selectBeginY, selectEndY) - y;
+
+		currentFrameGraphic.loadPixels();
+		for(int xx = x;xx< x+w;xx++){
+			for(int yy = y;yy<y+h;yy++){
+				int loc = xx+yy*currentFrameGraphic.width;
+				int loc2 = (xx-x)+((yy-y)*w);
+				
+				int c = currentFrameGraphic.pixels[loc];
+				int c2 = clipBoard.pixels[loc2];
+				c = color(red(c),green(c),blue(c),alpha(c)-alpha(c2));
+				 currentFrameGraphic.pixels[loc]=c;
+			}
+		}
+		currentFrameGraphic.updatePixels();
+		finaliseFrame(parent.CURRENTLAYER,parent.CURRENTFRAME);
+		showNewFrame(parent.CURRENTLAYER,parent.CURRENTFRAME,-1);
+
+		
+	}
 	public void copyToClipBoard() {
 
-		if (parent.currentTool.equals("selectRect")) {
-			if (selectBeginX != selectEndX) {
+		int x = min(selectBeginX, selectEndX);
+		int y = min(selectBeginY, selectEndY);
+		int w = max(selectBeginX, selectEndX) - x;
+		int h = max(selectBeginY, selectEndY) - y;
 
-				int x = min(selectBeginX, selectEndX);
-				int y = min(selectBeginY, selectEndY);
-				int w = max(selectBeginX, selectEndX) - x;
-				int h = max(selectBeginY, selectEndY) - y;
+		clipBoard = currentFrameGraphic.get(x, y, w, h);
+		clipBoardWidth = clipBoard.width;
+		clipBoardHeight = clipBoard.height;
+		
+		if (selectBeginX != selectEndX) {
 
-				clipBoard = currentFrameGraphic.get(x, y, w, h);
-				clipBoardWidth = clipBoard.width;
-				clipBoardHeight = clipBoard.height;
-				addFeatherAndCorners(x, y, w, h);
-
+				
+			if (parent.currentTool.equals("selectCirc")) 
+			{
+				println("its in here");
+				PGraphics tmpG = createGraphics(w,h);
+				PGraphics tmpG2 = createGraphics(w,h);
+				tmpG2.beginDraw();
+				tmpG2.background(0);
+				tmpG2.fill(255);
+				tmpG2.ellipseMode(CORNER);
+				tmpG2.ellipse(0,0,w,h);
+				tmpG2.endDraw();
+				
+			PImage tpim = tmpG2.get();	
+				tmpG.beginDraw();
+				tmpG.background(0,0);
+				clipBoard.mask(tpim);
+				tmpG.image(clipBoard,0,0);
+				tmpG.endDraw();
+				clipBoard = tmpG.get();
+				
+				tmpG =null;
+				tmpG2=null;
 			}
+			addFeatherAndCorners(x,y,w,h);
 		}
 	}
 
@@ -2025,6 +2086,8 @@ pg.noFill();
   int lc =img.pixels[0];
    int rad =(int)random(0,360);
    pg.beginDraw();
+
+   createNewCurve(5);
   // pg.fill(0,0);
   pg.image(img,0,0);
    pg.ellipseMode(CENTER);
@@ -2105,7 +2168,7 @@ cv[cv.length-1][1] = cv[cv.length-2][1];
 }
 public void drawCurve(PGraphics pg, int bristle){
   
-bristle = constrain(bristle,0,cv.length-2);
+bristle = constrain(bristle,0,cv.length);
  pg.beginShape();
   for(int i=0;i<cv.length-(bristle);i++){
   pg.curveVertex(cv[i][0], cv[i][1]); // is also the start point of curve
