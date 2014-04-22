@@ -159,17 +159,9 @@ minCanvas.setBounds(0,0,30,30);
 	}
 	public void createBrushOptions(){
 				
-	
-		
-		
-		
-		
 		ELabel brushSizeLabel = new ELabel(translate("Brush Size"));
 
 		brushSizeLabel.setForeground(fCol);
-		
-	
-		
 		
 		SpinnerNumberModel sizeModel = new SpinnerNumberModel(parent.PENSIZE,1, 255,
 				1);
@@ -180,15 +172,8 @@ minCanvas.setBounds(0,0,30,30);
 		sizeSpinner.setBackground(bgCol);
 		
 		
-
-		
-		
 		ELabel brushAlphaLabel = new ELabel(translate("Brush Alpha"));
 		brushAlphaLabel.setForeground(fCol);
-		
-
-		
-		
 		
 		SpinnerNumberModel alphaModel = new SpinnerNumberModel(parent.PENALPHA,1, 255,
 				1);
@@ -296,17 +281,23 @@ minCanvas.setBounds(0,0,30,30);
 		EButton squiggleButton = new EButton();
 		squiggleButton.setPreferredSize(new Dimension(20,20));
 		
+		EButton wandButton = new EButton();
+		wandButton.setPreferredSize(new Dimension(20,20));
+		
 		selectRectButton.addActionListener(new MyActionListener("selectRect"));
 		selectCircButton.addActionListener(new MyActionListener("selectCirc"));
 		squiggleButton.addActionListener(new MyActionListener("selectShape"));
+		wandButton.addActionListener(new MyActionListener("selectWand"));
 		
 		try {
 			img = ImageIO.read(getClass().getResource("/data/icons/tools/selectRect.png"));
 			selectRectButton.setIcon(new ImageIcon(img));
 			img = ImageIO.read(getClass().getResource("/data/icons/tools/selectCirc.png"));
-			selectCircButton.setIcon(new ImageIcon(img));;
+			selectCircButton.setIcon(new ImageIcon(img));
 			img = ImageIO.read(getClass().getResource("/data/icons/tools/squiggle.png"));
 			squiggleButton.setIcon(new ImageIcon(img));
+			img = ImageIO.read(getClass().getResource("/data/icons/tools/wand.png"));
+			wandButton.setIcon(new ImageIcon(img));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -322,6 +313,7 @@ minCanvas.setBounds(0,0,30,30);
 		selectPanel.add(selectRectButton);
 		selectPanel.add(selectCircButton);
 		selectPanel.add(squiggleButton);
+		selectPanel.add(wandButton);
 		selectPanel.repaint();
 	}
 	
@@ -381,6 +373,11 @@ minCanvas.setBounds(0,0,30,30);
 				if(myAction.equals("selectShape")){
 					parent.currentTool = "selectShape";
 				}
+				else
+
+					if(myAction.equals("selectWand")){
+						parent.currentTool = "selectWand";
+					}
 		
 	}
 	

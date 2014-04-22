@@ -41,11 +41,14 @@ public class Canvas extends PApplet {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	PGraphics selectG;
+	
 	CopyOnWriteArrayList<Ink> inks;
 	public PGraphics currentFrameGraphic;
 public PGraphics eraserMask;
 	PGraphics tempInkGraphic;
-
+PImage wandImage;
+PImage selectMask;
 	boolean keyEdited = false;
 	boolean resizing = false;
 	boolean rotating = false;
@@ -107,10 +110,10 @@ public PGraphics eraserMask;
 
 	public void setup() {
 		tempDispImage = createImage(cw,ch,ARGB);
-		
+		wandImage = createImage(cw,ch,ARGB);
 		brush = new CopyOnWriteArrayList<PImage>();
 		brush.add(loadImage("brushes/1/1.png"));
-
+		selectMask = loadImage("graphics/selectMask.gif");
 	
 		
 		size(cw, ch);
@@ -119,7 +122,6 @@ public PGraphics eraserMask;
 		  frameRate(200);
 		initInk();
 
-		
 		ellipseMode(CORNER);
 		background(bgColor);
 		currentFrameGraphic = new PGraphics();
@@ -436,53 +438,63 @@ public PGraphics eraserMask;
 	public void getTempDispImage() {
 		tempDispImage = get();
 	}
-
+int jutra = 0;
 	public void mouseDragged() {
 		if (parent.currentTool.equals("selectRect")
 				|| parent.currentTool.equals("selectCirc")
 				|| parent.currentTool.equals("selectShape")) {
+			jutra++;
+			if(jutra%3==0){
+			selectG.beginDraw();
+			selectG.clear();
+		
+			selectG.fill(255);
+			selectG.stroke(100);
+			selectG.strokeWeight(2);
 
-			fill(0, 0);
-			stroke(100);
-			strokeWeight(2);
-
-			background(bgColor);
-			image(tempDispImage, 0, 0);
+			
 			if (parent.currentTool.equals("selectRect")) {
 
-				rect(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
+				selectG.rect(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
 						max(selectBeginX, mouseX) - min(selectBeginX, mouseX),
 						max(selectBeginY, mouseY) - min(selectBeginY, mouseY),
 						parent.ROUNDCORNERSIZE);
 			}
 			if (parent.currentTool.equals("selectCirc")) {
 
-				ellipse(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
+				selectG.ellipse(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
 						max(selectBeginX, mouseX) - min(selectBeginX, mouseX),
 						max(selectBeginY, mouseY) - min(selectBeginY, mouseY));
 			}
 
 			if (parent.currentTool.equals("selectShape")) {
 				parent.selectShapePoints.add(new SimpleRow(mouseY,mouseX));
-				fill(255,50);
+				selectG.fill(255,50);
 				drawSelectCurve(parent.selectShapePoints);
 			}
 
-			stroke(200);
-			strokeWeight(1);
+			selectG.stroke(200);
+			selectG.strokeWeight(1);
 			if (parent.currentTool.equals("selectRect")) {
-				rect(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
+				selectG.rect(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
 						max(selectBeginX, mouseX) - min(selectBeginX, mouseX),
 						max(selectBeginY, mouseY) - min(selectBeginY, mouseY),
 						parent.ROUNDCORNERSIZE);
 			}
 			if (parent.currentTool.equals("selectCirc")) {
-				ellipse(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
+				selectG.ellipse(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
 						max(selectBeginX, mouseX) - min(selectBeginX, mouseX),
 						max(selectBeginY, mouseY) - min(selectBeginY, mouseY));
 			}
-			if (parent.currentTool.equals("selectShape")) {
-				
+			selectG.endDraw();
+			background(bgColor);
+			image(tempDispImage,0,0);
+			
+			PImage tmp = selectMask.get();
+			 tmp.mask(selectG.get());
+			tint(255,80);
+			 image( tmp,0,0);
+			noTint();
 			}
 		}
 
@@ -490,17 +502,17 @@ public PGraphics eraserMask;
 	
 	
 	public void drawSelectCurve(ArrayList<SimpleRow> curveShape){
-		beginShape();
+		selectG.beginShape();
 
-		curveVertex(curveShape.get(0).x,curveShape.get(0).y);
+		selectG.curveVertex(curveShape.get(0).x,curveShape.get(0).y);
 		for(int i=1;i<curveShape.size()-1;i++){
-			curveVertex(curveShape.get(i).x,curveShape.get(i).y);
+			selectG.curveVertex(curveShape.get(i).x,curveShape.get(i).y);
 		}
 	
-	curveVertex(curveShape.get(curveShape.size()-1).x,curveShape.get(curveShape.size()-1).y);
+		selectG.curveVertex(curveShape.get(curveShape.size()-1).x,curveShape.get(curveShape.size()-1).y);
 
-	curveVertex(curveShape.get(curveShape.size()-1).x,curveShape.get(curveShape.size()-1).y);
-endShape();
+		selectG.curveVertex(curveShape.get(curveShape.size()-1).x,curveShape.get(curveShape.size()-1).y);
+		selectG.endShape();
 	}
 	
 	public void drawSelectCurve(ArrayList<SimpleRow> curveShape,PGraphics pg,int x,int y){
@@ -667,10 +679,38 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 		if (allowActions) {
 			drawBool = true;
 		}
+		if (parent.currentTool.equals("selectWand")){
+			drawBool=false;
+			PGraphics pg = createGraphics(currentFrameGraphic.width,currentFrameGraphic.height);
+			pg.beginDraw();
+			pg.background(0,0);
+			pg.endDraw();
+			int oldCol=currentFrameGraphic.pixels[mouseX+mouseY*currentFrameGraphic.width];
+			wandImage = fillIterative(oldCol,color(255),mouseX,mouseY).get();
+			
+		image(tempDispImage,0,0);
+		
+		selectMask.resize(wandImage.width,wandImage.height);
+		PImage tmp = selectMask.get();
+		 tmp.mask(wandImage.get());
+		tint(255,80);
+		 image( tmp,0,0);
+		noTint();
+
+		pg=null;
+		}
 
 		if (parent.currentTool.equals("selectRect")
 				|| parent.currentTool.equals("selectCirc")
 				|| parent.currentTool.equals("selectShape")) {
+			selectG=createGraphics(currentFrameGraphic.width,currentFrameGraphic.height);
+selectG.beginDraw();
+
+selectG.ellipseMode(CORNER);
+selectG.background(0,0);
+selectG.endDraw();
+
+			selectMask.resize(selectG.width,selectG.height);
 			parent.selectShapePoints = new ArrayList<SimpleRow>();
 
 			parent.selectShapePoints.add(new SimpleRow(mouseY,mouseX));
@@ -719,6 +759,32 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 			}
 	}
 
+	public PImage addBorderToImage(PImage img,boolean resizeImage,int borderSize, int borderColor){
+		
+		img.loadPixels();
+		
+		
+		for(int x =1 ; x<img.width-1;x++)
+			for(int y=1;y<img.height-1;y++){
+				int loc=x+y*img.width;
+				int myCol = img.pixels[loc];
+				if(alpha(myCol)>0)
+				 for (int ky = -1; ky <= 1; ky++) 
+				        for (int kx = -1; kx <= 1; kx++) {
+
+							int loc2=(x+kx)+((y+ky)*img.width);
+							int newCol = img.pixels[loc2];
+							if(alpha(newCol)==0)
+								img.pixels[loc]=color(120);
+							
+				        
+				        
+			}
+			}
+		
+		img.updatePixels();
+		return img;
+	}
 	public int getLayerIndex(int id){
 		for(int i=0;i<parent.timeline.layers.size();i++)
 			if(parent.timeline.layers.get(i).layerID == id)
@@ -752,16 +818,18 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 		} else if (parent.currentTool.equals("selectRect")
 				|| parent.currentTool.equals("selectCirc") 
 			|| parent.currentTool.equals("selectShape")) {
+			selectG=null;
+			
 			selectEndX = mouseX;
 			selectEndY = mouseY;
 		} else
 
 			if (parent.currentTool.equals("brush")) {
-				tempInkGraphic.noTint();
-
-				noTint();
+				
 				tempInkGraphic.endDraw();
+				
 				printInkToGraphic();
+				
 				unsaved = true;
 
 				new Thread() {
@@ -772,6 +840,21 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 					}
 				}.start();
 
+				new Thread() {
+					public void run() {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						tempInkGraphic.noTint();
+
+						noTint();
+
+					}
+				}.start();
+				
 				currentlySaving++;
 				if (currentlySaving > 999)
 					currentlySaving = 0;
@@ -790,6 +873,8 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 					}
 				}.start();
 
+				
+				
 				currentlySaving++;
 				if (currentlySaving > 999)
 					currentlySaving = 0;
@@ -798,7 +883,9 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 			else if (parent.currentTool.equals("bucket")) {
 			fillGraphic(mouseX, mouseY);
 		}
-
+			
+			
+			
 	}
 
 	// OK
@@ -1696,9 +1783,50 @@ tempDispImage2 = currentFrameGraphic.get();
 		ret[0]=x;ret[1]=y;ret[2]=w;ret[3]=h;
 		return ret;
 	}
+	public PImage resizeAlphaImage(PImage img){
+		img.loadPixels();
+int leftX=img.width;
+int topY=img.height;
+int lowY=0;
+int rightX=0;
+		for(int x=0;x<img.width;x++)
+			for(int y=0;y<img.height;y++){
+				int loc = x+y*img.width;
+				if(alpha(img.pixels[loc])>0){
+					if(x<leftX){
+						leftX=x;
+					}
+					if(x>rightX){
+						rightX=x;
+					}
+
+					if(y>lowY){
+						lowY=y;
+					}if(y<topY){
+						topY=y;
+					}
+				}
+			}
+			
+		if(parent.currentTool.equals("selectWand")){
+			selectBeginX = leftX;selectEndX=rightX;
+			selectBeginY=topY;selectEndY=lowY;
+			
+			
+		}
+		img=img.get(leftX,topY,rightX-leftX,lowY-topY);
+		img.updatePixels();
+		return img;
+	}
 	public void copyToClipBoard() {
 
 		int x=0,y=0,w=0,h=0;
+		if(parent.currentTool.equals("selectWand")){
+			wandImage = drawMaskedAdvanced(currentFrameGraphic.get(),wandImage);
+			clipBoard = resizeAlphaImage(wandImage);
+			
+			addFeatherAndCorners(x,y,w,h);
+		}else
 		
 		if(parent.currentTool.equals("selectShape")){
 			int[] dims = getShapeDimensions(x,y,w,h);
@@ -1894,9 +2022,7 @@ tempDispImage2 = currentFrameGraphic.get();
 				parent.PENCOLOR.getAlpha());
 		if (c != newCol) {
 
-			currentFrameGraphic.loadPixels();
-			fillIterative(c, newCol, x, y);
-			currentFrameGraphic.updatePixels();
+			currentFrameGraphic =fillIterative(c, newCol, x, y);
 		}
 		saveAction(parent.CURRENTLAYER, parent.CURRENTFRAME, "Fill");
 		parent.timeline.shiffleTable(parent.CURRENTFRAME, parent.CURRENTLAYER,
@@ -1904,8 +2030,13 @@ tempDispImage2 = currentFrameGraphic.get();
 
 	}
 
-	public void fillIterative(int oldCol, int newCol, int x, int y) {
+	public PGraphics fillIterative(int oldCol, int newCol, int x, int y) {
 
+		PGraphics pg  = createGraphics(currentFrameGraphic.width,currentFrameGraphic.height);
+		pg.beginDraw();
+		pg.background(0,0);
+		pg.endDraw();
+		pg.loadPixels();
 		int[][] checked = new int[width][height];
 
 		Queue<Point> queue = new LinkedList<Point>();
@@ -1930,11 +2061,11 @@ tempDispImage2 = currentFrameGraphic.get();
 
 					if (!ignoreAlpha) {
 
-						currentFrameGraphic.pixels[p.x + (p.y * width)] = color(
+						pg.pixels[p.x + (p.y * width)] = color(
 								red(newCol), green(newCol), blue(newCol), tmp);
 
 					} else
-						currentFrameGraphic.pixels[p.x + (p.y * width)] = color(
+						pg.pixels[p.x + (p.y * width)] = color(
 								red(newCol), green(newCol), blue(newCol), 255);
 
 					queue.add(new Point(p.x + 1, p.y));
@@ -1947,6 +2078,8 @@ tempDispImage2 = currentFrameGraphic.get();
 
 		}
 
+		pg.updatePixels();
+return pg;
 	}
 
 	public boolean compareColors(int c1, int c2, int inAccuracy,

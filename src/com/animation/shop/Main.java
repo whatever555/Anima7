@@ -2394,6 +2394,9 @@ if(str.indexOf('.')>0){
 		if (str.equals("selectShape")) {
 			return "select";
 		}
+		if (str.equals("selectWand")) {
+			return "select";
+		}
 		return str;
 	}
 
