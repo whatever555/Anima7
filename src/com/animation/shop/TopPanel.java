@@ -101,12 +101,13 @@ squareSelectExtrasPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 	ESpinner sizeSpinner;
 	ESpinner featherSpinner;
 	ESpinner roundCornerSpinner;
+	ESpinner inaccuracySpinner;
 	
 	EPanel brushPanel = new EPanel();
 	EPanel fillPanel = new EPanel();
 	EPanel selectPanel = new EPanel();
 	EPanel squareSelectExtrasPanel  = new EPanel();
-	
+	EPanel inaccuracyPanel = new EPanel();
 
 	public void createMinMaxCanvasBut(){
 		
@@ -167,7 +168,6 @@ minCanvas.setBounds(0,0,30,30);
 				1);
 		sizeSpinner = new ESpinner(sizeModel);
 		
-		//sizeSpinner.setFont(parent.smallFont);
 		sizeSpinner.addChangeListener(new MyChangeListener());
 		sizeSpinner.setBackground(bgCol);
 		
@@ -182,7 +182,7 @@ minCanvas.setBounds(0,0,30,30);
 		alphaSpinner.setForeground(fCol);
 		alphaSpinner.addChangeListener(new MyChangeListener());
 
-		//alphaSpinner.setFont(parent.smallFont);
+	
 
 		alphaSpinner.setBackground(bgCol);
 		sizeSpinner.setBackground(bgCol);
@@ -229,7 +229,6 @@ minCanvas.setBounds(0,0,30,30);
 				1);
 		fillSpinner = new ESpinner(fillModel);
 		
-		//sizeSpinner.setFont(parent.smallFont);
 		fillSpinner.addChangeListener(new MyChangeListener());
 		
 		fillSpinner.setBackground(bgCol);
@@ -247,10 +246,16 @@ minCanvas.setBounds(0,0,30,30);
 	public void createSelectOptions(){
 		//this.removeAll();
 		
-		
+
+inaccuracyPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+inaccuracyPanel.setPreferredSize(new Dimension(180,20));
+inaccuracyPanel.setBounds(0,-5,180,20);
+inaccuracyPanel.setBackground(null);
 		squareSelectExtrasPanel.setBackground(bgCol);
+		
 		ELabel featherLabel = new ELabel(translate("Feather:"));
 		ELabel roundCornerLabel = new ELabel(translate("Rounded Corners:"));
+		ELabel inaccuracyLabel = new ELabel(translate("Inaccuracy:"));
 		
 		SpinnerNumberModel featherModel = new SpinnerNumberModel(parent.FEATHERSIZE,0, 99,
 				1);
@@ -262,9 +267,14 @@ minCanvas.setBounds(0,0,30,30);
 		
 		roundCornerSpinner = new ESpinner(roundCornerModel);
 		
+		SpinnerNumberModel inaccuracyModel = new SpinnerNumberModel(parent.selectInaccuracy,0, 500,
+				1);
+		
+		inaccuracySpinner = new ESpinner(inaccuracyModel);
 
 		featherSpinner.addChangeListener(new MyChangeListener());
 		roundCornerSpinner.addChangeListener(new MyChangeListener());
+		inaccuracySpinner.addChangeListener(new MyChangeListener());
 		
 		EPanel spacer = new EPanel();
 		spacer.setPreferredSize(new Dimension(20,30));
@@ -303,17 +313,21 @@ minCanvas.setBounds(0,0,30,30);
 			e.printStackTrace();
 		}
 		
-
+inaccuracyPanel.setVisible(false);
+		inaccuracyPanel.add(inaccuracyLabel);
+		inaccuracyPanel.add(inaccuracySpinner);
+		
 		selectPanel.add(featherLabel);
 		selectPanel.add(featherSpinner);
 		selectPanel.add(roundCornerLabel);
 		selectPanel.add(roundCornerSpinner);
-		//squareSelectExtrasPanel.add(spacer);
-		//selectPanel.add(squareSelectExtrasPanel);
 		selectPanel.add(selectRectButton);
 		selectPanel.add(selectCircButton);
 		selectPanel.add(squiggleButton);
 		selectPanel.add(wandButton);
+
+		selectPanel.add(inaccuracyPanel);
+		
 		selectPanel.repaint();
 	}
 	
@@ -344,6 +358,10 @@ minCanvas.setBounds(0,0,30,30);
 	    	if(parent.ROUNDCORNERSIZE<0)
 	    		parent.ROUNDCORNERSIZE=0;
 	    	
+	    	parent.selectInaccuracy = (Integer) inaccuracySpinner.getValue();
+	    	if(parent.selectInaccuracy<0)
+	    		parent.selectInaccuracy=0;
+	    	
 	    	parent.fillInaccuracy = (Integer) fillSpinner.getValue();
 	    	if(parent.fillInaccuracy<0)
 	    		parent.fillInaccuracy=0;
@@ -364,19 +382,23 @@ minCanvas.setBounds(0,0,30,30);
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if(myAction.equals("selectRect")){
+			inaccuracyPanel.setVisible(false);
 			parent.currentTool = "selectRect";
 		}else
 			if(myAction.equals("selectCirc")){
+				inaccuracyPanel.setVisible(false);
 				parent.currentTool = "selectCirc";
 			}else
 
 				if(myAction.equals("selectShape")){
+					inaccuracyPanel.setVisible(false);
 					parent.currentTool = "selectShape";
 				}
 				else
 
 					if(myAction.equals("selectWand")){
 						parent.currentTool = "selectWand";
+						inaccuracyPanel.setVisible(true);
 					}
 		
 	}

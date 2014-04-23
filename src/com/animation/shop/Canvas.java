@@ -233,16 +233,6 @@ PImage selectMask;
 
 			}
 
-		}else if(parent.currentTool.equals("Eraser")){
-			background(bgColor);
-			image(tempDispImage,0,0);
-		if(tempDispImage2!=null){
-			//image(tempDispImage2,0,0);
-			//TODO FIX THIS
-			PImage tmp=eraserMask.get();
-			tempDispImage2.mask(tmp);
-		 	image(tempDispImage2,0,0);
-		}
 		}
 	}
 	
@@ -444,7 +434,8 @@ int jutra = 0;
 				|| parent.currentTool.equals("selectCirc")
 				|| parent.currentTool.equals("selectShape")) {
 			jutra++;
-			if(jutra%3==0){
+			if(jutra%5==0){
+				jutra = 1;
 			selectG.beginDraw();
 			selectG.clear();
 		
@@ -496,7 +487,27 @@ int jutra = 0;
 			 image( tmp,0,0);
 			noTint();
 			}
-		}
+		}else
+			 if(parent.currentTool.equals("Eraser")) {
+					jutra++;
+					if(jutra%5==0){
+					jutra=1;
+					background(bgColor);
+					image(tempDispImage,0,0);
+				if(tempDispImage2!=null){
+				
+					PImage tmp=eraserMask.get();
+				//	tempDispImage2.mask(tmp);
+					tempDispImage2=eraseThisFromThat(tmp,tempDispImage2);
+					image(tempDispImage2.get(),0,0);
+				 
+					eraserMask.beginDraw();
+				 	eraserMask.clear();
+				 	eraserMask.endDraw();
+				 
+				}
+					}
+				}
 
 	}
 	
@@ -680,13 +691,16 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 			drawBool = true;
 		}
 		if (parent.currentTool.equals("selectWand")){
+			finaliseFrame(parent.CURRENTLAYER,parent.CURRENTFRAME);
+			showNewFrame(parent.CURRENTLAYER,parent.CURRENTFRAME,-1);
+			
 			drawBool=false;
 			PGraphics pg = createGraphics(currentFrameGraphic.width,currentFrameGraphic.height);
 			pg.beginDraw();
 			pg.background(0,0);
 			pg.endDraw();
 			int oldCol=currentFrameGraphic.pixels[mouseX+mouseY*currentFrameGraphic.width];
-			wandImage = fillIterative(oldCol,color(255),mouseX,mouseY).get();
+			wandImage = fillIterative(oldCol,color(255),mouseX,mouseY,parent.selectInaccuracy).get();
 			
 		image(tempDispImage,0,0);
 		
@@ -744,7 +758,7 @@ selectG.endDraw();
 			eraserMask.beginDraw();
 			eraserMask.strokeWeight(parent.PENSIZE);
 			localPenColor = parent.PENCOLOR.getRGB();
-			eraserMask.stroke(localPenColor);
+			eraserMask.stroke(255);
 
 			if (!isImage(parent.CURRENTLAYER, parent.CURRENTFRAME))
 				saveAction(parent.CURRENTLAYER, parent.CURRENTFRAME,
@@ -864,7 +878,10 @@ selectG.endDraw();
 				eraseInitialized=false;
 				eraserMask.endDraw();
 				unsaved = true;
-
+				currentFrameGraphic.beginDraw();
+				currentFrameGraphic.clear();
+				currentFrameGraphic.image(tempDispImage2,0,0);
+				currentFrameGraphic.endDraw();
 				new Thread() {
 					public void run() {
 						setSave(currentlySaving, false, parent.CURRENTLAYER,
@@ -1121,6 +1138,7 @@ selectG.endDraw();
 			
 				}
 			else if(parent.currentTool.equals("Eraser")){
+				
 				eraserMask.image(brush.get(brushIndex), x + pp, y + pp, parent.PENSIZE , parent.PENSIZE );
 				
 			
@@ -1286,9 +1304,10 @@ selectG.endDraw();
 		tmpG.noTint();
 		PImage tmp=null;
 		int maxTriesCount = 0;
+		if(parent.timeline.layers.get(getLayerIndex(parent.CURRENTLAYER)).visible && hiddenLayer!=parent.CURRENTLAYER){
 		while(tmp==null && maxTriesCount <4){
 		tmp =loadImageFromDisk(parent.CURRENTLAYER, parent.CURRENTFRAME);
-		if(parent.timeline.layers.get(getLayerIndex(parent.CURRENTLAYER)).visible)
+		
 			setBlending(tmpG,parent.CURRENTLAYER);
 		setBlending(currentFrameGraphic,parent.CURRENTLAYER);
 		
@@ -1322,6 +1341,7 @@ selectG.endDraw();
 		}
 		}
 			maxTriesCount++;
+		}
 		}
 		tmpG.blendMode(NORMAL);
 		currentFrameGraphic.blendMode(NORMAL);
@@ -1436,6 +1456,20 @@ PImage drawMaskedAdvanced(PImage img,PImage mask) {
     else {
       tmp.pixels[i] = color(0,0);
     }
+  }
+  return tmp;
+}
+
+PImage eraseThisFromThat(PImage mask,PImage img) {
+	PImage tmp=new PImage();
+	
+   tmp = img;
+
+  for (int i=0; i<img.pixels.length; i++) {
+    if ((alpha(img.pixels[i])>0) && (alpha(mask.pixels[i])>0)) {
+      tmp.pixels[i] = color(red(img.pixels[i]),green(img.pixels[i]),
+    		  blue(img.pixels[i]),(alpha(img.pixels[i]))-alpha(mask.pixels[i]));
+    } 
   }
   return tmp;
 }
@@ -1670,10 +1704,12 @@ return true;
 boolean eraseInitialized=false;
 PImage tempDispImage2;
 public void prepareForEraser(){
+	tempDispImage2=createImage(currentFrameGraphic.width,currentFrameGraphic.height,ARGB);
 tempDispImage2 = currentFrameGraphic.get();
 	eraserMask.beginDraw();
 	eraserMask.clear();
-
+	eraserMask.background(0,0);
+	eraserMask.tint(255);
 	eraserMask.endDraw();
 	eraseInitialized=true;
 	showNewFrame(parent.CURRENTLAYER,parent.CURRENTFRAME,parent.CURRENTLAYER);
@@ -2022,7 +2058,7 @@ int rightX=0;
 				parent.PENCOLOR.getAlpha());
 		if (c != newCol) {
 
-			currentFrameGraphic =fillIterative(c, newCol, x, y);
+			currentFrameGraphic =fillIterative(c, newCol, x, y,parent.fillInaccuracy);
 		}
 		saveAction(parent.CURRENTLAYER, parent.CURRENTFRAME, "Fill");
 		parent.timeline.shiffleTable(parent.CURRENTFRAME, parent.CURRENTLAYER,
@@ -2030,7 +2066,7 @@ int rightX=0;
 
 	}
 
-	public PGraphics fillIterative(int oldCol, int newCol, int x, int y) {
+	public PGraphics fillIterative(int oldCol, int newCol, int x, int y,int inaccuracy) {
 
 		PGraphics pg  = createGraphics(currentFrameGraphic.width,currentFrameGraphic.height);
 		pg.beginDraw();
@@ -2057,7 +2093,7 @@ int rightX=0;
 						&& (checked[p.x][p.y] != 1)
 						&& compareColors(currentFrameGraphic.pixels[p.x
 								+ (p.y * width)], oldCol,
-								parent.fillInaccuracy, ignoreAlpha)) {
+								inaccuracy, ignoreAlpha)) {
 
 					if (!ignoreAlpha) {
 
