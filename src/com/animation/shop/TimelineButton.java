@@ -8,6 +8,10 @@ import aniExtraGUI.EButton;
 
 
 public class TimelineButton extends EButton {
+/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 Main parent;
 int layerID;
 int x,y,w,h;

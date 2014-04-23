@@ -5,7 +5,6 @@ import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -151,11 +150,11 @@ PImage selectMask;
 
 		saveAction(0, 0, "Create");
 		layDownFrames(-1);
+		
 
 	}
 
 	public void draw() {
-		//parent.canvasFrame.setTitle((frameRate) + " fps");
 		if (parent.currentTool.equals("move")) {
 
 			parent.pasting = true;
@@ -234,6 +233,7 @@ PImage selectMask;
 			}
 
 		}
+
 	}
 	
 	public void addImagesToNewKeyFrames(File[] files){
@@ -249,6 +249,7 @@ PImage selectMask;
 				tmp.resize(parent.CANVASWIDTH,parent.CANVASHEIGHT);
 				saveImageToDisk(tmp,parent.CURRENTLAYER,parent.CURRENTFRAME);
 				parent.CURRENTFRAME++;
+				tmp=null;
 				}
 			}
 			parent.CURRENTFRAME=cf;
@@ -278,12 +279,12 @@ PImage selectMask;
 	
 	public void actionLoadFromFile(int l, int f,String folder){
 		if(parent.timeline.layers.get(l).jbs.get(f).isKey || f==0){
-			PImage tmp =loadImage(folder+"/"+parent.timeline.layers.get(l).layerID+"_"+f+".tga");
+			PImage tmp =loadImage(folder+"/"+parent.timeline.layers.get(l).layerID+"_"+f+".gif");
 			if(tmp!=null){
 				
 				parent.timeline.layers.get(l).jbs.get(f).isKey=true;
 				String sp = savePath(parent.workspaceFolder+"/images/" + parent.tmpName + "/"
-						+ parent.timeline.layers.get(l).layerID + "_" + f + ".tga");
+						+ parent.timeline.layers.get(l).layerID + "_" + f + ".gif");
 				
 				tmp.save(sp);
 			}
@@ -293,6 +294,7 @@ PImage selectMask;
 				}
 				parent.timeline.layers.get(l).jbs.get(f).isKey=false;
 			}
+			tmp=null;
 				}
 	}
 
@@ -485,6 +487,7 @@ int jutra = 0;
 			 tmp.mask(selectG.get());
 			tint(255,80);
 			 image( tmp,0,0);
+			 tmp=null;
 			noTint();
 			}
 		}else
@@ -504,11 +507,11 @@ int jutra = 0;
 					eraserMask.beginDraw();
 				 	eraserMask.clear();
 				 	eraserMask.endDraw();
+				 	tmp=null;
 				 
 				}
 					}
 				}
-
 	}
 	
 	
@@ -575,14 +578,14 @@ int jutra = 0;
 			tmp.clear();
 			//tmp.background(0,0);
 			tmp.background(bgColor);
-			for(int y=parent.MAXLAYERS-1;y>=0;y--){
+			for(int y= (parent.MAXLAYERS-1);y>=0;y--){
 				
 				if(parent.timeline.layers.get(y).visible )
 				if(!parent.timeline.layers.get(y).isMask ){
 				PImage img = loadImageFromDisk(parent.timeline.layers.get(y).layerID,x);
 			
 				if(parent.timeline.layers.get(y).hasMask ){
-int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).myMask )).layerID;
+					int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).myMask )).layerID;
 					PImage maskImage = loadImageFromDisk(id,x);
 					
 					img = drawMaskedAdvanced(img,maskImage) ;
@@ -593,7 +596,7 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 				setBlending(tmp,y);
 				tmp.image(img,0,0);
 				
-				
+				img=null;
 }
 			}
 		
@@ -622,6 +625,7 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 		
 		blendMode(NORMAL);
 		currentFrameGraphic.blendMode(NORMAL);
+		tmp=null;
 	}
 	
 	public void checkResize(int x, int y) {
@@ -685,6 +689,7 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 	}
 
 	public void mousePressed() {
+	//	loop();
 		prevXPos = mouseX;
 		prevYPos = mouseY;
 		if (allowActions) {
@@ -700,7 +705,7 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 			pg.background(0,0);
 			pg.endDraw();
 			int oldCol=currentFrameGraphic.pixels[mouseX+mouseY*currentFrameGraphic.width];
-			wandImage = fillIterative(oldCol,color(255),mouseX,mouseY,parent.selectInaccuracy).get();
+			wandImage = fillIterative(oldCol,color(255),mouseX,mouseY,parent.selectInaccuracy,false).get();
 			
 		image(tempDispImage,0,0);
 		
@@ -710,7 +715,7 @@ int id = parent.timeline.layers.get(getLayerIndex(parent.timeline.layers.get(y).
 		tint(255,80);
 		 image( tmp,0,0);
 		noTint();
-
+tmp=null;
 		pg=null;
 		}
 
@@ -822,7 +827,7 @@ selectG.endDraw();
 
 	// OK
 	public void mouseReleased() {
-
+		
 		drawBool = false;
 		if (parent.currentTool.equals("dropper")) {
 			int c = get(mouseX, mouseY);
@@ -901,8 +906,7 @@ selectG.endDraw();
 			fillGraphic(mouseX, mouseY);
 		}
 			
-			
-			
+			//noLoop();	
 	}
 
 	// OK
@@ -933,7 +937,7 @@ selectG.endDraw();
 
 	public void initInk() {
 		inks = new CopyOnWriteArrayList<Ink>();
-
+ 
 	}
 
 	public void setSave(int ss, boolean force, int cl, int cf, String message) {
@@ -985,8 +989,11 @@ selectG.endDraw();
 
 			}
 
+			if(parent.currentActionIndex>parent.MAXACTIONS){
+				parent.currentActionIndex=parent.MAXACTIONS;
+			}
 			cleanActions();
-			parent.currentActionIndex = parent.ACTIONTYPE.size();
+			parent.currentActionIndex =  parent.ACTIONTYPE.size();
 
 			parent.historicImages.add(loadImageFromDisk(cl, ck));
 
@@ -994,11 +1001,13 @@ selectG.endDraw();
 			parent.ACTIONTYPE.add(label);
 			parent.historyPanel.update();
 
-			parent.currentActionIndex = parent.ACTIONTYPE.size();
+			parent.currentActionIndex =  parent.ACTIONTYPE.size();
 
 			allowActions = true;
 			saving = false;
 		}
+
+	
 	}
 
 	// one check
@@ -1112,10 +1121,10 @@ selectG.endDraw();
 		else if (w > 0)
 			dx2 = 1;
 		int longest = Math.abs(w);
-		int shortest = Math.abs(h);
-		if (!(longest > shortest)) {
+		int intest = Math.abs(h);
+		if (!(longest > intest)) {
 			longest = Math.abs(h);
-			shortest = Math.abs(w);
+			intest = Math.abs(w);
 			if (h < 0)
 				dy2 = -1;
 			else if (h > 0)
@@ -1149,7 +1158,7 @@ selectG.endDraw();
 			if (brushIndex >= brush.size())
 				brushIndex = 0;
 
-			numerator += shortest;
+			numerator += intest;
 			if (!(numerator < longest)) {
 				numerator -= longest;
 				x += dx1;
@@ -1187,10 +1196,10 @@ selectG.endDraw();
 		else if (w > 0)
 			dx2 = 1;
 		int longest = Math.abs(w);
-		int shortest = Math.abs(h);
-		if (!(longest > shortest)) {
+		int intest = Math.abs(h);
+		if (!(longest > intest)) {
 			longest = Math.abs(h);
-			shortest = Math.abs(w);
+			intest = Math.abs(w);
 			if (h < 0)
 				dy2 = -1;
 			else if (h > 0)
@@ -1205,7 +1214,7 @@ selectG.endDraw();
 
 			ellipse(x + pp, y + pp, parent.PENSIZE , parent.PENSIZE);
 
-			numerator += shortest;
+			numerator += intest;
 			if (!(numerator < longest)) {
 				numerator -= longest;
 				x += dx1;
@@ -1225,17 +1234,17 @@ selectG.endDraw();
 
 	public void tidyClipBoard() {
 		if (clipBoardWidth < 0) {
-			clipBoardX = clipBoardX + clipBoardWidth;
+			clipBoardX = (clipBoardX + clipBoardWidth);
 			clipBoardWidth = -clipBoardWidth;
 		}
 		if (clipBoardHeight < 0) {
-			clipBoardY = clipBoardY + clipBoardHeight;
+			clipBoardY = (clipBoardY + clipBoardHeight);
 			clipBoardHeight = -clipBoardHeight;
 		}
 	}
 
 	public void layDownFrames(int hiddenLayer) {
-		
+		System.gc();	
 		// printFrameToImage(parent.CURRENTLAYER, parent.CURRENTFRAME);
 		PGraphics tmpG = createGraphics(parent.CANVASWIDTH,parent.CANVASHEIGHT);
 		tmpG.beginDraw();
@@ -1268,6 +1277,7 @@ selectG.endDraw();
 					
 				tmpG.image(tmp, 0, 0);
 				}
+				tmp=null;
 			}
 		}
 		/*
@@ -1275,7 +1285,7 @@ selectG.endDraw();
 		 */
 
 		ArrayList<Integer> shownKeys = new ArrayList<Integer>();
-		for (int i = Math.max(0, parent.CURRENTFRAME - parent.onionLeft); i <= Math
+		for (int i =  Math.max(0, parent.CURRENTFRAME - parent.onionLeft); i <= Math
 				.min(parent.MAXFRAMES - 1, parent.CURRENTFRAME
 						+ parent.onionRight); i++) {
 			if(parent.timeline.layers.get(getLayerIndex(parent.CURRENTLAYER)).visible)
@@ -1297,7 +1307,7 @@ selectG.endDraw();
 						
 					}
 					tmpG.image(tmp, 0, 0);
-					
+					tmp=null;
 				}
 		}
 		
@@ -1342,6 +1352,7 @@ selectG.endDraw();
 		}
 			maxTriesCount++;
 		}
+		tmp=null;
 		}
 		tmpG.blendMode(NORMAL);
 		currentFrameGraphic.blendMode(NORMAL);
@@ -1498,7 +1509,7 @@ return true;
 
 		} else {
 			return loadImage(parent.workspaceFolder+"/images/" + parent.tmpName + "/" + cl
-					+ "_" + ck + ".tga");
+					+ "_" + ck + ".gif");
 
 		}
 
@@ -1543,8 +1554,8 @@ return true;
 		final int ck = getKeyFrame(cf, clt);
 
 		final PImage tmpImage = img.get();
-
-		addToCache(img, cl, ck);
+img=null;
+		addToCache(tmpImage, cl, ck);
 
 		parent.timeline.layers.get(clt).jbs.get(ck).hasImage= true;
 		new Thread() {
@@ -1555,7 +1566,7 @@ return true;
 				SAVING = true;
 
 				String sp = savePath(parent.workspaceFolder+"/images/" + parent.tmpName + "/"
-						+ cl + "_" + ck + ".tga");
+						+ cl + "_" + ck + ".gif");
 				tmpImage.save(sp);
 
 				SAVING = false;
@@ -1674,18 +1685,18 @@ return true;
 				parent.pasting=true;
 		floatingClipBoard = clipBoard;
 		
-		clipBoardWidth = clipBoard.width;
-		clipBoardHeight = clipBoard.height;
+		clipBoardWidth =  clipBoard.width;
+		clipBoardHeight =  clipBoard.height;
 		parent.pasting = true;
 		if (mouseX > 0 && mouseX < width - 1 && mouseY > 0
 				&& mouseY < height - 1 && !clearClipBoard) {
 
-			clipBoardX = mouseX - clipBoard.width / 2;
-			clipBoardY = mouseY - clipBoard.height / 2;
+			clipBoardX =  (mouseX - clipBoard.width / 2);
+			clipBoardY =  (mouseY - clipBoard.height / 2);
 
 		} else {
-			clipBoardX = (width / 2 - clipBoard.width / 2);
-			clipBoardY = (height / 2 - clipBoard.height / 2);
+			clipBoardX =  (width / 2 - clipBoard.width / 2);
+			clipBoardY =  (height / 2 - clipBoard.height / 2);
 		}
 
 		background(bgColor);
@@ -1766,16 +1777,17 @@ tempDispImage2 = currentFrameGraphic.get();
 	public void cut(){
 		copyToClipBoard();
 		unsaved=true;
-		int x = min(selectBeginX, selectEndX);
-		int y = min(selectBeginY, selectEndY);
-		int w = max(selectBeginX, selectEndX) - x;
-		int h = max(selectBeginY, selectEndY) - y;
+		int x =  min(selectBeginX, selectEndX);
+		int y =   min(selectBeginY, selectEndY);
+		int w =  (max(selectBeginX, selectEndX) - x);
+		int h =   (max(selectBeginY, selectEndY) - y);
 		if(parent.currentTool.equals("selectShape")){
-		int[] dims = getShapeDimensions(x,y,w,h);
+			int[] dims = getShapeDimensions(x,y,w,h);
 		x=dims[0];
 		y=dims[1];
 		w=dims[2];
 		h=dims[3];
+		dims=null;
 		}
 		currentFrameGraphic.loadPixels();
 		for(int xx = x;xx< x+w;xx++){
@@ -1799,7 +1811,7 @@ tempDispImage2 = currentFrameGraphic.get();
 		 x=parent.selectShapePoints.get(0).x;
 		 y=parent.selectShapePoints.get(0).y;
 		 int farx =parent.selectShapePoints.get(0).x;
-		int fary=parent.selectShapePoints.get(0).y;
+		 int fary=parent.selectShapePoints.get(0).y;
 		 w =0;
 		h=0;
 		for(int i=0;i<parent.selectShapePoints.size();i++){
@@ -1813,18 +1825,18 @@ tempDispImage2 = currentFrameGraphic.get();
 				fary=parent.selectShapePoints.get(i).y;
 			
 		}
-		w=farx-x;
-		h=fary-y;
+		w= (farx-x);
+		h= (fary-y);
 		int[] ret = new int[4];
 		ret[0]=x;ret[1]=y;ret[2]=w;ret[3]=h;
 		return ret;
 	}
 	public PImage resizeAlphaImage(PImage img){
 		img.loadPixels();
-int leftX=img.width;
-int topY=img.height;
-int lowY=0;
-int rightX=0;
+		int leftX= img.width;
+		int topY= img.height;
+		int lowY=0;
+		int rightX=0;
 		for(int x=0;x<img.width;x++)
 			for(int y=0;y<img.height;y++){
 				int loc = x+y*img.width;
@@ -1870,6 +1882,7 @@ int rightX=0;
 			y=dims[1];
 			w=dims[2];
 			h=dims[3];
+			dims=null;
 			clipBoard = currentFrameGraphic.get(x, y, w, h);
 			
 			
@@ -1889,14 +1902,14 @@ int rightX=0;
 		}
 		else
 		{
-			 x = min(selectBeginX, selectEndX);
-			 y = min(selectBeginY, selectEndY);
-			w = max(selectBeginX, selectEndX) - x;
-			h = max(selectBeginY, selectEndY) - y;
+			 x =  min(selectBeginX, selectEndX);
+			 y =  min(selectBeginY, selectEndY);
+			w =  (max(selectBeginX, selectEndX) - x);
+			h =  (max(selectBeginY, selectEndY) - y);
 
 			clipBoard = currentFrameGraphic.get(x, y, w, h);
-			clipBoardWidth = clipBoard.width;
-			clipBoardHeight = clipBoard.height;
+			clipBoardWidth =  clipBoard.width;
+			clipBoardHeight =  clipBoard.height;
 		
 		
 		if (selectBeginX != selectEndX) {
@@ -2058,19 +2071,21 @@ int rightX=0;
 				parent.PENCOLOR.getAlpha());
 		if (c != newCol) {
 
-			currentFrameGraphic =fillIterative(c, newCol, x, y,parent.fillInaccuracy);
+			currentFrameGraphic =fillIterative(c, newCol, x, y,parent.fillInaccuracy,true);
 		}
 		saveAction(parent.CURRENTLAYER, parent.CURRENTFRAME, "Fill");
 		parent.timeline.shiffleTable(parent.CURRENTFRAME, parent.CURRENTLAYER,
-				0,false);
+				 0,false);
 
 	}
 
-	public PGraphics fillIterative(int oldCol, int newCol, int x, int y,int inaccuracy) {
+	public PGraphics fillIterative(int oldCol, int newCol, int x, int y,int inaccuracy,boolean fillTool) {
 
 		PGraphics pg  = createGraphics(currentFrameGraphic.width,currentFrameGraphic.height);
 		pg.beginDraw();
 		pg.background(0,0);
+		if(fillTool)
+			pg.image(currentFrameGraphic.get(),0,0);
 		pg.endDraw();
 		pg.loadPixels();
 		int[][] checked = new int[width][height];
@@ -2113,7 +2128,7 @@ int rightX=0;
 			}
 
 		}
-
+checked=null;
 		pg.updatePixels();
 return pg;
 	}
@@ -2377,7 +2392,6 @@ public PImage paintingSytle1(PImage img, int inaccuracy,int brush_hairs,int hair
   strokeWeight(1);
 pg.noFill();
   int lc =img.pixels[0];
-   int rad =(int)random(0,360);
    pg.beginDraw();
 
    createNewCurve(5);
@@ -2404,7 +2418,6 @@ pg.noFill();
        if(y>0)
        yy=((int)random(y-3,y+3));
        yy=constrain(yy,0,img.height-1);
-      rad=0;
       createNewCurve(20-(int)(red(c)+green(c)+blue(c))/40);
       
   bristle = (int)random(0,hairyness);

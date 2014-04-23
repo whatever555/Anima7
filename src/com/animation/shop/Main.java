@@ -20,15 +20,9 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,6 +83,7 @@ public class Main {
 	// Workspace memory
 	// order algorithm for JFrames/layout
 	//tidy copy paste etc
+	int MAXACTIONS = 5;
 	public boolean LOADED=false;
 	int layerIndex = 0;
 	int timelineButtonWidth;
@@ -132,7 +127,7 @@ public class Main {
 	int fillInaccuracy=12;
 	int selectInaccuracy=12;
 	// ## UNDO REDO VARS
-	 int MAXUNDOS = 20;
+	int MAXUNDOS = 5;
 	ArrayList<String> ACTIONTYPE = new ArrayList<String>();
 	int CHANGECOUNT = 0;
 	int LASTCHANGEINDEX = 0;
@@ -148,7 +143,7 @@ public class Main {
 	ArrayList<PImage> cachedImages = new ArrayList<PImage>();
 	
 	ArrayList<String> cachedImagesNames = new ArrayList<String>();
-	int CACHEMAX = 50;
+	int CACHEMAX = 100;
 	
 
 	//translations.put("Key Frame" , "");
@@ -240,7 +235,6 @@ return  bp.loadStrings(name);
 		UIManager.put("TextField.font", new Font(fontName, Font.BOLD, 10));
 		UIManager.put("InternalFrame.titleFont", new Font(fontName, Font.BOLD, 10));
 
-		basicPapplet bp = new basicPapplet();
 		
 		EN_TRANS = loadTranslations("EN");
 		System.out.println("PAST IT: "+language);
@@ -248,7 +242,6 @@ return  bp.loadStrings(name);
 		String[] transTemp = EN_TRANS;
 		transTemp=loadTranslations(language);
 			
-		bp=null;
 		
 		for(int i=0;i<EN_TRANS.length;i++){
 translations.put(EN_TRANS[i] , transTemp[i]);
@@ -679,7 +672,7 @@ if (selectedOption == JOptionPane.YES_OPTION) {
 	        String[] parts = configs[i].split("::");
 	        if(parts.length>1)
 	         	 if(parts[0].equals("FPS")){
-		 	 	        	FPS = Integer.parseInt(parts[1]);
+		 	 	        	FPS = Byte.parseByte(parts[1]);
 		 	 	        	timelineControls.fpsSpinber.setValue(FPS);
 		 	 	        }else
 	 	        	 if(parts[0].equals("MAXLAYERS")){
@@ -712,7 +705,7 @@ if (selectedOption == JOptionPane.YES_OPTION) {
 	        				String key  ="8q3b5R1ZMz0";
 	        				String[] dt = layerData[z].split(key);
 	        				
-	        					int id = Integer.parseInt(dt[2]);
+	        					int id  = Integer.parseInt(dt[2]);
 	        					boolean mask = (dt[4].equals("true"));
 	        					int maskof = Integer.parseInt(dt[6]);
 	        					String label = dt[8];
@@ -814,8 +807,8 @@ if (selectedOption == JOptionPane.YES_OPTION) {
 	
 	public void loadApplication(){
 		
-		screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width-50;
-		screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height-50;
+		screenWidth = (int) (Toolkit.getDefaultToolkit().getScreenSize().width-50);
+		screenHeight = (int) (Toolkit.getDefaultToolkit().getScreenSize().height-50);
 		frame.setSize(new Dimension(screenWidth,screenHeight));
 		
 		mainPanel = new JLayeredPane();
@@ -927,8 +920,8 @@ if (selectedOption == JOptionPane.YES_OPTION) {
 		
 		
 		
-		screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width-50;
-		screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height-50;
+		screenWidth = (int) (Toolkit.getDefaultToolkit().getScreenSize().width-50);
+		screenHeight = (int) (Toolkit.getDefaultToolkit().getScreenSize().height-50);
 		int extraX = 40;
 		int extraY = 32;
 		
@@ -1859,7 +1852,7 @@ canvasPanel.setBackground(new Color(67,67,67));
 				
 				if(CURRENTFRAME>0){
 				
-				timeline.shiffleTable(CURRENTFRAME-1,CURRENTLAYER,0,false);
+				timeline.shiffleTable((int)(CURRENTFRAME-1),CURRENTLAYER,0,false);
 				}
 			}
 		});
@@ -1872,7 +1865,7 @@ canvasPanel.setBackground(new Color(67,67,67));
 				
 				if(CURRENTFRAME<MAXFRAMES-1){
 				
-				timeline.shiffleTable(CURRENTFRAME+1,CURRENTLAYER,0,false);
+				timeline.shiffleTable((int)(CURRENTFRAME+1),CURRENTLAYER,0,false);
 				}
 			}
 		});
@@ -1983,7 +1976,7 @@ canvasPanel.setBackground(new Color(67,67,67));
 				
 				timeline.addNewLayer(layerIndex,true);
 				
-				canvas.saveImageToDisk(canvas.emptyImage,layerIndex-1, 0);
+				canvas.saveImageToDisk(canvas.emptyImage,(int)(layerIndex-1), (int)0);
 				
 				
 			}
@@ -2001,7 +1994,7 @@ canvasPanel.setBackground(new Color(67,67,67));
 				MAXLAYERS++;
 				
 				timeline.addNewLayer( layerIndex,false);
-				canvas.saveImageToDisk(canvas.emptyImage, layerIndex-1, 0);
+				canvas.saveImageToDisk(canvas.emptyImage, (int)(layerIndex-1), (int)0);
 				
 			}
 		});
@@ -2378,7 +2371,7 @@ if(str.indexOf('.')>0){
 				
 			}
 			else
-				timeline.shiffleTable(CURRENTFRAME+1,-1,0,false);
+				timeline.shiffleTable((int)(CURRENTFRAME+1),-1,0,false);
 			
 				
 			 playPreview();

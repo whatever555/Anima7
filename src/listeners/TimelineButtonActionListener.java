@@ -18,7 +18,7 @@ public class TimelineButtonActionListener implements ActionListener {
    	   
     	  String[] action = (e.getActionCommand()).split("-");
     	  
-   	 	parent.timeline.shiffleTable(Integer.parseInt(action[1]),Integer.parseInt(action[0]),1,false);
+   	 	parent.timeline.shiffleTable(Short.parseShort(action[1]),Short.parseShort(action[0]),(byte)1,false);
       	
       }
   }

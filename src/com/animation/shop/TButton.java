@@ -5,6 +5,11 @@ import aniExtraGUI.EButton;
 
 
 public class TButton extends EButton{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public TButton(){
 		 super();
 		 this.setBackground(new Color(200,200,200));

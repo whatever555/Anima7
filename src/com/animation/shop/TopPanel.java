@@ -338,31 +338,31 @@ inaccuracyPanel.setVisible(false);
     	
 	public void stateChanged(ChangeEvent e) {
 	        
-	    	parent.PENSIZE = (Integer) sizeSpinner.getValue();
+	    	parent.PENSIZE = (int) sizeSpinner.getValue();
 	    	if(parent.PENSIZE<=0)
 	    		parent.PENSIZE=1;
 			parent.penOps.brushSizeSlider.setValue(parent.PENSIZE);
 			
-			parent.PENALPHA = (Integer) alphaSpinner.getValue();
+			parent.PENALPHA = (int) alphaSpinner.getValue();
 	    	if(parent.PENALPHA<=0)
 	    		parent.PENALPHA=1;
 	    	parent.penOps.brushAlphaSlider.setValue(parent.PENALPHA);
 	    	
 	    	
-	    	parent.FEATHERSIZE = (Integer) featherSpinner.getValue();
+	    	parent.FEATHERSIZE = (int) featherSpinner.getValue();
 	    	if(parent.FEATHERSIZE<0)
 	    		parent.FEATHERSIZE=0;
 	    	//parent.penOps.brushAlphaSlider.setValue(parent.PENALPHA);
 	    	
-	    	parent.ROUNDCORNERSIZE = (Integer) roundCornerSpinner.getValue();
+	    	parent.ROUNDCORNERSIZE = (int) roundCornerSpinner.getValue();
 	    	if(parent.ROUNDCORNERSIZE<0)
 	    		parent.ROUNDCORNERSIZE=0;
 	    	
-	    	parent.selectInaccuracy = (Integer) inaccuracySpinner.getValue();
+	    	parent.selectInaccuracy = (int) inaccuracySpinner.getValue();
 	    	if(parent.selectInaccuracy<0)
 	    		parent.selectInaccuracy=0;
 	    	
-	    	parent.fillInaccuracy = (Integer) fillSpinner.getValue();
+	    	parent.fillInaccuracy = (int) fillSpinner.getValue();
 	    	if(parent.fillInaccuracy<0)
 	    		parent.fillInaccuracy=0;
 	    	//parent.penOps.brushAlphaSlider.setValue(parent.PENALPHA);

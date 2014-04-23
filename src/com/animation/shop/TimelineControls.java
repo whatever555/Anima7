@@ -10,7 +10,6 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.SpinnerNumberModel;
@@ -196,12 +195,12 @@ public class TimelineControls extends EInternalFrame {
 		 if(parent.LOADED){
 		 parent.canvas.finaliseFrame(parent.CURRENTLAYER,parent.CURRENTFRAME);
 	     if(changeName.equals("fps")){
-parent.FPS = (Integer)(fpsSpinber.getValue());
+parent.FPS = (int) (fpsSpinber.getValue());
 	     }else
 	    		if(changeName.equals("onion")){
-	        		parent.onionLeft = (Integer) onLeftSpinner.getValue();
-	        		parent.onionRight = (Integer) onRightSpinner.getValue();
-	        		System.out.println("ONION MOFO");
+	        		parent.onionLeft =  (int) onLeftSpinner.getValue();
+	        		parent.onionRight =  (int) onRightSpinner.getValue();
+	        		
 	        		parent.timeline.shiffleTable(parent.CURRENTFRAME,parent.CURRENTLAYER,0,false);
 	        		
 	        	}

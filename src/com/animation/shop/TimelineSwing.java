@@ -10,7 +10,6 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import processing.core.PImage;
@@ -77,8 +76,8 @@ ArrayList<TimelineLayer> layers = new ArrayList<TimelineLayer>();
 		this.parent=parent;
 		this.lc=lc;
 		this.fc=fc;
-		this.w = ((fc*=parent.timelineButtonWidth)+xoff)+100;
-		this.h=((lc*=parent.timelineButtonHeight)+yoff)+50;
+		this.w = (int) (((fc*parent.timelineButtonWidth)+xoff)+100);
+		this.h=(int) (((lc*parent.timelineButtonHeight)+yoff)+50);
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
 		try {

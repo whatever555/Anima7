@@ -115,7 +115,7 @@ private class MyChangeListener implements ChangeListener{
 	}
 	public void stateChanged(ChangeEvent e){
 		if(myName.equals("alpha")){
-			currentLayer.alphaLevel = (int) transparencySpinner.getValue();
+			currentLayer.alphaLevel = (short) transparencySpinner.getValue();
 			 refreshCanvasStepOne();
 		}
 	}
@@ -167,7 +167,7 @@ final int x = myCount;
  }
  public void refreshCanvasStepTwo(int x){
  if(x == myCount)
-		parent.canvas.showNewFrame(parent.CURRENTLAYER,parent.CURRENTFRAME,-1);
+		parent.canvas.showNewFrame(parent.CURRENTLAYER,parent.CURRENTFRAME,(short)-1);
  }
 }
 

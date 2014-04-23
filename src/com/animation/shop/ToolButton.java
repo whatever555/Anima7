@@ -60,29 +60,29 @@ boolean selected =false;
 				
 				
 				if(toolName.equals("Eraser")){
-					parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,0,false);
+					parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,(byte)0,false);
 					parent.parent.topPanel.setBrushOptions();
 					parent.parent.canvas.eraseInitialized=false;
 					}else
 				if(toolName.equals("selectRect")){
-					parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,0,false);
+					parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,(byte)0,false);
 					parent.parent.topPanel.setSelectOptions();
 					}else
 						if(toolName.equals("brush")){
-							parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,0,false);
+							parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,(byte)0,false);
 							parent.parent.topPanel.setBrushOptions();
 
 							parent.parent.canvas.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 							}
 						else
 							if(toolName.equals("bucket")){
-								parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,0,false);
+								parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,(byte)0,false);
 								parent.parent.topPanel.setFillOptions();
 								parent.parent.setCursor("bucket");
 								}
 							else
 								if(toolName.equals("dropper")){
-									parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,0,false);
+									parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,(byte)0,false);
 									parent.parent.setCursor("dropper");
 									}
 								else

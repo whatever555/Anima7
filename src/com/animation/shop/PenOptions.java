@@ -1,18 +1,15 @@
 package com.animation.shop;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Panel;
 
-import javax.swing.BorderFactory;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import aniExtraGUI.EInternalFrame;
 import aniExtraGUI.ELabel;
 import aniExtraGUI.EPanel;
-import aniExtraGUI.ESlider;
 import aniExtraGUI.EScrollPane;
+import aniExtraGUI.ESlider;
 
 
 /**
@@ -191,17 +188,17 @@ ColorButton colorButton;
 	    ESlider source = (ESlider)e.getSource();
 	    if (!source.getValueIsAdjusting()) {
 	        
-	    	parent.PENSIZE = brushSizeSlider.getValue();
+	    	parent.PENSIZE = (short) brushSizeSlider.getValue();
 	    	if(parent.PENSIZE<=0)
 	    		parent.PENSIZE=1;
 			brushSizeLabel2.setText(""+parent.PENSIZE);
-			parent.topPanel.sizeSpinner.setValue(parent.PENSIZE);
+			parent.topPanel.sizeSpinner.setValue((int)parent.PENSIZE);
 			
-			parent.PENALPHA = brushAlphaSlider.getValue();
+			parent.PENALPHA = (short) brushAlphaSlider.getValue();
 	    	if(parent.PENALPHA<=0)
 	    		parent.PENALPHA=1;
 			brushAlphaLabel2.setText(""+parent.PENALPHA);
-			parent.topPanel.alphaSpinner.setValue(parent.PENALPHA);
+			parent.topPanel.alphaSpinner.setValue((int)parent.PENALPHA);
 	    }
 	}
 	

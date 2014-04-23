@@ -1,11 +1,8 @@
 package com.animation.shop;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
-
-import javax.swing.BorderFactory;
 
 import aniExtraGUI.EInternalFrame;
 import aniExtraGUI.EPanel;
