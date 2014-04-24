@@ -105,3 +105,7 @@ Distance
 Angel
 Sides
 Bloom
+Stroke Colour
+Stroke Size
+Choose Shape Stroke Colour
+Rounded Corners

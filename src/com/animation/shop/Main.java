@@ -61,27 +61,28 @@ import aniFilters.FilterFrame;
  * 
  */
 public class Main {
-	
+	//46H
 	//TODO LIST
-	//PREVIEW LOFI IMAGES
-	//MAKE SAVING AND LOADING MORE ELEGANT [NO MISSING FILES] CLEANING ETC
-	//SIMPLE BRUSHES
-	//Clean ICONS
-	//DRAG / MOVE KEYS
-	//SETTINGS MENU
-	//IMPORT EXPORT SVGS
+	//SHAPES (2H)
+	//PROGRESS BAR FOR MESSAGES (2H)
+	//PREVIEW LOFI IMAGES 
+	//MAKE SAVING AND LOADING MORE ELEGANT [NO MISSING FILES] CLEANING ETC (4H)
+	//SIMPLE BRUSHES (2H)
+	//Clean ICONS (3H)
+	//DRAG / MOVE KEYS (7H)
+	//SETTINGS MENU (5H)
+	//IMPORT EXPORT SVGS 
 	//stageholders
-	//rotate transforms
-	//dashed lines on select rect
-	//dashed/resizing ink
+	//rotate transforms (2H)
+ 	//dashed/resizing ink
 	//layer properties (blending options)
-	//TWEENS + expand drawing area larger than stage +ZOOM
-	// CURSORS
-	// AUDIO
+	//TWEENS + expand drawing area larger than stage +ZOOM (3H)
+	// CURSORS (1H)
+	// AUDIO 
 	//fix ALPHA issue ON paste MASK
 	// ERASER (done as polygon select maybe?)
-	// Styling and Skins
-	// fix undos
+	// Styling and Skins (4H)
+	// fix undos (8H)
 	// Workspace memory
 	// order algorithm for JFrames/layout
 	//tidy copy paste etc
@@ -113,6 +114,11 @@ public class Main {
 	int onionRight=0;
 	Font smallFont = new Font("Verdana", Font.ITALIC, 8);
 	
+	int SHAPESTROKESIZE = 0;
+	Color SHAPESTROKECOLOR  = new Color(0, 0, 0);
+	int SHAPEALPHA  = 255;
+	int SHAPESTROKEALPHA  = 255;
+	int SHAPEROUNDCORNERSIZE = 0;
 	int MAXLAYERS = 5;
 	int MAXFRAMES = 700;
 	public int CURRENTFRAME = 0;

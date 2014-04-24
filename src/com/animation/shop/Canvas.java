@@ -42,7 +42,7 @@ public class Canvas extends PApplet {
 	private static final long serialVersionUID = 1L;
 
 	PImage brushCursor;
-	PGraphics selectG;
+	PGraphics shapeGraphic;
 	myThread saveThread;
 	CopyOnWriteArrayList<Ink> inks;
 	public PGraphics currentFrameGraphic;
@@ -542,59 +542,85 @@ PImage selectMask;
 	}
 int jutra = 0;
 	public void mouseDragged() {
+		
+	 if(parent.currentTool.equals("star") ||parent.currentTool.equals("circle") || parent.currentTool.equals("rect") ){
+		 jutra++;
+			if(jutra%5==0){
+				jutra = 1;
+				shapeGraphic.clear();
+				
+				if (parent.currentTool.equals("rect")) {
+
+					shapeGraphic.rect(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
+							max(selectBeginX, mouseX) - min(selectBeginX, mouseX),
+							max(selectBeginY, mouseY) - min(selectBeginY, mouseY),
+							parent.SHAPEROUNDCORNERSIZE);
+				}else
+					if (parent.currentTool.equals("circle")) {
+
+						shapeGraphic.ellipse(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
+								max(selectBeginX, mouseX) - min(selectBeginX, mouseX),
+								max(selectBeginY, mouseY) - min(selectBeginY, mouseY));
+					}
+				background(bgColor);
+				image(tempDispImage,0,0);
+				image(shapeGraphic.get(),0,0);
+				
+			}
+	 }else
 		if (parent.currentTool.equals("selectRect")
 				|| parent.currentTool.equals("selectCirc")
 				|| parent.currentTool.equals("selectShape")) {
 			jutra++;
 			if(jutra%5==0){
 				jutra = 1;
-			selectG.beginDraw();
-			selectG.clear();
+			shapeGraphic.beginDraw();
+			shapeGraphic.clear();
 		
-			selectG.fill(255);
-			selectG.stroke(100);
-			selectG.strokeWeight(2);
+			shapeGraphic.fill(255);
+			shapeGraphic.stroke(100);
+			shapeGraphic.strokeWeight(2);
 
 			
 			if (parent.currentTool.equals("selectRect")) {
 
-				selectG.rect(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
+				shapeGraphic.rect(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
 						max(selectBeginX, mouseX) - min(selectBeginX, mouseX),
 						max(selectBeginY, mouseY) - min(selectBeginY, mouseY),
 						parent.ROUNDCORNERSIZE);
 			}
 			if (parent.currentTool.equals("selectCirc")) {
 
-				selectG.ellipse(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
+				shapeGraphic.ellipse(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
 						max(selectBeginX, mouseX) - min(selectBeginX, mouseX),
 						max(selectBeginY, mouseY) - min(selectBeginY, mouseY));
 			}
 
 			if (parent.currentTool.equals("selectShape")) {
 				parent.selectShapePoints.add(new SimpleRow(mouseY,mouseX));
-				selectG.fill(255,50);
+				shapeGraphic.fill(255,50);
 				drawSelectCurve(parent.selectShapePoints);
 			}
 
-			selectG.stroke(200);
-			selectG.strokeWeight(1);
+			shapeGraphic.stroke(200);
+			shapeGraphic.strokeWeight(1);
 			if (parent.currentTool.equals("selectRect")) {
-				selectG.rect(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
+				shapeGraphic.rect(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
 						max(selectBeginX, mouseX) - min(selectBeginX, mouseX),
 						max(selectBeginY, mouseY) - min(selectBeginY, mouseY),
 						parent.ROUNDCORNERSIZE);
 			}
 			if (parent.currentTool.equals("selectCirc")) {
-				selectG.ellipse(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
+				shapeGraphic.ellipse(min(selectBeginX, mouseX), min(selectBeginY, mouseY),
 						max(selectBeginX, mouseX) - min(selectBeginX, mouseX),
 						max(selectBeginY, mouseY) - min(selectBeginY, mouseY));
 			}
-			selectG.endDraw();
+			shapeGraphic.endDraw();
 			background(bgColor);
 			image(tempDispImage,0,0);
 			
 			PImage tmp = selectMask.get();
-			 tmp.mask(selectG.get());
+			 tmp.mask(shapeGraphic.get());
 			tint(255,80);
 			 image( addBorderToImage(tmp,false,0,0),0,0);
 			 tmp=null;
@@ -629,17 +655,17 @@ int jutra = 0;
 		}
 	}
 	public void drawSelectCurve(ArrayList<SimpleRow> curveShape){
-		selectG.beginShape();
+		shapeGraphic.beginShape();
 
-		selectG.curveVertex(curveShape.get(0).x,curveShape.get(0).y);
+		shapeGraphic.curveVertex(curveShape.get(0).x,curveShape.get(0).y);
 		for(int i=1;i<curveShape.size()-1;i++){
-			selectG.curveVertex(curveShape.get(i).x,curveShape.get(i).y);
+			shapeGraphic.curveVertex(curveShape.get(i).x,curveShape.get(i).y);
 		}
 	
-		selectG.curveVertex(curveShape.get(curveShape.size()-1).x,curveShape.get(curveShape.size()-1).y);
+		shapeGraphic.curveVertex(curveShape.get(curveShape.size()-1).x,curveShape.get(curveShape.size()-1).y);
 
-		selectG.curveVertex(curveShape.get(curveShape.size()-1).x,curveShape.get(curveShape.size()-1).y);
-		selectG.endShape();
+		shapeGraphic.curveVertex(curveShape.get(curveShape.size()-1).x,curveShape.get(curveShape.size()-1).y);
+		shapeGraphic.endShape();
 	}
 	
 	public void drawSelectCurve(ArrayList<SimpleRow> curveShape,PGraphics pg,int x,int y){
@@ -835,20 +861,38 @@ tmp=null;
 		if (parent.currentTool.equals("selectRect")
 				|| parent.currentTool.equals("selectCirc")
 				|| parent.currentTool.equals("selectShape")) {
-			selectG=createGraphics(currentFrameGraphic.width,currentFrameGraphic.height);
-selectG.beginDraw();
+			shapeGraphic=createGraphics(currentFrameGraphic.width,currentFrameGraphic.height);
+			shapeGraphic.beginDraw();
+			
+			shapeGraphic.ellipseMode(CORNER);
+			shapeGraphic.background(0,0);
+			shapeGraphic.endDraw();
 
-selectG.ellipseMode(CORNER);
-selectG.background(0,0);
-selectG.endDraw();
-
-			selectMask.resize(selectG.width,selectG.height);
+			selectMask.resize(shapeGraphic.width,shapeGraphic.height);
 			parent.selectShapePoints = new ArrayList<SimpleRow>();
 
 			parent.selectShapePoints.add(new SimpleRow(mouseY,mouseX));
 			selectBeginX = mouseX;
 			selectBeginY = mouseY;
 			
+		}else if(parent.currentTool.equals("star") ||parent.currentTool.equals("circle") || parent.currentTool.equals("rect") ){
+			shapeGraphic=createGraphics(currentFrameGraphic.width,currentFrameGraphic.height);
+			shapeGraphic.beginDraw();
+			
+			shapeGraphic.ellipseMode(CORNER);
+			shapeGraphic.background(0,0);
+			shapeGraphic.fill(parent.PENCOLOR.getRGB(),parent.PENALPHA);
+			shapeGraphic.stroke(parent.SHAPESTROKECOLOR.getRGB(),parent.SHAPESTROKEALPHA);
+			if(parent.SHAPESTROKESIZE>0){
+
+				shapeGraphic.strokeWeight(parent.SHAPESTROKESIZE-1);
+			}else{
+				shapeGraphic.noStroke();
+			}
+			shapeGraphic.endDraw();
+			
+			selectBeginX = mouseX;
+			selectBeginY = mouseY;
 		}
 
 		else if (parent.currentTool.equals("brush")) {
@@ -992,12 +1036,24 @@ public PImage getBorderToImage(PImage img,int alphaVal){
 		} else if (parent.currentTool.equals("selectRect")
 				|| parent.currentTool.equals("selectCirc") 
 			|| parent.currentTool.equals("selectShape")) {
-			selectG=null;
+			shapeGraphic=null;
 			
 			selectEndX = mouseX;
 			selectEndY = mouseY;
 		} else
 
+			if(parent.currentTool.equals("rect") ||parent.currentTool.equals("circle") || parent.currentTool.equals("star") ){
+			unsaved=true;
+			keyEdited=true;
+				currentFrameGraphic.beginDraw();
+				currentFrameGraphic.image(shapeGraphic.get(),0,0);
+				currentFrameGraphic.endDraw();
+				saveAction(parent.CURRENTLAYER,parent.CURRENTFRAME,"Shape");
+				finaliseFrame(parent.CURRENTLAYER,parent.CURRENTFRAME);
+				showNewFrame(parent.CURRENTLAYER,parent.CURRENTFRAME,-1);
+				shapeGraphic=null;
+				
+			}
 			if (parent.currentTool.equals("brush")) {
 				
 				tempInkGraphic.endDraw();

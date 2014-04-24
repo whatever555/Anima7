@@ -65,11 +65,17 @@ boolean selected =false;
 					parent.parent.canvas.eraseInitialized=false;
 					parent.parent.setCursor(parent.parent.currentTool);
 					}else
-				if(toolName.equals("selectRect") || toolName.equals("selectCirc")){
-					parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,(byte)0,false);
-					parent.parent.topPanel.setSelectOptions();
-					parent.parent.canvas.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-					}else
+						if(toolName.equals("selectRect") || toolName.equals("selectCirc")){
+							parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,(byte)0,false);
+							parent.parent.topPanel.setSelectOptions();
+							parent.parent.canvas.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+							}else
+
+								if(toolName.equals("rect") || toolName.equals("circle")){
+									parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,(byte)0,false);
+									parent.parent.topPanel.setShapeOptions();
+									parent.parent.canvas.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+									}else
 						if(toolName.equals("brush")){
 							parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,(byte)0,false);
 							parent.parent.topPanel.setBrushOptions();

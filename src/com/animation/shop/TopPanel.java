@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
@@ -41,6 +42,7 @@ public class TopPanel extends EPanel{
 	public TopPanel(Main parent){
 this.parent=parent;
 brushPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+shapePanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 fillPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 selectPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 squareSelectExtrasPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
@@ -57,6 +59,7 @@ squareSelectExtrasPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 		addColorSelect();
 		createSelectOptions();
 		createBrushOptions();
+		createShapeOptions();
 		createFillOptions();
 
 		createMinMaxCanvasBut();
@@ -64,13 +67,16 @@ squareSelectExtrasPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 
 		this.add(colorOptionsPanel);
 		this.add(fillPanel);
+		this.add(shapePanel);
 		this.add(brushPanel);
 		this.add(selectPanel);
 		this.add(minCanvas);
+		shapePanel.setBackground(bgCol);
 		brushPanel.setBackground(bgCol);
 		selectPanel.setBackground(bgCol);
 		fillPanel.setBackground(bgCol);
 		selectPanel.setVisible(false);
+		shapePanel.setVisible(false);
 		brushPanel.setVisible(false);
 		fillPanel.setVisible(false);
 
@@ -102,8 +108,13 @@ squareSelectExtrasPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 	ESpinner featherSpinner;
 	ESpinner roundCornerSpinner;
 	ESpinner inaccuracySpinner;
-	
+	ESpinner shapeStrokeSizeSpinner;
+	ESpinner shapeAlphaSpinner;
+	ESpinner shapeStrokeAlphaSpinner;
+	ESpinner shapeRoundedCornerSpinner;
+
 	EPanel brushPanel = new EPanel();
+	EPanel shapePanel = new EPanel();
 	EPanel fillPanel = new EPanel();
 	EPanel selectPanel = new EPanel();
 	EPanel squareSelectExtrasPanel  = new EPanel();
@@ -158,6 +169,89 @@ minCanvas.setBounds(0,0,30,30);
 			}
 		});
 	}
+	
+	EButton strokeColorButton;
+	public void createShapeOptions(){
+		ELabel strokeSizeLabel = new ELabel(translate("Stroke Size"));
+		strokeSizeLabel.setForeground(fCol);
+		SpinnerNumberModel sizeModel = new SpinnerNumberModel(parent.SHAPESTROKESIZE,0, 255,1);
+		shapeStrokeSizeSpinner = new ESpinner(sizeModel);
+		shapeStrokeSizeSpinner.addChangeListener(new MyChangeListener());
+		
+
+		ELabel strokeAlphaLabel = new ELabel(translate("Stroke Alpha"));
+		strokeAlphaLabel.setForeground(fCol);
+		SpinnerNumberModel alphaModel = new SpinnerNumberModel(parent.SHAPESTROKEALPHA,0, 255,1);
+		shapeStrokeAlphaSpinner = new ESpinner(alphaModel);
+		shapeStrokeAlphaSpinner.addChangeListener(new MyChangeListener());
+		
+
+		/*ELabel shapeAlphaLabel = new ELabel(translate("Shape Alpha"));
+		shapeAlphaLabel.setForeground(fCol);
+		SpinnerNumberModel shapeAlphaModel = new SpinnerNumberModel(parent.SHAPEALPHA,0, 255,1);
+		shapeAlphaSpinner = new ESpinner(shapeAlphaModel);
+		shapeAlphaSpinner.addChangeListener(new MyChangeListener());
+		*/
+		ELabel shapeRoundedCornerLabel = new ELabel(translate("Rounded Corners"));
+		shapeRoundedCornerLabel.setForeground(fCol);
+		SpinnerNumberModel roundedModel = new SpinnerNumberModel(parent.SHAPEROUNDCORNERSIZE,0, 120,1);
+		shapeRoundedCornerSpinner = new ESpinner(roundedModel);
+		shapeRoundedCornerSpinner.addChangeListener(new MyChangeListener());
+		
+
+		
+		
+		ELabel strokeColorLabel = new ELabel(translate("Stroke Colour"));
+		strokeColorLabel.setForeground(fCol);
+		strokeColorButton = new EButton();
+		strokeColorButton.setBackground(parent.SHAPESTROKECOLOR);
+		strokeColorButton.setPreferredSize(new Dimension(20,20));
+		strokeColorButton.addActionListener(new MyActionListener("stroke color"));
+
+		EButton circShape = new EButton();
+		EButton rectShape = new EButton();
+		//EButton starShape = new EButton();
+		
+
+		circShape.addActionListener(new MyActionListener("circle"));
+		rectShape.addActionListener(new MyActionListener("rect"));
+		//starShape.addActionListener(new MyActionListener("star"));
+		
+		try {
+			img = ImageIO.read(getClass().getResource("/data/icons/tools/circle.png"));
+			circShape.setIcon(new ImageIcon(img));
+			img = ImageIO.read(getClass().getResource("/data/icons/tools/rect.png"));
+			rectShape.setIcon(new ImageIcon(img));
+			//img = ImageIO.read(getClass().getResource("/data/icons/tools/star.png"));
+			//starShape.setIcon(new ImageIcon(img));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+
+		circShape.setPreferredSize(new Dimension(20,20));
+		rectShape.setPreferredSize(new Dimension(20,20));
+		//starShape.setPreferredSize(new Dimension(20,20));
+
+
+		//shapePanel.add(shapeAlphaLabel);
+		//shapePanel.add(shapeAlphaSpinner);
+		shapePanel.add(rectShape);
+		shapePanel.add(circShape);
+		shapePanel.add(starShape);
+		shapePanel.add(strokeSizeLabel);
+		shapePanel.add(shapeStrokeSizeSpinner);
+		shapePanel.add(strokeColorLabel);
+		shapePanel.add(strokeColorButton);
+		shapePanel.add(strokeAlphaLabel);
+		shapePanel.add(shapeStrokeAlphaSpinner);
+
+		shapePanel.add(shapeRoundedCornerLabel);
+
+		shapePanel.add(shapeRoundedCornerSpinner);
+		
+	}
 	public void createBrushOptions(){
 				
 		ELabel brushSizeLabel = new ELabel(translate("Brush Size"));
@@ -202,6 +296,10 @@ minCanvas.setBounds(0,0,30,30);
 		hideAll();
 		selectPanel.setVisible(true);
 	}
+	public void setShapeOptions(){
+		hideAll();
+		shapePanel.setVisible(true);
+	}
 	public void setBrushOptions(){
 		hideAll();
 		brushPanel.setVisible(true);
@@ -214,6 +312,7 @@ minCanvas.setBounds(0,0,30,30);
 	public void hideAll(){
 
 		selectPanel.setVisible(false);
+		shapePanel.setVisible(false);
 		brushPanel.setVisible(false);
 		fillPanel.setVisible(false);
 	}
@@ -338,6 +437,15 @@ inaccuracyPanel.setVisible(false);
     	
 	public void stateChanged(ChangeEvent e) {
 	        
+		
+		
+		
+		parent.SHAPEROUNDCORNERSIZE = (int)shapeRoundedCornerSpinner.getValue();
+		parent.SHAPESTROKEALPHA = (int)shapeStrokeAlphaSpinner.getValue();
+	//	parent.SHAPEALPHA = (int)shapeAlphaSpinner.getValue();
+		parent.SHAPESTROKESIZE = (int)shapeStrokeSizeSpinner.getValue();
+		
+		
 	    	parent.PENSIZE = (int) sizeSpinner.getValue();
 	    	if(parent.PENSIZE<=0)
 	    		parent.PENSIZE=1;
@@ -386,24 +494,47 @@ inaccuracyPanel.setVisible(false);
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if(myAction.equals("selectRect")){
+			parent.canvas.finaliseFrame(parent.CURRENTLAYER, parent.CURRENTFRAME);
+			parent.canvas.showNewFrame(parent.CURRENTLAYER, parent.CURRENTFRAME,-1);
 			inaccuracyPanel.setVisible(false);
 			parent.currentTool = "selectRect";
 		}else
 			if(myAction.equals("selectCirc")){
+				parent.canvas.finaliseFrame(parent.CURRENTLAYER, parent.CURRENTFRAME);
+				parent.canvas.showNewFrame(parent.CURRENTLAYER, parent.CURRENTFRAME,-1);
 				inaccuracyPanel.setVisible(false);
 				parent.currentTool = "selectCirc";
 			}else
 
 				if(myAction.equals("selectShape")){
+					parent.canvas.finaliseFrame(parent.CURRENTLAYER, parent.CURRENTFRAME);
+					parent.canvas.showNewFrame(parent.CURRENTLAYER, parent.CURRENTFRAME,-1);
 					inaccuracyPanel.setVisible(false);
 					parent.currentTool = "selectShape";
 				}
 				else
 
 					if(myAction.equals("selectWand")){
+						parent.canvas.finaliseFrame(parent.CURRENTLAYER, parent.CURRENTFRAME);
+						parent.canvas.showNewFrame(parent.CURRENTLAYER, parent.CURRENTFRAME,-1);
 						parent.currentTool = "selectWand";
 						inaccuracyPanel.setVisible(true);
 					}
+					else
+						if(myAction.equals("stroke color")){
+							parent.SHAPESTROKECOLOR = JColorChooser.showDialog(
+				                     parent.mainPanel,
+				                     translate("Choose Shape Stroke Colour"),
+				                     parent.SHAPESTROKECOLOR );
+							strokeColorButton.setBackground(parent.SHAPESTROKECOLOR);
+						}else
+							if(myAction.equals("rect") || myAction.equals("circle") ||myAction.equals("star") ){
+								parent.canvas.finaliseFrame(parent.CURRENTLAYER, parent.CURRENTFRAME);
+								parent.canvas.showNewFrame(parent.CURRENTLAYER, parent.CURRENTFRAME,-1);
+								parent.currentTool=myAction;
+								
+							}
+		
 		
 	}
 	
