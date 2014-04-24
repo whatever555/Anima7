@@ -239,7 +239,7 @@ minCanvas.setBounds(0,0,30,30);
 		//shapePanel.add(shapeAlphaSpinner);
 		shapePanel.add(rectShape);
 		shapePanel.add(circShape);
-		shapePanel.add(starShape);
+		//shapePanel.add(starShape);
 		shapePanel.add(strokeSizeLabel);
 		shapePanel.add(shapeStrokeSizeSpinner);
 		shapePanel.add(strokeColorLabel);

@@ -61,9 +61,11 @@ import aniFilters.FilterFrame;
  * 
  */
 public class Main {
-	//46H
+	//
+	//SHAPES (2H  = 1.2)
+	
+	//44H
 	//TODO LIST
-	//SHAPES (2H)
 	//PROGRESS BAR FOR MESSAGES (2H)
 	//PREVIEW LOFI IMAGES 
 	//MAKE SAVING AND LOADING MORE ELEGANT [NO MISSING FILES] CLEANING ETC (4H)
