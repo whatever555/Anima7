@@ -367,6 +367,10 @@ inaccuracyPanel.setVisible(false);
 	    		parent.fillInaccuracy=0;
 	    	//parent.penOps.brushAlphaSlider.setValue(parent.PENALPHA);
 	    
+	    	if(parent.currentTool.equals("Eraser")||parent.currentTool.equals("brush")){
+				parent.setCursor(parent.currentTool);
+			}
+	    	
 	}
 	
 	}

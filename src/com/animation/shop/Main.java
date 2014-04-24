@@ -63,10 +63,12 @@ import aniFilters.FilterFrame;
 public class Main {
 	
 	//TODO LIST
+	//PREVIEW LOFI IMAGES
 	//MAKE SAVING AND LOADING MORE ELEGANT [NO MISSING FILES] CLEANING ETC
 	//SIMPLE BRUSHES
 	//Clean ICONS
 	//DRAG / MOVE KEYS
+	//SETTINGS MENU
 	//IMPORT EXPORT SVGS
 	//stageholders
 	//rotate transforms
@@ -112,7 +114,7 @@ public class Main {
 	Font smallFont = new Font("Verdana", Font.ITALIC, 8);
 	
 	int MAXLAYERS = 5;
-	int MAXFRAMES = 1200;
+	int MAXFRAMES = 700;
 	public int CURRENTFRAME = 0;
 	public int CURRENTLAYER = 0;
 	int CANVASWIDTH = 620;
@@ -143,7 +145,7 @@ public class Main {
 	ArrayList<PImage> cachedImages = new ArrayList<PImage>();
 	
 	ArrayList<String> cachedImagesNames = new ArrayList<String>();
-	int CACHEMAX = 100;
+	int CACHEMAX = 10;
 	
 
 	//translations.put("Key Frame" , "");
@@ -188,6 +190,7 @@ TimelineControls timelineControls;
 	
 	
 	public void initVars(){
+		currentTool="brush";
 		timelineButtonActionListener = new TimelineButtonActionListener(this);
 		initTranslations();
 		cachedImagesNames=new ArrayList<String>();
@@ -373,7 +376,18 @@ translations.put(EN_TRANS[i] , transTemp[i]);
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Point hotSpot; 
 
-		hotSpot = new Point(23,23); 
+		if(cursorName.equals("brush") || cursorName.equals("Eraser")){
+			if(PENSIZE>78){
+				canvas.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+			}else{
+			hotSpot = new Point(PENSIZE/2,PENSIZE/2); 
+			Cursor cursor = toolkit.createCustomCursor(canvas.getBrushCursor(), hotSpot, cursorName);  
+			canvas.setCursor(cursor);  
+			}
+		}else{
+		
+		hotSpot = new Point(0,0); 
+		
 		
 		if(cursorName.equals("dropper"))
 			hotSpot = new Point(23,0);
@@ -382,11 +396,12 @@ translations.put(EN_TRANS[i] , transTemp[i]);
 		
 		try {
 			image = ImageIO.read(getClass().getResource("/data/icons/tools/"+cursorName+".png"));
-			Cursor cursor = toolkit.createCustomCursor(image, hotSpot, "Pencil");  
+			Cursor cursor = toolkit.createCustomCursor(image, hotSpot, cursorName);  
 			canvas.setCursor(cursor);  
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
 		}
 		
 	}
@@ -2371,7 +2386,7 @@ if(str.indexOf('.')>0){
 				
 			}
 			else
-				timeline.shiffleTable((int)(CURRENTFRAME+1),-1,0,false);
+				timeline.shiffleTable((int)(CURRENTFRAME+1),-1,0,true);
 			
 				
 			 playPreview();

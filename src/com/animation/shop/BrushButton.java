@@ -66,9 +66,13 @@ setIcon(new ImageIcon(img));
 addActionListener(new ActionListener(){  
 @Override  
 public void actionPerformed(ActionEvent e) {  
-	parent.currentTool="brush";
+	if(!parent.currentTool.equals("Eraser"))
+		parent.currentTool="brush";
 	parent.topPanel.setBrushOptions();
 	parent.canvas.setBrush(locs);
+
+	
+	parent.setCursor(parent.currentTool);
 
 	
 }  

@@ -2,16 +2,17 @@ package com.animation.shop;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Image;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.awt.image.PixelGrabber;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.swing.ImageIcon;
 
 import jpen.PButtonEvent;
 import jpen.PKind;
@@ -40,8 +41,9 @@ public class Canvas extends PApplet {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	PImage brushCursor;
 	PGraphics selectG;
-	
+	myThread saveThread;
 	CopyOnWriteArrayList<Ink> inks;
 	public PGraphics currentFrameGraphic;
 public PGraphics eraserMask;
@@ -107,11 +109,62 @@ PImage selectMask;
 		this.parent = parent;
 	}
 
+	PImage loadImagex(String inFile){
+		  //http://www.java-tips.org/java-se-tips/java.awt.image/how-to-use-pixelgrabber-class-to-acquire-pixel-data-from-an-image-o.html
+		  Image image = Toolkit.getDefaultToolkit().getImage(inFile); 
+		  int [] data= new int [1];
+		  PImage retval = createImage(1,1,ARGB);
+		  try {
+
+		    PixelGrabber grabber = 
+		      new PixelGrabber(image, 0, 0, -1, -1, false);
+
+		    if (grabber.grabPixels()) {
+		      int w = grabber.getWidth();
+		      int h = grabber.getHeight();
+		      retval = createImage(w,h,ARGB);
+		      if (isGreyscaleImage(grabber)) {
+		        byte[] datax = (byte[]) grabber.getPixels();
+		       
+		          arrayCopy(datax,retval.pixels);
+		         
+		        // Process greyscale image ...
+
+		      }
+		      else {
+		        data = (int[]) grabber.getPixels();
+		        arrayCopy(data,retval.pixels);
+		        //arraycopy(data,pixels);
+		        // Process Color image
+
+		      }
+		    }
+		  }
+		  catch (InterruptedException e1) {
+		    e1.printStackTrace();
+		  }
+
+
+		  return retval; 
+		}
+
+		public static final boolean isGreyscaleImage(PixelGrabber pg) {
+		  return pg.getPixels() instanceof byte[];
+		}
+		public Image getBrushCursor(){
+			PImage tmp = getBorderToImage(brush.get(0).get(),19);
+					tmp.resize(parent.PENSIZE,parent.PENSIZE);
+			return (Image) tmp.getNative();
+			
+		}
+	
 	public void setup() {
 		tempDispImage = createImage(cw,ch,ARGB);
 		wandImage = createImage(cw,ch,ARGB);
 		brush = new CopyOnWriteArrayList<PImage>();
 		brush.add(loadImage("brushes/1/1.png"));
+
+		parent.setCursor(parent.currentTool);
 		selectMask = loadImage("graphics/selectMask.gif");
 	
 		
@@ -143,7 +196,7 @@ PImage selectMask;
 		tempInkGraphic.background(0, 0);
 		tempInkGraphic.endDraw();
 
-		trans = loadImage("graphics/trans.png");
+		trans = loadImagex("graphics/trans.png");
 		PenManager pm = new PenManager(this);
 		pm.pen.addListener(new ProcessingPen());
 		smooth();
@@ -156,24 +209,35 @@ PImage selectMask;
 
 	int clearGarbage = 0;
 	public void draw() {
+		
 		if(!drawBool && parent.LOADED){
 			if(parent.playPreviewBool==false){
-		if(clearGarbage>320){
-			System.gc();
+		if(clearGarbage>1020){
+			
+		new Thread() {
+			public void run() {
+				System.gc();
+
+			}
+		}.start();
 			clearGarbage=0;
 		}
 		clearGarbage++;
 			}else{
 				if(parent.CURRENTFRAME==0){
 
-					System.gc();
-					clearGarbage=0;
+					//System.gc();
+					//clearGarbage=0;
 				}
 			}
 		}else{
-			clearGarbage=100;
+			clearGarbage=1000;
 		}
-			
+			if(parent.currentTool.equals("Eraser")&& drawBool){
+				mylineBasic(pmouseX, pmouseY, mouseX,mouseY);	
+				
+				eraseThatShizzle();
+			}else
 		if (parent.currentTool.equals("move")) {
 
 			parent.pasting = true;
@@ -264,7 +328,7 @@ PImage selectMask;
 				}
 				String fileName = files[i].getPath();
 				if(parent.isImageFile(fileName)){
-				PImage tmp = loadImage(fileName);
+				PImage tmp = loadImagex(fileName);
 				tmp.resize(parent.CANVASWIDTH,parent.CANVASHEIGHT);
 				saveImageToDisk(tmp,parent.CURRENTLAYER,parent.CURRENTFRAME);
 				parent.CURRENTFRAME++;
@@ -298,12 +362,12 @@ PImage selectMask;
 	
 	public void actionLoadFromFile(int l, int f,String folder){
 		if(parent.timeline.layers.get(l).jbs.get(f).isKey || f==0){
-			PImage tmp =loadImage(folder+"/"+parent.timeline.layers.get(l).layerID+"_"+f+".gif");
+			PImage tmp =loadImagex(folder+"/"+parent.timeline.layers.get(l).layerID+"_"+f+".png");
 			if(tmp!=null){
 				
 				parent.timeline.layers.get(l).jbs.get(f).isKey=true;
 				String sp = savePath(parent.workspaceFolder+"/images/" + parent.tmpName + "/"
-						+ parent.timeline.layers.get(l).layerID + "_" + f + ".gif");
+						+ parent.timeline.layers.get(l).layerID + "_" + f + ".png");
 				
 				tmp.save(sp);
 			}
@@ -327,6 +391,36 @@ PImage selectMask;
 			brush.add(loadImage(loc[i]));
 		}
 	}
+	
+	public class myThread{
+		PImage img=null;
+		int cl,ck;
+		public myThread(PImage img,int cl,int ck){
+			this.img = img;
+			this.cl=cl;
+			this.ck=ck;
+		}
+		public myThread(){
+		}
+		
+		public void runSaveFile(){
+		new Thread() {
+
+			public void run() {
+
+				// Thread.currentThread().setPriority(1);
+				SAVING = true;
+
+				String sp = savePath(parent.workspaceFolder+"/images/" + parent.tmpName + "/"
+						+ cl + "_" + ck + ".png");
+				img.save(sp);
+				SAVING = false;
+				img=null;
+
+			}
+		}.start();
+		}
+	}
 
 	// Most of the code here is taken from the DrawingSurface demo code.
 	public class ProcessingPen extends PenAdapter {
@@ -338,7 +432,7 @@ PImage selectMask;
 
 		public void penLevelEvent(PLevelEvent evt) {
 
-			if (drawBool && (parent.currentTool.equals("brush") || parent.currentTool.equals("Eraser")) ) {
+			if (drawBool && (parent.currentTool.equals("brush")) ) {
 				// Get kind of event: does it come from mouse (CURSOR), STYLUS
 				// or ERASER?
 				PKind type = evt.pen.getKind();
@@ -409,14 +503,11 @@ PImage selectMask;
 				// Draw a line between the current and previous locations
 				float brushSize = parent.PENSIZE * pressure;
 
-				if(parent.currentTool.equals("brush"))
 				inks.add(new Ink(prevXPos, prevYPos, xPos, yPos, brushSize,
 						localPenColor, parent.PENALPHA));
 				
 				mylineBasic((int) prevXPos, (int) prevYPos, (int) xPos,
 						(int) yPos);	
-				//mylineSuperBasic((int) prevXPos, (int) prevYPos, (int) xPos,
-					//	(int) yPos);
 
 				
 				prevXPos = xPos;
@@ -505,35 +596,38 @@ int jutra = 0;
 			PImage tmp = selectMask.get();
 			 tmp.mask(selectG.get());
 			tint(255,80);
-			 image( tmp,0,0);
+			 image( addBorderToImage(tmp,false,0,0),0,0);
 			 tmp=null;
 			noTint();
 			}
-		}else
-			 if(parent.currentTool.equals("Eraser")) {
-					jutra++;
-					if(jutra%5==0){
-					jutra=1;
-					background(bgColor);
-					image(tempDispImage,0,0);
-				if(tempDispImage2!=null){
-				
-					PImage tmp=eraserMask.get();
-				//	tempDispImage2.mask(tmp);
-					tempDispImage2=eraseThisFromThat(tmp,tempDispImage2);
-					image(tempDispImage2.get(),0,0);
-				 
-					eraserMask.beginDraw();
-				 	eraserMask.clear();
-				 	eraserMask.endDraw();
-				 	tmp=null;
-				 
-				}
-					}
-				}
+		}
 	}
 	
-	
+	public void eraseThatShizzle(){
+		jutra++;
+		if(jutra%9==0){
+		jutra=1;
+	if(tempDispImage2!=null){
+	PGraphics tg = createGraphics(width,height);
+	tg.beginDraw();
+	tg.background(0,0);
+		PImage tmp=eraserMask.get();
+	//	tempDispImage2.mask(tmp);
+		tempDispImage2=eraseThisFromThat(tmp,tempDispImage2,mouseX,mouseY,pmouseX,pmouseX);
+		
+		tg.image(tempDispImage2.get(),0,0);
+	 tg.endDraw();
+	 	eraserMask.clear();
+	 	tmp=null;
+
+		background(bgColor);
+		image(tempDispImage,0,0);
+		image(tg.get(),0,0);
+		tg=null;
+	 
+	}
+		}
+	}
 	public void drawSelectCurve(ArrayList<SimpleRow> curveShape){
 		selectG.beginShape();
 
@@ -581,8 +675,8 @@ int jutra = 0;
 		
 		if(createAnimatedGIF){
 			aniGIF = new AnimatedGifEncoder();
-		aniGIF.start(location+".gif");
-		System.out.println(location+".gif");
+		aniGIF.start(location+".png");
+		System.out.println(location+".png");
 		aniGIF.setDelay(1000/parent.FPS); 
 		}
 		
@@ -779,14 +873,11 @@ selectG.endDraw();
 				prepareForEraser();
 			}
 
-			eraserMask.beginDraw();
-			eraserMask.strokeWeight(parent.PENSIZE);
-			localPenColor = parent.PENCOLOR.getRGB();
-			eraserMask.stroke(255);
-
+		
 			if (!isImage(parent.CURRENTLAYER, parent.CURRENTFRAME))
 				saveAction(parent.CURRENTLAYER, parent.CURRENTFRAME,
 						"Empty Canvas");
+			
 		}
 		
 		
@@ -801,7 +892,7 @@ selectG.endDraw();
 		
 		img.loadPixels();
 		
-		
+		int alteration=0;
 		for(int x =1 ; x<img.width-1;x++)
 			for(int y=1;y<img.height-1;y++){
 				int loc=x+y*img.width;
@@ -812,8 +903,16 @@ selectG.endDraw();
 
 							int loc2=(x+kx)+((y+ky)*img.width);
 							int newCol = img.pixels[loc2];
-							if(alpha(newCol)==0)
-								img.pixels[loc]=color(120);
+							if(alpha(newCol)==0){
+								if(alteration==0){
+									alteration++;
+								img.pixels[loc]=color(80);
+								}else{
+									alteration--;
+									img.pixels[loc]=color(220);
+								}
+								
+							}
 							
 				        
 				        
@@ -822,6 +921,43 @@ selectG.endDraw();
 		
 		img.updatePixels();
 		return img;
+	}
+	
+public PImage getBorderToImage(PImage img,int alphaVal){
+		
+	PImage tmp = createImage(img.width,img.height,ARGB);
+	
+	tmp.loadPixels();
+		
+		int alteration=0;
+		for(int x =1 ; x<img.width-1;x++)
+			for(int y=1;y<img.height-1;y++){
+				int loc=x+y*img.width;
+				int myCol = img.pixels[loc];
+				if(alpha(myCol)>0)
+				 for (int ky = -1; ky <= 1; ky++) 
+				        for (int kx = -1; kx <= 1; kx++) {
+
+							int loc2=(x+kx)+((y+ky)*img.width);
+							int newCol = img.pixels[loc2];
+							if(alpha(newCol)==0){
+								if(alteration==0){
+									alteration++;
+								tmp.pixels[loc]=color(80,alphaVal);
+								}else{
+									alteration--;
+									tmp.pixels[loc]=color(220,alphaVal);
+								}
+								
+							}
+							
+				        
+				        
+			}
+			}
+		
+		tmp.updatePixels();
+		return tmp;
 	}
 	public int getLayerIndex(int id){
 		for(int i=0;i<parent.timeline.layers.size();i++)
@@ -881,14 +1017,15 @@ selectG.endDraw();
 				new Thread() {
 					public void run() {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(120);
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
+						if(!drawBool){
 						tempInkGraphic.noTint();
-
 						noTint();
+						}
 
 					}
 				}.start();
@@ -1057,8 +1194,9 @@ selectG.endDraw();
 								.get(ca + 1).y)).jbs.get(parent.historicChanges
 								.get(ca + 1).x).isKey=true;
 
-						parent.timeline.layers.get(cl_index).jbs.get(cf).setIcon(new ImageIcon(
-								parent.timeline.emptyIcon));
+					//TIMELINEICONS
+						//	parent.timeline.layers.get(cl_index).jbs.get(cf).setIcon(new ImageIcon(
+					//			parent.timeline.emptyIcon));
 
 					}
 
@@ -1073,8 +1211,9 @@ selectG.endDraw();
 			if (parent.ACTIONTYPE.get(ca).equals("Keyframe Removed")) {
 				parent.timeline.layers.get(cl_index).jbs.get(cf).isKey=false;
 				
-				parent.timeline.layers.get(cl_index).jbs.get(cf).setIcon(new ImageIcon(
-						parent.timeline.emptyIcon));
+				//TIMELINEICONS
+			//	parent.timeline.layers.get(cl_index).jbs.get(cf).setIcon(new ImageIcon(
+			//			parent.timeline.emptyIcon));
 
 			}
 
@@ -1490,12 +1629,23 @@ PImage drawMaskedAdvanced(PImage img,PImage mask) {
   return tmp;
 }
 
-PImage eraseThisFromThat(PImage mask,PImage img) {
+PImage eraseThisFromThat(PImage mask,PImage img,int x, int y, int px, int py) {
+	int startX = min(x,px)-parent.PENSIZE*2;
+	int startY = min(y,py)-parent.PENSIZE*2;
+	int endX = max(x,px)+parent.PENSIZE*2;
+	int endY = max(y,py)+parent.PENSIZE*2;
+	startX=constrain(startX,0,img.width);
+	endX=constrain(endX,0,img.width);
+	startY=constrain(startY,0,img.height);
+	endY=constrain(endY,0,img.height);
+	
 	PImage tmp=new PImage();
 	
    tmp = img;
 
-  for (int i=0; i<img.pixels.length; i++) {
+   for (int p=startX; p<endX; p++) 
+	   for (int j=startY; j<endY; j++) {
+		   int i=p+(j*img.width);
     if ((alpha(img.pixels[i])>0) && (alpha(mask.pixels[i])>0)) {
       tmp.pixels[i] = color(red(img.pixels[i]),green(img.pixels[i]),
     		  blue(img.pixels[i]),(alpha(img.pixels[i]))-alpha(mask.pixels[i]));
@@ -1527,11 +1677,12 @@ return true;
 			return loadImageFromCache(cl, ck);
 
 		} else {
-			return loadImage(parent.workspaceFolder+"/images/" + parent.tmpName + "/" + cl
-					+ "_" + ck + ".gif");
+			return loadImagex(parent.workspaceFolder+"/images/" + parent.tmpName + "/" + cl
+					+ "_" + ck + ".png");
 
 		}
 
+		
 	}
 
 	public PImage loadImageFromCache(int l, int k) {
@@ -1550,7 +1701,7 @@ return true;
 		saveImageToDisk(emptyImage, cl, ck);
 	}
 
-	public void addToCache(PImage img, final int cl, int ck) {
+	public void addToCache(PImage img, int cl, int ck) {
 
 		if (!((parent.cachedImagesNames.contains("image" + cl + "_" + ck)))) {
 			parent.cachedImagesNames.add("image" + cl + "_" + ck);
@@ -1566,34 +1717,27 @@ return true;
 					img);
 
 		}
+		
 	}
 
-	public void saveImageToDisk(PImage img, final int cl, int cf) {
+	public void saveImageToDisk(PImage img, int cl, int cf) {
 		final int clt=getLayerIndex(cl);
 		final int ck = getKeyFrame(cf, clt);
 
-		final PImage tmpImage = img.get();
-img=null;
-		addToCache(tmpImage, cl, ck);
+		 PImage tmpImage = img.get();
 
+		 saveThread = new myThread(tmpImage.get(),cl,ck);
+		 saveThread.runSaveFile();
+		addToCache(tmpImage.get(), cl, ck);
+		img=null;
 		parent.timeline.layers.get(clt).jbs.get(ck).hasImage= true;
-		new Thread() {
+		
 
-			public void run() {
-
-				// Thread.currentThread().setPriority(1);
-				SAVING = true;
-
-				String sp = savePath(parent.workspaceFolder+"/images/" + parent.tmpName + "/"
-						+ cl + "_" + ck + ".gif");
-				tmpImage.save(sp);
-
-				SAVING = false;
-
-			}
-		}.start();
-
+		System.gc();
+			clearGarbage=1000;
 	}
+	
+	
 	PImage tempImg;
 	public void finaliseFrame(int layer, int frame) {
 
@@ -1616,9 +1760,10 @@ img=null;
 
 			tempImg = currentFrameGraphic.get();
 			saveImageToDisk(tempImg.get(), layer, lk);
-			tempImg.resize(parent.timelineButtonWidth, parent.timelineButtonHeight);
-			BufferedImage tmp = (BufferedImage) (tempImg.getNative());
-			parent.timeline.layers.get(getLayerIndex(layer)).jbs.get(lk).setIcon(new ImageIcon(tmp));
+			tempImg=null;
+			//tempImg.resize(parent.timelineButtonWidth, parent.timelineButtonHeight);
+			//BufferedImage tmp = (BufferedImage) (tempImg.getNative());
+			//parent.timeline.layers.get(getLayerIndex(layer)).jbs.get(lk).setIcon(new ImageIcon(tmp));
 
 
 		}
@@ -1740,9 +1885,10 @@ tempDispImage2 = currentFrameGraphic.get();
 	eraserMask.clear();
 	eraserMask.background(0,0);
 	eraserMask.tint(255);
-	eraserMask.endDraw();
 	eraseInitialized=true;
 	showNewFrame(parent.CURRENTLAYER,parent.CURRENTFRAME,parent.CURRENTLAYER);
+	jutra=8;
+	eraseThatShizzle();
 }
 
 

@@ -194,11 +194,16 @@ ColorButton colorButton;
 			brushSizeLabel2.setText(""+parent.PENSIZE);
 			parent.topPanel.sizeSpinner.setValue((int)parent.PENSIZE);
 			
+			
 			parent.PENALPHA = (short) brushAlphaSlider.getValue();
 	    	if(parent.PENALPHA<=0)
 	    		parent.PENALPHA=1;
 			brushAlphaLabel2.setText(""+parent.PENALPHA);
 			parent.topPanel.alphaSpinner.setValue((int)parent.PENALPHA);
+			
+			if(parent.currentTool.equals("Eraser")||parent.currentTool.equals("brush")){
+				parent.setCursor(parent.currentTool);
+			}
 	    }
 	}
 	

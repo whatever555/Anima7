@@ -63,17 +63,20 @@ boolean selected =false;
 					parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,(byte)0,false);
 					parent.parent.topPanel.setBrushOptions();
 					parent.parent.canvas.eraseInitialized=false;
+					parent.parent.setCursor(parent.parent.currentTool);
 					}else
-				if(toolName.equals("selectRect")){
+				if(toolName.equals("selectRect") || toolName.equals("selectCirc")){
 					parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,(byte)0,false);
 					parent.parent.topPanel.setSelectOptions();
+					parent.parent.canvas.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 					}else
 						if(toolName.equals("brush")){
 							parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,(byte)0,false);
 							parent.parent.topPanel.setBrushOptions();
-
-							parent.parent.canvas.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+							
+							parent.parent.setCursor(parent.parent.currentTool);
 							}
+							
 						else
 							if(toolName.equals("bucket")){
 								parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,(byte)0,false);
@@ -102,6 +105,8 @@ boolean selected =false;
 										 	parent.parent.canvas.layDownFrames(-1);
 											parent.parent.canvas.pasteFromClipBoard(true,"Transform");
 											parent.parent.canvas.keyEdited=true;
+
+											parent.parent.canvas.setCursor(new Cursor(Cursor.HAND_CURSOR));
 										}
 				
 				

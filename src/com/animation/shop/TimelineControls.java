@@ -239,6 +239,7 @@ parent.FPS = (int) (fpsSpinber.getValue());
     		if(myActionName.equals("play")){
     			if(!parent.playPreviewBool){
         			
+       			 parent.canvas.finaliseFrame(parent.CURRENTLAYER,parent.CURRENTFRAME);
     			parent.playPreviewBool=true;
     			
     			new Thread() {
