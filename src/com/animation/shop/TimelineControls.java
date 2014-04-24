@@ -270,6 +270,8 @@ loopButton.setBackground(new Color(190,190,190));
             			}
     		else
     			if(myActionName.equals("stop")){
+    				parent.canvas.stopAudio();
+    				
     				parent.playPreviewBool=false;
     				new Thread() {
         				public void run() {

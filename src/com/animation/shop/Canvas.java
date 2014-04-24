@@ -33,6 +33,8 @@ import aniFilters.MotionBlur;
 import aniFilters.RaysFilter;
 import aniFilters.ShadowFilter;
 import aniFilters.UnsharpFilter;
+import ddf.minim.AudioPlayer;
+import ddf.minim.Minim;
 
 public class Canvas extends PApplet {
 
@@ -41,6 +43,10 @@ public class Canvas extends PApplet {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	
+	Minim minim;
+	AudioPlayer player;
+	
 	PImage brushCursor;
 	PGraphics shapeGraphic;
 	myThread saveThread;
@@ -159,6 +165,8 @@ PImage selectMask;
 		}
 	
 	public void setup() {
+
+		 minim = new Minim(this);
 		tempDispImage = createImage(cw,ch,ARGB);
 		wandImage = createImage(cw,ch,ARGB);
 		brush = new CopyOnWriteArrayList<PImage>();
@@ -749,9 +757,19 @@ int jutra = 0;
 		if(createAnimatedGIF)
 			aniGIF.addFrame((BufferedImage) (tmp.getNative()));
 		
-		if(createSWF)
+		
+		if(createSWF){
+			if(parent.timeline.layers.get(AUDIOLAYER).jbs.get(x).isKey){
+				outSWF.stopAudio();
+				if(parent.timeline.layers.get(AUDIOLAYER).jbs.get(x).hasAudio){
+					outSWF.playAudio(parent.timeline.layers.get(AUDIOLAYER).jbs.get(x).audioFile);
+				}
+			}
+				
 			outSWF.addImage(location+"/"
 					+ x +"."+STRextension);
+			
+		}
 	
 		
 		
@@ -1023,7 +1041,61 @@ public PImage getBorderToImage(PImage img,int alphaVal){
 
 		return 0;
 	}
+	public void playAudio(String audioPath){
+		stopAudio();
+		println("GONNAPLAY: "+audioPath);
+		try{
+		player = minim.loadFile(audioPath, 2048);
+		player.play();
+		PLAYINGSOUND=true;
+		}catch(Exception ex){
+			//TODO MESSAGE WARNING
+		}
+	}
+boolean PLAYINGSOUND=false;
+	public void stopAudio(){
+		if(PLAYINGSOUND){
+		player.pause();
+		player=null;
+		PLAYINGSOUND=false;
+		}
+	}
+	int AUDIOLAYER = -1;
+	public void addAudioToKeyFrame(int cl,int cf,String audioPath){
+		if(AUDIOLAYER == -1){
+			AUDIOLAYER = cl;
+			parent.timeline.layers.get(cl).setBackground(new Color(30,30,67));
+			//TODO ADD EXPLAINING JOPTIONPANE MESSAGE
+		}
+		if(AUDIOLAYER == cl){
+		if(!parent.timeline.layers.get(cl).isMask){
+			AUDIOLAYER = cl;
+		player = minim.loadFile(audioPath, 2048);
+		parent.timeline.layers.get(cl).jbs.get(cf).hasAudio=true;
+		parent.timeline.layers.get(cl).jbs.get(cf).audioFile=audioPath;
+		parent.timeline.layers.get(cl).jbs.get(cf).setIcon(parent.timeline.audioIcon);
+		}
+		else{
+			//TODO WARNING MESSAGE
+		}
+		}else{
+			//TODO WARNING MESSAGE about having only one audio layer
+		}
+		
+	
+		
+		//parent.timeline.layers.get(getLayerIndex(cl)).jbs.get(getKeyFrame(cf, getLayerIndex(cl))).hasAudio=true;
+		//parent.timeline.layers.get(getLayerIndex(cl)).jbs.get(getKeyFrame(cf, getLayerIndex(cl))).audioFile=audioPath;
+	}
+	
+	public void removeAudioFromKeyFrame(int cl,int cf){
 
+		parent.timeline.layers.get(cl).jbs.get(cf).hasAudio=false;
+		parent.timeline.layers.get(cl).jbs.get(cf).audioFile="";
+		//parent.timeline.layers.get(getLayerIndex(cl)).jbs.get(getKeyFrame(cf, getLayerIndex(cl))).hasAudio=false;
+		//parent.timeline.layers.get(getLayerIndex(cl)).jbs.get(getKeyFrame(cf, getLayerIndex(cl))).audioFile="";
+	}
+	
 	// OK
 	public void mouseReleased() {
 		
@@ -1465,9 +1537,20 @@ public PImage getBorderToImage(PImage img,int alphaVal){
 		
 		tmpG.background(0,0);
 		
+		if(AUDIOLAYER>-1)
+		if(parent.timeline.layers.get(AUDIOLAYER).jbs.get(parent.CURRENTFRAME).isKey){
+		stopAudio();
+		if(parent.timeline.layers.get(AUDIOLAYER).jbs.get(parent.CURRENTFRAME).hasAudio && parent.playPreviewBool){
+			playAudio(parent.timeline.layers.get(AUDIOLAYER).jbs.get(parent.CURRENTFRAME).audioFile);
+		}
+		
+		}
+		
 		for (int i = parent.MAXLAYERS - 1; i > -1; i--) {
 		
 			if (parent.timeline.layers.get(i).visible && !parent.timeline.layers.get(i).activeMask && parent.timeline.layers.get(i).layerID != parent.CURRENTLAYER && i!=hiddenLayer){
+			if(parent.timeline.layers.get(i).jbs.get(parent.CURRENTFRAME).hasAudio && parent.playPreviewBool)
+				playAudio(parent.timeline.layers.get(i).jbs.get(parent.CURRENTFRAME).audioFile);
 			
 				PImage tmp =loadImageFromDisk(parent.timeline.layers.get(i).layerID, parent.CURRENTFRAME);
 				if(tmp!=null){

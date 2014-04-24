@@ -96,6 +96,7 @@ public class Main {
 	int screenWidth;// = Toolkit.getDefaultToolkit().getScreenSize().width;
 	int screenHeight;// = Toolkit.getDefaultToolkit().getScreenSize().height;
 	
+	boolean MUTE=false;
 	boolean pasting = false;
 	boolean ISLOADED = false;
 
@@ -204,7 +205,7 @@ TimelineControls timelineControls;
 		cachedImagesNames=new ArrayList<String>();
 		cachedImages=new ArrayList<PImage>();
 		CTRL=false;
-		timelineButtonWidth=10;
+		timelineButtonWidth=24;
 		timelineButtonHeight=20;
 		layerIndex=0;
 		
@@ -429,6 +430,17 @@ translations.put(EN_TRANS[i] , transTemp[i]);
 		 if(isImageFile(imagePath)){
 			 canvas.clipBoard = canvas.loadImage(imagePath).get();
 			 canvas.pasteFromClipBoard(false,"Paste");
+		 }
+		 
+	 }
+	 
+	 
+	 public void importAudio(String audioPath){
+		 if(isAudioFile(audioPath)){
+			// TODO
+			// canvas.clipBoard = canvas.loadImage(imagePath).get();
+			// canvas.pasteFromClipBoard(false,"Paste");
+			 canvas.addAudioToKeyFrame(CURRENTLAYER,CURRENTFRAME,audioPath);
 		 }
 		 
 	 }
@@ -1453,6 +1465,10 @@ canvasPanel.setBackground(new Color(67,67,67));
 		tmpKey = KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK);
 		mnImportImages.setAccelerator(tmpKey);
 		
+		mnFile.addSeparator();
+		
+		JMenuItem mnImportAudio = new JMenuItem(translate("Import Audio To Stage.."));
+		mnFile.add(mnImportAudio);
 		
 		mnFile.addSeparator();
 		
@@ -2244,6 +2260,14 @@ canvasPanel.setBackground(new Color(67,67,67));
 		});
 
 		
+		mnImportAudio.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
+				canvas.showNewFrame(CURRENTLAYER,CURRENTFRAME,-1);
+			importAudio(getFilePath());
+			}
+		});
+		
 		mnImportImage.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
@@ -2252,7 +2276,6 @@ canvasPanel.setBackground(new Color(67,67,67));
 			importImage(getFilePath());
 			}
 		});
-		
 		mnImportImages.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
@@ -2350,9 +2373,9 @@ if(str.indexOf('.')>0){
 		return extension;
 	}
 	public boolean isImageFile(String fileName) {
-	   
+		   
 
-	    String extension = getExtension(fileName);
+	    String extension = getExtension(fileName).toLowerCase();
 	    if (extension != null) {
 	        if (extension.equals("tif") ||
 	            extension.equals("tiff") ||
@@ -2361,6 +2384,23 @@ if(str.indexOf('.')>0){
 	            extension.equals("jpg") ||
 	            extension.equals("png")||
 	            extension.equals("tga")) {
+	                return true;
+	        } else {
+	            return false;
+	        }
+	    }
+
+	    return false;
+	}
+	
+	public boolean isAudioFile(String fileName) {
+		   
+
+	    String extension = getExtension(fileName).toLowerCase();
+	    if (extension != null) {
+	        if (extension.equals("wav") ||
+	            extension.equals("mp3") ||
+	            extension.equals("flac")) {
 	                return true;
 	        } else {
 	            return false;
@@ -2387,10 +2427,13 @@ if(str.indexOf('.')>0){
 			snooze("Preview Playing",1000/FPS);
 			
 			if(CURRENTFRAME>=lastFrame){
+				canvas.stopAudio();	
 				if(loopPreview)
 				timeline.shiffleTable(0,-1,0,false);
 				else
 					playPreviewBool=false;
+					
+				
 				
 			}
 			else

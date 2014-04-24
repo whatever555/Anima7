@@ -16,6 +16,8 @@ Main parent;
 int layerID;
 int x,y,w,h;
 int frameID;
+String audioFile="";
+boolean hasAudio=false;
 TimelineLayer myLayer;
 boolean isKey=false;
 boolean selected=false;

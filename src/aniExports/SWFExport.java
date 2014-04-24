@@ -16,8 +16,12 @@ import com.flagstone.transform.datatype.WebPalette;
 import com.flagstone.transform.image.ImageTag;
 import com.flagstone.transform.linestyle.LineStyle1;
 import com.flagstone.transform.shape.ShapeTag;
+import com.flagstone.transform.sound.DefineSound;
+import com.flagstone.transform.sound.SoundInfo;
+import com.flagstone.transform.sound.StartSound;
 import com.flagstone.transform.util.image.ImageFactory;
 import com.flagstone.transform.util.image.ImageShape;
+import com.flagstone.transform.util.sound.SoundFactory;
 
 public class SWFExport {
     Movie movie;  
@@ -49,6 +53,35 @@ int w,h;
 	 }
 	 
 	 int xx=0;
+	 boolean AUDIOPLAYING=false;
+	 public void stopAudio(){
+		 
+	 }
+	 public void playAudio(String soundFile){
+		 final SoundFactory factory = new SoundFactory();
+		 try {
+			factory.read(new File(soundFile));
+		} catch (IOException | DataFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 uid++;
+			DefineSound sound = null;
+			try {
+				sound = factory.defineSound(uid);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (DataFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			 uid++;
+			movie.add(sound);
+			movie.add(new StartSound(new SoundInfo(uid,
+			    SoundInfo.Mode.START, 0, null)));
+			 uid++;
+	 }
 	 public void addImage(String loc){
 		try {
 				factory.read(new File(loc));

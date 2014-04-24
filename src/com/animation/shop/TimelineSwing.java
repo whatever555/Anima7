@@ -44,6 +44,7 @@ ImageIcon eyeIcon;
 ImageIcon maskIcon;
 ImageIcon upIcon;
 ImageIcon downIcon;
+ImageIcon audioIcon;
 
 ArrayList<Integer> layerIdMap = new ArrayList<Integer>();
 ArrayList<Integer> layerIndexMap = new ArrayList<Integer>();
@@ -59,17 +60,20 @@ ArrayList<TimelineLayer> layers = new ArrayList<TimelineLayer>();
 		Image maskImage =null;
 		Image downImage =null;
 		Image upImage =null;
+		Image audioImage =null;
 		try {
 			eyeImage = ImageIO.read(getClass().getResource("/data/icons/tools/eye.png"));
 			maskImage = ImageIO.read(getClass().getResource("/data/icons/tools/mask.png"));
 			downImage = ImageIO.read(getClass().getResource("/data/icons/tools/down.png"));
 			upImage = ImageIO.read(getClass().getResource("/data/icons/tools/up.png"));
+			audioImage = ImageIO.read(getClass().getResource("/data/icons/tools/audio.png"));
 			} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		eyeIcon = new ImageIcon(eyeImage);
+		audioIcon = new ImageIcon(audioImage);
 		maskIcon = new ImageIcon(maskImage);
 		upIcon = new ImageIcon(upImage);
 		downIcon = new ImageIcon(downImage);
