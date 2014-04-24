@@ -154,7 +154,26 @@ PImage selectMask;
 
 	}
 
+	int clearGarbage = 0;
 	public void draw() {
+		if(!drawBool && parent.LOADED){
+			if(parent.playPreviewBool==false){
+		if(clearGarbage>320){
+			System.gc();
+			clearGarbage=0;
+		}
+		clearGarbage++;
+			}else{
+				if(parent.CURRENTFRAME==0){
+
+					System.gc();
+					clearGarbage=0;
+				}
+			}
+		}else{
+			clearGarbage=100;
+		}
+			
 		if (parent.currentTool.equals("move")) {
 
 			parent.pasting = true;
@@ -1244,7 +1263,7 @@ selectG.endDraw();
 	}
 
 	public void layDownFrames(int hiddenLayer) {
-		System.gc();	
+		
 		// printFrameToImage(parent.CURRENTLAYER, parent.CURRENTFRAME);
 		PGraphics tmpG = createGraphics(parent.CANVASWIDTH,parent.CANVASHEIGHT);
 		tmpG.beginDraw();
