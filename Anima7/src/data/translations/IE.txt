@@ -1,0 +1,107 @@
+Comhad Ann Cheana . Forscríobh ?
+Forscríobh ?
+Ar mhaith leat athruithe a dhéanamh comhad reatha a shábháil roimh dúnadh?
+Cuirfear athruithe i Discarded .
+Fillteán spás oibre Roghnaigh
+ag luchtú
+Tá do Fillteán Spás Oibre leagtha chun
+Ar mhaith leat a roghnú fillteán eile ?
+Spás Oibre
+Canbhás
+Amlíne
+Comhad
+Nua
+Oscailte
+Sábháil ..
+Sábháil Mar ..
+Íomhá Iompórtáil Chun Céim ..
+Easpórtáil go ..
+Íomhánna
+Scoir
+sraitheanna
+Cuir Sraith
+Cuir Measca Chun Sraith Reatha
+Scrios Sraith Reatha
+keyframe scoránaigh
+Eagar
+Cealaigh
+Athdhéan
+Gearr
+Cóip
+greamaigh
+Geal
+Féach ar
+Folaigh Amlíne
+Uirlisí Folaigh
+Taispeáin Roghanna Scuab
+Scoránaigh Oinniún Skin
+Athraigh Dath an Chúlra ..
+scoránaigh
+Scagairí
+A Doiléirigh ..
+A Doiléirigh ..
+Tairiscint Doiléirigh ..
+Lionsa Doiléirigh ..
+Glow Doiléirigh ..
+Ghéarú ..
+Éifeachtaí ..
+Posterize ..
+Tairseach ..
+Ealaíne ..
+Spherify ..
+Boxify ..
+Scáthú ..
+Scáth ..
+Ghathanna Solas ..
+scuab
+Scuab Dath ..
+éilíonn Atosaigh
+Roghanna Sraith
+Nuashonraigh
+Sraith Ainm
+Mód Cumasc
+Masc do
+keyframe Bainte
+keyframe Bhreisluacha
+Paint
+Canbhás Folamh
+Eraser
+scuab Roghnú
+Roghanna scuab
+scuab Méid
+scuab Alfa
+Dath Roghnaithe
+Cúinní Slánaithe :
+cleite :
+Rialuithe Amlíne
+Stair
+Clé
+Ceart
+Trédhearcacht Sraith Scoránaigh
+Cruthaigh
+Glow
+Posterize
+Tairseach
+Doiléirigh
+tairiscint Doiléirigh
+Lionsa Doiléirigh
+ghéarú
+Scáth
+ghathanna
+Spherify
+Boxify
+Méid Bosca
+saobhadh
+Stróc
+teimhneacht
+Neart
+ga
+Fritháireamh X
+Fritháireamh Y
+teimhneacht
+Leibhéal
+Rothlú
+Fad
+Angel
+thaobh
+Bloom

@@ -1,0 +1,107 @@
+Datei existiert bereits . Überschreiben ?
+Überschreiben ?
+Haben Sie Änderungen an der aktuellen Datei vor dem Schließen speichern?
+Änderungen werden verworfen.
+Arbeitsbereich Ordner wählen
+Verladung
+Ihr Arbeitsbereich- Ordner eingestellt ist
+Wollen Sie einen anderen Ordner auswählen?
+Arbeitsplatz
+Leinwand
+Timeline
+Datei
+neu
+öffnen
+Speichern ..
+Speichern unter ..
+Bild importieren auf Bühne ..
+Exportieren nach ..
+Bilder
+Beenden
+Layers
+Schicht hinzufügen
+Maske hinzufügen , um aktuelle Ebene
+Löschen Aktuelle Ebene
+Toggle Keyframe
+Bearbeiten
+rückgängig machen
+Redo
+Cut
+Kopie
+Einfügen
+klar
+anzeigen
+Zeitleiste ausblenden
+Werkzeuge ausblenden
+Pinsel- Optionen anzeigen
+Toggle Onion Skin
+Ändern Sie Hintergrund-Farbe ..
+Toggle
+Filter
+Blur ..
+Blur ..
+Motion Blur ..
+Objektiv Blur ..
+Glow Blur ..
+Schärfen ..
+Effekte ..
+Posterisieren ..
+Threshold ..
+Künstlerische ..
+KuGEL ..
+Boxify ..
+Shading ..
+Schatten ..
+Light Rays ..
+Pinsel
+Pinsel Farbe ..
+Neustart erforderlich
+Ebenenoptionen
+Aktualisierung
+Layer-Name
+Füllmethode
+Maske für
+Keyframe entfernt
+Keyframe hinzugefügt
+malen
+Leere Leinwand
+Radiergummi
+Pinselauswahl
+Pinsel- Optionen
+Pinselgröße
+Pinsel Alpha
+Ausgewählte Farbe
+Abgerundete Ecken:
+Feder:
+Timeline- Steuerung
+Geschichte
+Links
+Recht
+Toggle Layer- Transparenz
+schaffen
+Glow
+Posterisieren
+Schwelle
+verwischen
+Motion Blur
+Objektiv Blur
+schärfen
+Schatten
+rays
+KuGEL
+Boxify
+Kasten-Größe
+Verzerrung
+Schlaganfall
+Opazität
+Stärke
+Radius
+Offset X
+Offset Y
+Opazität
+Ebene
+Rotation
+Abstand
+Engel
+Sides
+Bloom

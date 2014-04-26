@@ -1,0 +1,107 @@
+File già esistente . Sovrascrivere ?
+Sovrascrivere ?
+Vuoi salvare le modifiche apportate al file corrente prima di chiudere ?
+Saranno scartati modifiche .
+Selezionare la cartella di lavoro
+caricamento
+La cartella di lavoro è impostato su
+Vuoi selezionare una cartella diversa ?
+Area di lavoro
+tela
+Timeline
+file
+nuovo
+aperto
+Salva ..
+Salva con nome ..
+Importa immagine Allo stage ..
+Esporta in ..
+immagini
+Exit
+Livelli
+Aggiungi layer
+Aggiungi maschera Per livello corrente
+Elimina livello corrente
+Keyframe Toggle
+Modifica
+disfare
+rifare
+Cut
+copia
+Incolla
+chiaro
+View
+Nascondi Timeline
+Hide Tools
+Mostra Opzioni pennello
+Toggle Onion Skin
+Cambiare colore di sfondo ..
+Toggle
+filtri
+Blur ..
+Blur ..
+Motion Blur ..
+Sfocatura con lente ..
+Glow Blur ..
+Contrasta ..
+Effetti ..
+Posterizzare ..
+Soglia ..
+Artistic ..
+Spherify ..
+Boxify ..
+Shading ..
+Ombra ..
+Raggi di luce ..
+spazzola
+Pennello colore ..
+richiede Restart
+Opzioni livello
+aggiornare
+livello Nome
+Modalità Fusione
+Maschera per
+keyframe Rimosso
+keyframe Aggiunto
+dipingere
+tela vuota
+gomma
+pennello selezione
+Opzioni Brush
+Dimensione pennello
+Brush Alpha
+Colore selezionato
+Angoli arrotondati :
+Piuma:
+Controlli FAQ
+storia
+sinistra
+diritto
+Toggle trasparenza del livello
+creare
+Glow
+posterizzare
+soglia
+Blur
+motion Blur
+Sfocatura con lente
+affinare
+ombra
+raggi
+Spherify
+Boxify
+box Size
+distorsione
+corsa
+opacità
+forza
+raggio
+Offset X
+Offset Y
+opacità
+livello
+rotazione
+distanza
+angelo
+Sides
+Bloom
