@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.swing.SwingUtilities;
+
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PImage;
@@ -362,6 +364,19 @@ viewHeight = ch;
 
 	}
 	
+	public void addImagesToNewKeyFrameThread(final File[] files){
+		if(files == null){
+			parent.setProgress(100,"Cancelled By User");
+		}else{
+		   Thread t = new Thread(){
+		        public void run(){
+		        	 addImagesToNewKeyFrames(files);
+		    };
+	};
+	t.start();
+		}
+	}
+	
 	public void addImagesToNewKeyFrames(File[] files){
 	int cf = parent.CURRENTFRAME;
 	parent.LOADED=false;
@@ -381,15 +396,18 @@ viewHeight = ch;
 				parent.CURRENTFRAME++;
 				tmp=null;
 				}
+				parent.setProgress(i+1,"Importing Images:");
 			}
 			parent.CURRENTFRAME=cf;
 			parent.canvas.showNewFrame(parent.CURRENTLAYER, cf, -1);
 		parent.LOADED=true;
+		parent.setProgress(100,"Importing Images:");
 		parent.messagePanel.setVisible(false);
 	}
 	public void loadNewFile(String folder,int maxlayers,int maxframes){
 		
-
+folder=folder.replaceAll(".anima","");
+println("LODAING IMAGES FROM FOLDER@ "+folder);
 		parent.currentActionIndex=0;
 		
 		parent.historicChanges= new ArrayList<SimpleRow>();
