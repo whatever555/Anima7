@@ -70,6 +70,7 @@ public class Main {
 
 	// 44H
 	// TODO LIST
+	//FIX EXTRA LOADING LAYERS
 	// PROGRESS BAR FOR MESSAGES (2H)
 	// PREVIEW LOFI IMAGES
 	// MAKE SAVING AND LOADING MORE ELEGANT [NO MISSING FILES] CLEANING ETC (4H)
@@ -267,36 +268,43 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		UIManager.put("Button.font", new Font("Verdana", Font.BOLD, 10));
-		UIManager.put("Label.font", new Font("Verdana", Font.BOLD, 10));
-		UIManager.put("Panel.font", new Font("Verdana", Font.BOLD, 10));
-		UIManager.put("ComboBox.font", new Font("Verdana", Font.BOLD, 10));
-		UIManager.put("InternalFrame.font", new Font("Verdana", Font.BOLD, 10));
-		UIManager.put("Spinner.font", new Font("Verdana", Font.BOLD, 10));
-		UIManager.put("TextField.font", new Font("Verdana", Font.BOLD, 10));
+		Font ffont = new Font("Verdana", Font.BOLD, 12);
+		Font smallFont = new Font("Verdana", Font.BOLD, 10);
+		Color foreColor = new Color(202, 202, 202);
+		Color backColor =new Color(67, 67, 67);
+		Color heavierBack  = new Color(57, 57, 57);
+		
+		
+		UIManager.put("Button.font", smallFont);
+		UIManager.put("Label.font", smallFont);
+		UIManager.put("Panel.font", smallFont);
+		UIManager.put("ComboBox.font", smallFont);
+		UIManager.put("InternalFrame.font", smallFont);
+		UIManager.put("Spinner.font", smallFont);
+		UIManager.put("TextField.font", smallFont);
 
-		UIManager.put("OptionPane.font", new Font("Verdana", Font.BOLD, 12));
-		UIManager.put("OptionPane.foreground", new Color(202, 202, 202));
-		UIManager.put("OptionPane.background", new Color(67, 67, 67));
+		UIManager.put("OptionPane.font", ffont);
+		UIManager.put("OptionPane.foreground", foreColor);
+		UIManager.put("OptionPane.background", backColor);
 		UIManager.put("OptionPane.border", null);
 
-		UIManager.put("TabbedPane.tabAreaBackground", new Color(67, 67, 67));
-		UIManager.put("TabbedPane.contentAreaColor ", new Color(67, 67, 67));
+		UIManager.put("TabbedPane.tabAreaBackground", backColor);
+		UIManager.put("TabbedPane.contentAreaColor ", backColor);
 		UIManager.put("TabbedPane.selected", (new Color(37, 37, 37)));
-		UIManager.put("TabbedPane.background", (new Color(57, 57, 57)));
+		UIManager.put("TabbedPane.background", (heavierBack));
 		UIManager.put("TabbedPane.border", (null));
 		UIManager.put("TabbedPane.contentBorderInsets", new Insets(0, 0, 0, 0));
 		UIManager.put("TabbedPane.tabsOverlapBorder", true);
-		UIManager.put("TabbedPane.borderColor", new Color(67, 67, 67));
-		UIManager.put("TabbedPane.darkShadow", new Color(67, 67, 67));
-		UIManager.put("TabbedPane.light", new Color(67, 67, 67));
-		UIManager.put("TabbedPane.highlight", new Color(67, 67, 67));
-		UIManager.put("TabbedPane.focus", new Color(67, 67, 67));
-		UIManager.put("TabbedPane.unselectedBackground", new Color(67, 67, 67));
-		UIManager.put("TabbedPane.selectHighlight", new Color(67, 67, 67));
-		UIManager.put("TabbedPane.tabAreaBackground", new Color(67, 67, 67));
+		UIManager.put("TabbedPane.borderColor", backColor);
+		UIManager.put("TabbedPane.darkShadow", backColor);
+		UIManager.put("TabbedPane.light", backColor);
+		UIManager.put("TabbedPane.highlight", backColor);
+		UIManager.put("TabbedPane.focus", backColor);
+		UIManager.put("TabbedPane.unselectedBackground", backColor);
+		UIManager.put("TabbedPane.selectHighlight", backColor);
+		UIManager.put("TabbedPane.tabAreaBackground", backColor);
 		UIManager
-				.put("TabbedPane.borderHightlightColor", new Color(67, 67, 67));
+				.put("TabbedPane.borderHightlightColor", backColor);
 
 		UIManager.put("ScrollBar.trackHighlightForeground", (new Color(157,
 				157, 157)));
@@ -305,16 +313,16 @@ public class Main {
 		UIManager.put("ScrollBar.thumb", new ColorUIResource(new Color(157,
 				157, 157)));
 		UIManager.put("ScrollBar.thumbHeight", 2);
-		UIManager.put("ScrollBar.background", (new Color(57, 57, 57)));
+		UIManager.put("ScrollBar.background", (heavierBack));
 
 		UIManager.put("InternalFrame.activeTitleBackground",
-				new ColorUIResource(new Color(57, 57, 57)));
+				new ColorUIResource(heavierBack));
 		UIManager.put("InternalFrame.inactiveTitleBackground",
-				new ColorUIResource(new Color(57, 57, 57)));
+				new ColorUIResource(heavierBack));
 		UIManager.put("InternalFrame.activeTitleForeground",
-				new ColorUIResource(new Color(202, 202, 202)));
+				new ColorUIResource(foreColor));
 		UIManager.put("InternalFrame.inactiveTitleForeground",
-				new ColorUIResource(new Color(202, 202, 202)));
+				new ColorUIResource(foreColor));
 		UIManager.put("InternalFrame.titleFont", new FontUIResource(new Font(
 				"Verdana", Font.BOLD, 10)));
 
@@ -457,8 +465,8 @@ public class Main {
 
 			File[] files = chooser.getSelectedFiles();
 
-			progressTotal = files.length;
-			setProgress(0, "Loading:");
+			int progressTotal = files.length;
+			setProgress(1,progressTotal, "Loading:", false);
 
 			return files;
 		}
@@ -476,7 +484,7 @@ public class Main {
 			return file.getPath();
 
 		} else {
-			setProgress(100, "");
+			setProgress(100,100, "", true);
 			System.out.println("Open command cancelled by user.");
 		}
 		return "";
@@ -493,29 +501,40 @@ public class Main {
 		int returnVal = fc.showSaveDialog(mainPanel);
 
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			setProgress(100,100, "Save File to..", true);
 			file = fc.getSelectedFile();
 			fileName = file.getPath();
 			fileShortName = file.getName();
 			saveFile(file, false);
 		} else {
-			setProgress(100, "");
+			setProgress(100,100, "", true);
 			System.out.println("Open command cancelled by user.");
 		}
 
 	}
 
-	public void saveInit(final boolean loadFileAfter) {
-		
-				if (fileName == null)
+	public void saveInit(final boolean loadFileAfter,final boolean saveAs) {
+		Thread t = new Thread() {
+			public void run() {
+
+				if (fileName == null || saveAs)
 					saveNewFile();
 				else {
 					saveFile(fileName, true);
 				}
 
-				if (loadFileAfter)
-					loadNow(getFilePath());
-				System.gc();
+				if (loadFileAfter) {
+					setProgress(2,100, "Save Complete // Select File to Load:",
+							false);
 
+					loadNow(getFilePath());
+				}
+				System.gc();
+				if(!loadFileAfter)
+				setProgress(100,100, "Done", false);
+			};
+		};
+		t.start();
 
 	}
 
@@ -529,7 +548,9 @@ public class Main {
 
 	public void saveFileFunction(File file, boolean overwrite) {
 		saveData(file.getPath(), overwrite);
-		fileConfigString="";
+		
+		setProgress(98,100, "Saving " + file.getName(), true);
+		fileConfigString = "";
 		fileConfigString += "BGCOL::" + canvas.bgColor + ":::";
 		fileConfigString += "FPS::" + FPS + ":::";
 		fileConfigString += "LASTFRAME::" + lastFrame + ":::";
@@ -540,7 +561,7 @@ public class Main {
 		fileConfigString += "CURRENTFRAME::" + CURRENTFRAME + ":::";
 
 		fileConfigString += "LAYERS::";
-		
+
 		for (int i = 0; i < timeline.layers.size(); i++) {
 			TimelineLayer tl = timeline.layers.get(i);
 			fileConfigString += "8q3b5R1ZMINDEX8q3b5R1ZM" + i
@@ -550,7 +571,8 @@ public class Main {
 					+ "8q3b5R1ZMz0LABEL8q3b5R1ZMz0" + tl.layerName
 					+ "8q3b5R1ZMz0";
 		}
-		
+
+		setProgress(99,100, "Saving " + file.getName(), true);
 		fileConfigString += ":::";
 
 		fileConfigString += "KEYFRAMES::";
@@ -561,13 +583,13 @@ public class Main {
 				}
 			}
 		}
-	
+
 		fileConfigString += ":::";
 
 		fileConfigString += "FOLDER::" + file.getPath() + ":::";
-		
+
 		saveText(fileConfigString, file.getPath() + extension);
-	
+		
 	}
 
 	public void forceRename(File source, File target) throws IOException {
@@ -577,42 +599,47 @@ public class Main {
 	}
 
 	public void saveData(String location, boolean overwrite) {
-	
-		setProgress(0, "Saving File:");
 
 		
-		
-		while (location.indexOf(".anima") > -1){
-		
+		setProgress(2,100, "Saving File:", false);
+
+		while (location.indexOf(".anima") > -1) {
+
 			location = location.replaceAll(".anima", "");
-		
+
 		}
 
 		File theDir = new File(location);
 		// if the directory does not exist, create it
 		boolean result = true;
-		
+
 		if (!theDir.exists()) {
+			setProgress(1,100, "Creating Directory", false);
 			result = theDir.mkdir();
 		} else {
 			int selectedOption = 1;
 			if (overwrite == false) {
+				setProgress(1,100, "File Options", false);
 				selectedOption = JOptionPane.showConfirmDialog(null,
 						translate("File Already Exists. Overwrite?"),
 						translate("Overwrite?"), JOptionPane.YES_NO_OPTION);
 			}
 			if (selectedOption == JOptionPane.YES_OPTION || overwrite) {
-				
+
+				setProgress(1,100, "Deleting Directory", false);
 				deleteDirectory(theDir);
-				
+
+				setProgress(1,100, "Creating Directory", false);
 				result = theDir.mkdir();
 			}
 		}
 		if (result) {
-			progressTotal = lastFrame;
 
+			setProgress(1,100, "Directory OK", false);
+			int progressTotal = lastFrame+1;
 			for (int x = 0; x <= lastFrame; x++) {
-				setProgress(x, "Loading " + theDir.getName());
+
+				setProgress(x,progressTotal, "Saving " + file.getName(), true);
 				for (int y = 0; y < MAXLAYERS; y++) {
 					if (timeline.layers.get(y).jbs.get(x).isKey)
 						canvas.copyImage(
@@ -625,15 +652,15 @@ public class Main {
 		} else {
 			JOptionPane.showMessageDialog(mainPanel, "Could Not Save");
 		}
-		setProgress(1000, "Saving File Complete:");
+		
 	}
 
 	public void saveText(String str, String txtFile) {
 		try {
-			
+
 			while (txtFile.indexOf(".anima.anima") > -1)
 				txtFile = txtFile.replaceAll(".anima.anima", ".anima");
-			
+
 			File newTextFile = new File(txtFile);
 
 			FileWriter fw = new FileWriter(newTextFile);
@@ -648,61 +675,82 @@ public class Main {
 
 	public void loadNow(final String filePath) {
 
-		canvas.println("LoadNow IN ACTION" + filePath);
-if(filePath!=null)
-	if(filePath.length()>2){
-		String[] strs = canvas.loadStrings(filePath);
-		if (strs.length > 0) {
+		Thread t = new Thread() {
+			public void run() {
 
-			// cleanLocalFolder();
-			timeline.cleanOutTimeline();
-			messageTextArea = new JLabel(translate("Loading") + " "
-					+ fileShortName);
-			messagePanel.setVisible(true);
-			fileName = filePath;
+				
+				
+		if (filePath != null)
+			if (filePath.length() > 2) {
+				String[] strs = canvas.loadStrings(filePath);
+				if (strs.length > 0) {
 
-			fileShortName = file.getName();
+					// cleanLocalFolder();
+					timeline.cleanOutTimeline();
+					
+					fileName = filePath;
 
-			setConfig(strs[0], file.getPath().replaceAll(extension, ""));
-		}
-	}
+					fileShortName = file.getName();
+
+					setConfig(strs[0], file.getPath().replaceAll(extension, ""));
+				}
+			}
 		System.gc();
+		
+		setProgress(100,100, "Complete", true);
+		
+			}
+		};
+		t.start();
 	}
 
 	public void loadNewFile() {
 
 		System.out.println("THE START");
+		Thread t = new Thread() {
+			public void run() {
 
-		setProgress(0, "Loading new File:");
-		messagePanel.setVisible(true);
-		LOADED = false;
-
-		if (!SAVEDTODISK) {
-			int selectedOption = JOptionPane
-					.showConfirmDialog(
-							null,
-							translate("Do you want to save changes to current file before closing?"),
-							translate("Changes will be Discarded."),
-							JOptionPane.YES_NO_CANCEL_OPTION);
 			
-			if (selectedOption == JOptionPane.YES_OPTION) {
+				setProgress(2,100, "Loading File:", false);
+				messagePanel.setVisible(true);
+				LOADED = false;
 
-				
-				saveInit(true);
-			} else if (selectedOption == JOptionPane.NO_OPTION){
-				loadNow(getFilePath());
-			}else{
-				
-			}
-		} else {
-			loadNow(getFilePath());
-		}
-		System.out.println("THE END");
-		LOADED = true;
+				if (!SAVEDTODISK) {
+
+					setProgress(1,100, "File Save Options", false);
+					int selectedOption = JOptionPane
+							.showConfirmDialog(
+									null,
+									translate("Do you want to save changes to current file before closing?"),
+									translate("Changes will be Discarded."),
+									JOptionPane.YES_NO_CANCEL_OPTION);
+
+					if (selectedOption == JOptionPane.YES_OPTION) {
+
+						setProgress(1,100, "Saving File", false);
+
+						saveInit(true,false);
+					} else if (selectedOption == JOptionPane.NO_OPTION) {
+						setProgress(1,100, "Choose File to Load", false);
+						loadNow(getFilePath());
+					} else {
+
+					}
+				} else {
+					setProgress(1,100, "Choose File to Load", false);
+					loadNow(getFilePath());
+				}
+				System.out.println("THE END");
+				LOADED = true;
+			};
+		};
+		t.start();
 	}
 
 	public void setConfig(String line, String folderName) {
 
+		setProgress(2,100, "Loading Configurations:", false);
+		
 		try {
 			Thread.sleep(10);
 		} catch (InterruptedException e) {
@@ -710,6 +758,7 @@ if(filePath!=null)
 			e.printStackTrace();
 		}
 
+		
 		initVars();
 
 		tmpName = "" + (System.currentTimeMillis() / 1000L) + "_loaded";
@@ -719,8 +768,10 @@ if(filePath!=null)
 		 * fileConfigString+="FPS::"+FPS+":::";
 		 * fileConfigString+="FOLDER::"+file.getPath()+":::";
 		 */
-
+	
 		for (int i = 0; i < configs.length; i++) {
+
+			
 			if (line != null) {
 				String[] parts = configs[i].split("::");
 				if (parts.length > 1)
@@ -794,17 +845,17 @@ if(filePath!=null)
 						}
 						timelineControls.fpsSpinber.setValue(FPS);
 					} else if (parts[0].equals("FOLDER")) {
-
+						
+						setProgress(1,100, "Loading "+parts[1],false); 
 						canvas.loadNewFile(parts[1], MAXLAYERS, MAXFRAMES);
-						pout("images loaded ");
+						
 					}
 			}
 		}
 
 		// loadApplication();
 
-		messagePanel.setVisible(false);
-		timeline.shiffleTable(CURRENTFRAME, CURRENTLAYER, 0, true);
+		//timeline.shiffleTable(CURRENTFRAME, CURRENTLAYER, 0, true);
 
 	}
 
@@ -846,7 +897,7 @@ if(filePath!=null)
 		file = new File(workspaceFolder + "/images/" + tmpName);
 		file.delete();
 	}
-
+	EPanel messageHolder ;
 	public void loadApplication() {
 
 		screenWidth = (int) (Toolkit.getDefaultToolkit().getScreenSize().width - 50);
@@ -859,7 +910,7 @@ if(filePath!=null)
 		frame.setVisible(true);
 		mainPanel.setVisible(true);
 
-		EPanel messageHolder = new EPanel();
+		 messageHolder = new EPanel();
 
 		messagePanel.setPreferredSize(new Dimension(screenWidth, screenHeight));
 		messagePanel.setBackground(new Color(47, 47, 47));
@@ -873,13 +924,13 @@ if(filePath!=null)
 		messageTextArea.setFont(new Font("Verdana", Font.PLAIN, fontSizeToUse));
 		messageTextArea.setForeground(Color.white);
 		messageHolder.setBackground(new Color(47, 47, 47));
-		messageHolder.setBounds((screenWidth / 2) - (400 / 2), 200, 400, 200);
+		messageHolder.setBounds(0, 50, screenWidth, 200);
 		messageHolder.add(messageTextArea);
 
 		progressBar = new JProgressBar(0, 100);
 		progressBar.setVisible(true);
 		progressBar.setPreferredSize(new Dimension(200, 40));
-		progressBar.setBounds(0, 0, 200, 40);
+		progressBar.setBounds(0, 0, screenWidth, 20);
 
 		messagePanel.add(messageHolder);
 		messagePanel.add(progressBar);
@@ -1037,7 +1088,7 @@ if(filePath!=null)
 		mainPanel.add(bug_workaround);
 		bug_workaround.setVisible(false);
 
-		messagePanel.setVisible(false);
+		messagePanel.setBounds(0,0,0,0);
 		mainPanel.setPreferredSize(new Dimension(screenWidth, screenHeight));
 
 		scMain = new EScrollPane();
@@ -1102,31 +1153,58 @@ if(filePath!=null)
 		}
 	}
 
-	int progressTotal = 0;
-	int progressComplete = 0;
 
-	public void setProgress(final int pc, final String message) {
-		messagePanel.setVisible(true);
-		if (progressTotal == 0) {
-			messagePanel.setVisible(false);
-		} else {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					progressComplete = pc;
-					int percent = (100 / progressTotal) * progressComplete;
+public void hideMainComponents(){
+	canvasFrame.setVisible(false);
+	tlFrame.setVisible(false);
+}
+
+public void showMainComponents(){
+	canvasFrame.setVisible(true);
+	tlFrame.setVisible(true);
+}
+	public void setProgress(final int pca,final int pta, final String messagea,
+			final boolean showPercentagea) {
+		
+		final int pc = pca;
+		final int pt = pta;
+		final String message = messagea;
+		final boolean showPercentage = showPercentagea;
+		
+
+				
+	pout("WHAT IS IT: pc "+pc+" pt:"+pt+" message: "+message+" showp: "+showPercentage);
+	messagePanel.setVisible(false);messagePanel.setVisible(true);
+				messagePanel.setBounds(0,0,screenWidth,screenHeight);
+				hideMainComponents();
+				if (pt == 0) {
+					pout("SHOWING BECUASE PT = 0 " + message);
+					showMainComponents();
+					messagePanel.setBounds(0,0,0,0);
+				} else {
+					int percent = (100 / pt) * pc;
 					progressBar.setValue(percent);
-					progressBar.setString("" + percent + "%");
+					if (showPercentage)
+						progressBar.setString("" + percent + "%");
+					else
+						progressBar.setString(message);
 					progressBar.setStringPainted(true);
-					System.out.println("PRINTING " + percent + "%");
-					messagePanel.revalidate();
-					messageTextArea.setText(message + " " + percent + "%");
+				
+					if (showPercentage)
+						messageTextArea.setText(message + " - " + percent + "%");
+					else
+						messageTextArea.setText(message);
 					if (percent >= 100) {
-						messagePanel.setVisible(false);
+						messageTextArea.setText("");
+						showMainComponents();
+						messagePanel.setBounds(0,0,0,0);
+						
 					}
 				}
 
-			});
-		}
+				pout("MESSAGE TEXT = "+messageTextArea.getText());
+			
+		
 
 	}
 
@@ -1409,7 +1487,6 @@ if(filePath!=null)
 		canvas.init();
 
 		canvasFrame.setVisible(false);
-		canvasPanel.setBackground(new Color(67, 67, 67));
 		// canvasFrame.setClosable(true);
 		canvasFrame.setResizable(true);
 		canvasFrame.setDefaultCloseOperation(1);
@@ -2262,7 +2339,7 @@ if(filePath!=null)
 				canvas.finaliseFrame(CURRENTLAYER, CURRENTFRAME);
 
 				canvas.showNewFrame(CURRENTLAYER, CURRENTFRAME, -1);
-				saveInit(false);
+				saveInit(false,false);
 			}
 		});
 
@@ -2271,7 +2348,7 @@ if(filePath!=null)
 				canvas.finaliseFrame(CURRENTLAYER, CURRENTFRAME);
 
 				canvas.showNewFrame(CURRENTLAYER, CURRENTFRAME, -1);
-				saveNewFile();
+				saveInit(false,true);
 			}
 		});
 

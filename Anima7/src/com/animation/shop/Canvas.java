@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.swing.SwingUtilities;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
@@ -366,7 +365,7 @@ viewHeight = ch;
 	
 	public void addImagesToNewKeyFrameThread(final File[] files){
 		if(files == null){
-			parent.setProgress(100,"Cancelled By User");
+			parent.setProgress(100,100,"Cancelled By User",true);
 		}else{
 		   Thread t = new Thread(){
 		        public void run(){
@@ -380,6 +379,7 @@ viewHeight = ch;
 	public void addImagesToNewKeyFrames(File[] files){
 	int cf = parent.CURRENTFRAME;
 	parent.LOADED=false;
+	int progressTotal=files.length+1;
 			for(int i=0;i<files.length;i++){
 				if(!parent.timeline.layers.get(parent.CURRENTLAYER).jbs.get(parent.CURRENTFRAME).isKey){
 					parent.timeline.toggleKeyFrame(parent.CURRENTLAYER,parent.CURRENTFRAME,true);
@@ -396,25 +396,32 @@ viewHeight = ch;
 				parent.CURRENTFRAME++;
 				tmp=null;
 				}
-				parent.setProgress(i+1,"Importing Images:");
+				parent.setProgress(i,progressTotal,"Importing Images:",true);
 			}
 			parent.CURRENTFRAME=cf;
 			parent.canvas.showNewFrame(parent.CURRENTLAYER, cf, -1);
 		parent.LOADED=true;
-		parent.setProgress(100,"Importing Images:");
-		parent.messagePanel.setVisible(false);
+		//TODO summary of failed files
+		parent.setProgress(100,100,"Importing Images Complete",false);
+		//parent.messagePanel.setVisible(false);
 	}
 	public void loadNewFile(String folder,int maxlayers,int maxframes){
 		
+		File fl = new File(folder);
+		String fname = fl.getName();
+		
+			parent.setProgress(1,100, "Loading "+fname,false);
+			
 folder=folder.replaceAll(".anima","");
-println("LODAING IMAGES FROM FOLDER@ "+folder);
 		parent.currentActionIndex=0;
 		
 		parent.historicChanges= new ArrayList<SimpleRow>();
 		parent.ACTIONTYPE=new ArrayList<String>();
 		parent.historicImages=new ArrayList<PImage>();
+int progressTotal = parent.lastFrame+1;
+		for(int f=0;f<=parent.lastFrame;f++){
+			parent.setProgress(f,progressTotal, "Loading "+fname,true);
 			for(int l=0;l<maxlayers;l++)
-				for(int f=0;f<=parent.lastFrame;f++){
 					actionLoadFromFile(l,f,folder);
 				}
 			initImages(true);
@@ -422,7 +429,7 @@ println("LODAING IMAGES FROM FOLDER@ "+folder);
 			showNewFrame(parent.CURRENTLAYER,parent.CURRENTFRAME,-1);
 
 			parent.timeline.shiffleTable(parent.CURRENTFRAME,parent.CURRENTLAYER,0,true);
-
+			
 	}
 	
 	public void actionLoadFromFile(int l, int f,String folder){
