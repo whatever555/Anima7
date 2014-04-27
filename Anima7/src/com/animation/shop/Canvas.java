@@ -17,6 +17,11 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Line;
+import javax.sound.sampled.Mixer;
+import javax.sound.sampled.TargetDataLine;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
@@ -29,8 +34,11 @@ import aniFilters.MotionBlur;
 import aniFilters.RaysFilter;
 import aniFilters.ShadowFilter;
 import aniFilters.UnsharpFilter;
+import ddf.minim.AudioInput;
 import ddf.minim.AudioPlayer;
+import ddf.minim.AudioRecorder;
 import ddf.minim.Minim;
+import ddf.minim.ugens.FilePlayer;
 
 public class Canvas extends PApplet {
 
@@ -38,6 +46,10 @@ public class Canvas extends PApplet {
 	
 	private static final long serialVersionUID = 1L;
 	
+	// for recording
+	AudioInput in;
+	AudioRecorder recorder;
+	FilePlayer filePlayer;
 
 	int viewWidth=300,viewHeight=300;
 	Minim minim;
@@ -165,6 +177,9 @@ PImage selectMask;
 		Object ftemp = this;
 	public void setup() {
 	
+		 
+		  
+		  
 		while (ftemp!=null && !(ftemp instanceof Frame)) {
 		  ftemp = ((Component) ftemp).getParent();
 		}
@@ -240,6 +255,72 @@ viewHeight = ch;
 			frame.setResizable(false);
 	  showNewFrame(parent.CURRENTLAYER,parent.CURRENTFRAME,-1);
 		
+	}
+	boolean recording=false;
+	String recordingFileName = "recording";
+	boolean inVolume = false;
+	
+	public void beginRecording(){
+		recording=true;
+		// get a stereo line-in: sample buffer length of 2048
+		  // default sample rate is 44100, default bit depth is 16
+		
+		  in = minim.getLineIn(Minim.STEREO, 2048);
+	inVolume=in.isMuted();
+	println("volume = "+inVolume);
+		   recordingFileName = parent.workspaceFolder+"/data/" + parent.tmpName + "/"
+					+ parent.timeline.layers.get(parent.CURRENTLAYER).layerID + "_" + parent.CURRENTFRAME +".wav";
+		
+
+			  File f = new File(recordingFileName);
+			  if(f.exists())
+				  f.delete();
+			  
+		   if(!parent.timeline.layers.get(parent.CURRENTLAYER).jbs.get(parent.CURRENTFRAME).isKey){
+			 parent.timeline.layers.get(parent.CURRENTLAYER).jbs.get(parent.CURRENTFRAME).isKey=true;
+		 }
+
+			addAudioToKeyFrame(parent.CURRENTLAYER, parent.CURRENTFRAME, recordingFileName);
+			
+	
+		  recorder = minim.createRecorder(in, recordingFileName,true);
+		  
+		   recorder.beginRecord();
+	}
+	
+	public void endRecording(){
+		recorder.endRecord();
+		
+			 recorder.save();
+			in.close();
+		 recording=false;
+	}
+	
+	public TargetDataLine getTargetDataLine(AudioFormat desiredFormat, Mixer.Info desiredMixer)
+	{
+	     TargetDataLine targetDataLine = null;
+
+	     for(Line.Info lineInfo : AudioSystem.getMixer(desiredMixer).getTargetLineInfo())
+	     {
+	          if(lineInfo instanceof TargetDataLine.Info)
+	          {
+	               try
+	               {
+	                    targetDataLine = (TargetDataLine)AudioSystem.getMixer(desiredMixer).getLine(lineInfo);
+	                    targetDataLine.open(desiredFormat);
+	                    targetDataLine.close();
+	               }
+	               catch(Exception ex)
+	               {
+	                    targetDataLine = null;
+	                    continue;
+	               }
+
+	               break;
+	          }
+	     }
+
+	     return targetDataLine;
 	}
 		 
 	int clearGarbage = 0;
@@ -360,6 +441,10 @@ viewHeight = ch;
 			}
 
 		}
+		
+		if(recording){
+			text("RECORDING AUDIO",20,20);
+		}
 
 	}
 	
@@ -438,7 +523,7 @@ int progressTotal = parent.lastFrame+1;
 			if(tmp!=null){
 				
 				parent.timeline.layers.get(l).jbs.get(f).isKey=true;
-				String sp = savePath(parent.workspaceFolder+"/images/" + parent.tmpName + "/"
+				String sp = savePath(parent.workspaceFolder+"/data/" + parent.tmpName + "/"
 						+ parent.timeline.layers.get(l).layerID + "_" + f + ".png");
 				
 				tmp.save(sp);
@@ -483,7 +568,7 @@ int progressTotal = parent.lastFrame+1;
 				// Thread.currentThread().setPriority(1);
 				SAVING = true;
 
-				String sp = savePath(parent.workspaceFolder+"/images/" + parent.tmpName + "/"
+				String sp = savePath(parent.workspaceFolder+"/data/" + parent.tmpName + "/"
 						+ cl + "_" + ck + ".png");
 				img.save(sp);
 				SAVING = false;
@@ -654,25 +739,34 @@ int jutra = 0;
 	String resizeDirection = "";
 	AnimatedGifEncoder aniGIF;
 	SWFExport outSWF;
-	public void exportImages(boolean createAnimatedGIF,boolean createSWF,String STRextension,String location){
-		if(createSWF)
+	
+	public void exportImages(final boolean createAnimatedGIF,final boolean createSWF,final String STRextension,final String location){
+		Thread t = new Thread() {
+			public void run() {
+				parent.setProgress(1,100,"Exporting",false);
+		if(createSWF){
 		outSWF = new SWFExport(cw,ch,parent.FPS,null,
 				false,location+"/swf.swf");
+
+		parent.setProgress(1,100,"Exporting SWF",false);
+		}
 		
 		if(createAnimatedGIF){
+
+			parent.setProgress(1,100,"Exporting Animated Gif",false);
 			aniGIF = new AnimatedGifEncoder();
 		aniGIF.start(location+".png");
 		System.out.println(location+".png");
 		aniGIF.setDelay(1000/parent.FPS); 
 		}
 		
-		parent.frame.getContentPane().add(parent.messagePanel);
-		parent.messagePanel.setVisible(true);
 		parent.LOADED=false;
 		
 		PGraphics tmp = createGraphics(width,height);
-		
+		int progressTotal = parent.lastFrame+1;
 		for(int x=0;x<=parent.lastFrame;x++){
+
+			parent.setProgress(x,progressTotal,"Exporting:",true);
 			tmp.beginDraw();
 			tmp.clear();
 			//tmp.background(0,0);
@@ -701,6 +795,7 @@ int jutra = 0;
 		
 		tmp.endDraw();
 		
+
 		if(!createAnimatedGIF){
 		String sp = savePath(location+"/"
 				+ x +"."+STRextension);
@@ -711,10 +806,17 @@ int jutra = 0;
 		
 		
 		if(createSWF){
+			if(AUDIOLAYER>-1)
 			if(parent.timeline.layers.get(AUDIOLAYER).jbs.get(x).isKey){
 				outSWF.stopAudio();
 				if(parent.timeline.layers.get(AUDIOLAYER).jbs.get(x).hasAudio){
+					parent.setProgress(x,progressTotal,"Exporting Audio:",true);
+					try{
 					outSWF.playAudio(parent.timeline.layers.get(AUDIOLAYER).jbs.get(x).audioFile);
+					}catch(Exception anyEx){
+						parent.setProgress(x,progressTotal,"Problem Exporting Audio:",true);
+						println("Could not add Audio");
+					}
 				}
 			}
 				
@@ -726,6 +828,8 @@ int jutra = 0;
 		
 		
 		}
+
+		parent.setProgress(99,100,"Saving to File",false);
 		if(createSWF)
 			outSWF.exportThis();
 		if(createAnimatedGIF)
@@ -735,6 +839,10 @@ int jutra = 0;
 		blendMode(NORMAL);
 		currentFrameGraphic.blendMode(NORMAL);
 		tmp=null;
+
+		parent.setProgress(100,100,"Complete",false);
+			}};
+		t.start();
 	}
 	
 	public void checkResize(int x, int y) {
@@ -995,6 +1103,7 @@ public PImage getBorderToImage(PImage img,int alphaVal){
 		return 0;
 	}
 	public void playAudio(String audioPath){
+		if(!recording){
 		stopAudio();
 		println("GONNAPLAY: "+audioPath);
 		try{
@@ -1004,17 +1113,21 @@ public PImage getBorderToImage(PImage img,int alphaVal){
 		}catch(Exception ex){
 			//TODO MESSAGE WARNING
 		}
+		}
 	}
 boolean PLAYINGSOUND=false;
 	public void stopAudio(){
 		if(PLAYINGSOUND){
 		player.pause();
+		player.close();
 		player=null;
 		PLAYINGSOUND=false;
 		}
 	}
 	int AUDIOLAYER = -1;
 	public void addAudioToKeyFrame(int cl,int cf,String audioPath){
+		if(audioPath!=null)
+			if(audioPath.length()>3){
 		if(AUDIOLAYER == -1){
 			AUDIOLAYER = cl;
 			parent.timeline.layers.get(cl).setBackground(new Color(30,30,67));
@@ -1023,6 +1136,7 @@ boolean PLAYINGSOUND=false;
 		if(AUDIOLAYER == cl){
 		if(!parent.timeline.layers.get(cl).isMask){
 			AUDIOLAYER = cl;
+			if(!recording)
 		player = minim.loadFile(audioPath, 2048);
 		parent.timeline.layers.get(cl).jbs.get(cf).hasAudio=true;
 		parent.timeline.layers.get(cl).jbs.get(cf).audioFile=audioPath;
@@ -1036,7 +1150,7 @@ boolean PLAYINGSOUND=false;
 		}
 		
 	
-		
+			}
 		//parent.timeline.layers.get(getLayerIndex(cl)).jbs.get(getKeyFrame(cf, getLayerIndex(cl))).hasAudio=true;
 		//parent.timeline.layers.get(getLayerIndex(cl)).jbs.get(getKeyFrame(cf, getLayerIndex(cl))).audioFile=audioPath;
 	}
@@ -1769,7 +1883,7 @@ return true;
 			return loadImageFromCache(cl, ck);
 
 		} else {
-			return loadImagex(parent.workspaceFolder+"/images/" + parent.tmpName + "/" + cl
+			return loadImagex(parent.workspaceFolder+"/data/" + parent.tmpName + "/" + cl
 					+ "_" + ck + ".png");
 
 		}

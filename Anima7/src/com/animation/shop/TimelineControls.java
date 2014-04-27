@@ -33,6 +33,7 @@ public class TimelineControls extends EInternalFrame {
 	Color inactiveCol =new Color(240,240,240);
 	Color activeCol =new Color(190,190,190);
 	EButton toggleTrans ;
+	EButton recordButton;
 	Main parent;
 	ESpinner fpsSpinber;
 	EButton loopButton ;
@@ -129,15 +130,20 @@ public class TimelineControls extends EInternalFrame {
 		loopButton.setPreferredSize(new Dimension(20, 20));
 		EButton muteButton = new EButton();
 		muteButton.setPreferredSize(new Dimension(20, 20));
-		
+		recordButton = new EButton();
+		recordButton.setPreferredSize(new Dimension(20, 20));
 
 		try {
 
 			Image img = ImageIO.read(getClass().getResource(
 					"/data/icons/actions/play.png"));
-			playButton.setIcon(new ImageIcon(img));img = ImageIO.read(getClass().getResource(
+			playButton.setIcon(new ImageIcon(img));
+			img = ImageIO.read(getClass().getResource(
 					"/data/icons/actions/pause.png"));
 			pauseButton.setIcon(new ImageIcon(img));
+			img = ImageIO.read(getClass().getResource(
+					"/data/icons/tools/record.png"));
+			recordButton.setIcon(new ImageIcon(img));
 			img = ImageIO.read(getClass().getResource(
 					"/data/icons/actions/stop.png"));
 			stopButton.setIcon(new ImageIcon(img));
@@ -154,6 +160,7 @@ public class TimelineControls extends EInternalFrame {
 		
 
 		playButton.addActionListener(new MyActionListener("play"));
+		recordButton.addActionListener(new MyActionListener("record"));
 		pauseButton.addActionListener(new MyActionListener("pause"));
 		loopButton.addActionListener(new MyActionListener("loop"));
 		stopButton.addActionListener(new MyActionListener("stop"));
@@ -170,6 +177,7 @@ public class TimelineControls extends EInternalFrame {
 		playControlPanel.add(stopButton);
 		playControlPanel.add(loopButton);
 		playControlPanel.add(muteButton);
+		playControlPanel.add(recordButton);
 
 
 		fpsArea.add(fpsLabel);
@@ -253,6 +261,32 @@ parent.FPS = (int) (fpsSpinber.getValue());
     			
     		}
     		}
+    		else
+				if(myActionName.equals("record")){
+					
+					if(!parent.canvas.recording){
+		       			 parent.canvas.finaliseFrame(parent.CURRENTLAYER,parent.CURRENTFRAME);
+		    			parent.playPreviewBool=true;
+		    			parent.timelineControls.recordButton.setBackground(Color.RED);
+		    			new Thread() {
+		    				public void run() {
+
+								parent.canvas.beginRecording();
+		    	    			parent.playPreview();
+
+		    				}
+		    			}.start();
+		    			
+					}else{
+	    					parent.canvas.endRecording();
+	    				
+						parent.playPreviewBool=false;
+
+		    			parent.timelineControls.recordButton.setBackground(null);
+					}
+		    		
+					
+					}
     			else
         			if(myActionName.equals("pause")){
 
@@ -271,7 +305,10 @@ loopButton.setBackground(new Color(190,190,190));
     		else
     			if(myActionName.equals("stop")){
     				parent.canvas.stopAudio();
-    				
+    				if(parent.canvas.recording){
+    					parent.canvas.endRecording();
+    				}
+	    			parent.timelineControls.recordButton.setBackground(null);
     				parent.playPreviewBool=false;
     				new Thread() {
         				public void run() {

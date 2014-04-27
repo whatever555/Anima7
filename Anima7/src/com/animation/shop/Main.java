@@ -392,10 +392,10 @@ public class Main {
 		Point hotSpot;
 
 		if (cursorName.equals("brush") || cursorName.equals("Eraser")) {
-			if (PENSIZE > 78) {
+			if (PENSIZE > 78 || PENSIZE < 5) {
 				canvas.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 			} else {
-				hotSpot = new Point(PENSIZE / 2, PENSIZE / 2);
+				hotSpot = new Point((int)(PENSIZE / 2), (int)(PENSIZE / 2));
 				Cursor cursor = toolkit.createCustomCursor(
 						canvas.getBrushCursor(), hotSpot, cursorName);
 				canvas.setCursor(cursor);

@@ -98,11 +98,13 @@ boolean selected =false;
 
 						parent.parent.canvas.zoom(-100);
 										}
-							else
-								if(toolName.equals("dropper")){
-									parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,(byte)0,false);
-									parent.parent.setCursor("dropper");
-									}
+									else
+										if(toolName.equals("dropper")){
+											parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,(byte)0,false);
+											parent.parent.setCursor("dropper");
+											}
+
+									
 								else
 									if(toolName.equals("move")){
 										parent.parent.currentTool="moveInit";
