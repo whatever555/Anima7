@@ -3,7 +3,6 @@
  */
 package com.animation.shop;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -42,11 +41,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.colorchooser.ColorSelectionModel;
 import javax.swing.event.ChangeEvent;
@@ -61,6 +58,7 @@ import aniExtraGUI.EPanel;
 import aniExtraGUI.EScrollPane;
 import aniExtraGUI.ETabbedPane;
 import aniExtraGUI.LayerOptionsFrame;
+import aniExtraGUI.SettingsPanel;
 import aniFilters.FilterFrame;
 
 /**
@@ -112,7 +110,11 @@ public class Main {
 	boolean pasting = false;
 	boolean ISLOADED = false;
 
-	String language = "EN";
+
+	public String THEME = "Classic";
+	public String LAYOUT = "Classic";
+	
+	public String language = "EN";
 	boolean SAVEDTODISK = true;
 	int rotationOfTransformingBlock = 0;
 
@@ -164,7 +166,7 @@ public class Main {
 	ArrayList<PImage> cachedImages = new ArrayList<PImage>();
 
 	ArrayList<String> cachedImagesNames = new ArrayList<String>();
-	int CACHEMAX = 10;
+	public int CACHEMAX = 10;
 
 	// translations.put("Key Frame" , "");
 	Map<String, String> translations = new HashMap<String, String>();
@@ -195,7 +197,7 @@ public class Main {
 
 	EScrollPane scMain;
 
-	String workspaceFolder = null;
+	public String workspaceFolder = null;
 
 	static String loadFile;
 	JLabel messageTextArea;
@@ -1107,7 +1109,7 @@ public class Main {
 
 	}
 
-	String[] userConfig;
+	public String[] userConfig;
 
 	public void loadUserConfig() {
 		basicPapplet bp = new basicPapplet();
@@ -1521,6 +1523,15 @@ public void showMainComponents(){
 
 	}
 
+	
+	public void displaySettings(){
+
+		SettingsPanel sp = new SettingsPanel(this);
+		sp.setVisible(true);
+		sp.setBounds(10,100,320,400);
+		mainPanel.add(sp);
+	}
+	
 	JMenuItem mntmSave;
 	JMenuItem mnImportImage;
 	JMenuItem mnSaveAs;
@@ -1596,6 +1607,12 @@ public void showMainComponents(){
 		JMenuItem mnExportTFF = new JMenuItem("TIFF " + translate("Images"));
 		mntmExport.add(mnExportTFF);
 
+		mnFile.addSeparator();
+		
+		JMenuItem mntmPreferences = new JMenuItem(translate("Preferences") + "..");
+		mnFile.add(mntmPreferences);
+		
+		
 		mnFile.addSeparator();
 
 		JMenuItem mnExit = new JMenuItem(translate("Exit"));
@@ -1844,6 +1861,12 @@ public void showMainComponents(){
 
 		// //#####ACTIONS#####////
 
+		mntmPreferences.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				displaySettings();
+			}
+		});
+		
 		mntmLanguageJapanese.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				setDefaultLanguage("JP");
