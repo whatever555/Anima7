@@ -11,7 +11,7 @@ import aniExtraGUI.EInternalFrame;
 import aniExtraGUI.EPanel;
 import aniExtraGUI.EScrollPane;
 
-public class BrushSelection extends EInternalFrame {
+public class BrushSelection extends EPanel {
 
 		/**
 	 * 
@@ -37,11 +37,11 @@ public class BrushSelection extends EInternalFrame {
 
 			bordPanel.setLayout(new BorderLayout());
 			this.setLayout(new BorderLayout());
-			this.setVisible(false);
-			this.setTitle(translate("Brush Selection"));
-			this.setClosable(true); 
-			this.setResizable(true);
-			this.setDefaultCloseOperation(1);
+		//	this.setVisible(false);
+			//this.setTitle(translate("Brush Selection"));
+		//	this.setClosable(true); 
+		//	this.setResizable(true);
+		//	this.setDefaultCloseOperation(1);
 			
 			
 

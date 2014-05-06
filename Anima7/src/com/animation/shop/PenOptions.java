@@ -20,7 +20,7 @@ import aniExtraGUI.ESlider;
  * @author eddie
  *
  */
-public class PenOptions extends EInternalFrame implements ChangeListener {
+public class PenOptions extends EPanel implements ChangeListener {
 /**
 	 * 
 	 */
@@ -52,16 +52,16 @@ ColorButton colorButton;
 		sc.setBounds(0,0,WIDTH,HEIGHT);
 		//sc.setHorizontalScrollBarPolicy(EScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		//sc.setVerticalScrollBarPolicy(EScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		this.setTitle(translate("Brush Options"));
+		//this.setTitle(translate("Brush Options"));
 		this.setLayout(new BorderLayout());
-		this.setVisible(false);
+		//this.setVisible(false);
 		
 		
-		this.setClosable(true); 
+		//this.setClosable(true); 
 		// tlFrame.setIconifiable(true); 
-		this.setResizable(true);
+		//this.setResizable(true);
 		//tlFrame.setMaximumSize(new java.awt.Dimension(800, 200)); 
-		 this.setDefaultCloseOperation(1);
+		// this.setDefaultCloseOperation(1);
 		
 		
 		EPanel penOpsPanel = new EPanel();
@@ -171,7 +171,6 @@ ColorButton colorButton;
 
 	
 		
-		this.setResizable(true);
 		sc.setVisible(true);
 		penOpsPanel.setVisible(true);
 		

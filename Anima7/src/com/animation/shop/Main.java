@@ -3,6 +3,7 @@
  */
 package com.animation.shop;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -41,6 +42,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.KeyStroke;
@@ -57,6 +59,7 @@ import processing.core.PImage;
 import aniExtraGUI.EInternalFrame;
 import aniExtraGUI.EPanel;
 import aniExtraGUI.EScrollPane;
+import aniExtraGUI.ETabbedPane;
 import aniExtraGUI.LayerOptionsFrame;
 import aniFilters.FilterFrame;
 
@@ -104,6 +107,7 @@ public class Main {
 	int screenWidth;// = Toolkit.getDefaultToolkit().getScreenSize().width;
 	int screenHeight;// = Toolkit.getDefaultToolkit().getScreenSize().height;
 
+	EInternalFrame brushOptionsPane;
 	boolean MUTE = false;
 	boolean pasting = false;
 	boolean ISLOADED = false;
@@ -266,10 +270,14 @@ public class Main {
 		return str;
 	}
 
+
+	Color backColor =new Color(67, 67, 67);
+	
 	public static void main(String[] args) {
 
-		Font ffont = new Font("Verdana", Font.BOLD, 12);
+
 		Font smallFont = new Font("Verdana", Font.BOLD, 10);
+		Font ffont = new Font("Verdana", Font.BOLD, 12);
 		Color foreColor = new Color(202, 202, 202);
 		Color backColor =new Color(67, 67, 67);
 		Color heavierBack  = new Color(57, 57, 57);
@@ -303,8 +311,7 @@ public class Main {
 		UIManager.put("TabbedPane.unselectedBackground", backColor);
 		UIManager.put("TabbedPane.selectHighlight", backColor);
 		UIManager.put("TabbedPane.tabAreaBackground", backColor);
-		UIManager
-				.put("TabbedPane.borderHightlightColor", backColor);
+		UIManager.put("TabbedPane.borderHightlightColor", backColor);
 
 		UIManager.put("ScrollBar.trackHighlightForeground", (new Color(157,
 				157, 157)));
@@ -956,8 +963,8 @@ public class Main {
 
 		addTimelineControls();
 
-		addPenOptions();
-		addBrushOptions();
+		addBrushPane();
+		
 		// addColorPicker();
 		// snooze("after color picker options");
 		addPreviousColourList();
@@ -1030,11 +1037,10 @@ public class Main {
 		int defaultPanelWidth = (screenWidth - (CANVASWIDTH + extraX) - 40) / 2;
 		int defaultPanelHeight = 220;
 
-		penOps.setBounds(CANVASWIDTH + extraX, extraY, defaultPanelWidth,
+		brushOptionsPane.setBounds(CANVASWIDTH + extraX, extraY, defaultPanelWidth,
 				defaultPanelHeight);
 
-		BrushSelectionOps.setBounds(CANVASWIDTH + extraX, defaultPanelHeight
-				+ 5 + extraY, defaultPanelWidth, 200);
+	
 
 		extraX += 5;
 		timelineControls.setBounds(
@@ -1066,8 +1072,7 @@ public class Main {
 		tlFrame.setVisible(true);
 		toolBar.setVisible(true);
 		prevColPanel.setVisible(true);
-		penOps.setVisible(true);
-		BrushSelectionOps.setVisible(true);
+		brushOptionsPane.setVisible(true);
 		historyPanel.setVisible(true);
 		historyPanel.update();
 
@@ -1079,8 +1084,7 @@ public class Main {
 
 		mainPanel.add(prevColPanel);
 		mainPanel.add(canvasFrame);
-		mainPanel.add(penOps);
-		mainPanel.add(BrushSelectionOps);
+		mainPanel.add(brushOptionsPane);
 		mainPanel.add(historyPanel);
 		mainPanel.add(toolBar);
 		EPanel bug_workaround = new EPanel();
@@ -1413,19 +1417,29 @@ public void showMainComponents(){
 
 	}
 
-	public void addPenOptions() {
-
+	public void addBrushPane() {
+		brushOptionsPane = new EInternalFrame();
+		ETabbedPane brushTabbedPane= new ETabbedPane();
+		
+		
 		penOps = new PenOptions(this);
 
+		BrushSelectionOps = new BrushSelection(this);
+
+		brushTabbedPane.addTab("Brush Options", penOps);
+		brushTabbedPane.addTab("Brush Selection", BrushSelectionOps);
+		brushOptionsPane.add(brushTabbedPane);
+		
+		brushOptionsPane.setBackground(backColor);
+		brushOptionsPane.setTitle(translate("Brush"));
+		brushOptionsPane.setClosable(true); 
+		brushOptionsPane.setResizable(true);
+		brushOptionsPane.setDefaultCloseOperation(1);
 	}
 
 	BrushSelection BrushSelectionOps;
 
-	public void addBrushOptions() {
-
-		BrushSelectionOps = new BrushSelection(this);
-
-	}
+	
 
 	public void addHistoryPanel() {
 
