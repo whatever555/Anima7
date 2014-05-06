@@ -35,6 +35,7 @@ import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
@@ -45,9 +46,12 @@ import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 import javax.swing.colorchooser.ColorSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 
@@ -97,6 +101,10 @@ public class Main {
 	// tidy copy paste etc
 	JProgressBar progressBar;
 
+	public String[] currentTheme;
+	public String THEMESFOLDER;
+	public String PLUGINSFOLDER;
+	
 	int MAXACTIONS = 5;
 	public boolean LOADED = false;
 	int layerIndex = 0;
@@ -129,7 +137,6 @@ public class Main {
 	int lastFrame = 0;
 	int onionLeft = 0;
 	int onionRight = 0;
-	Font smallFont = new Font("Verdana", Font.ITALIC, 8);
 
 	int SHAPESTROKESIZE = 0;
 	Color SHAPESTROKECOLOR = new Color(0, 0, 0);
@@ -243,15 +250,15 @@ public class Main {
 			fontName = "MS Mincho";
 		}
 
-		UIManager.put("OptionPane.font", new Font(fontName, Font.BOLD, 12));
-		UIManager.put("Label.font", new Font(fontName, Font.BOLD, 12));
-		UIManager.put("Panel.font", new Font(fontName, Font.BOLD, 12));
-		UIManager.put("Button.font", new Font(fontName, Font.BOLD, 12));
-		UIManager.put("Slider.font", new Font(fontName, Font.BOLD, 12));
-		UIManager.put("Spinner.font", new Font(fontName, Font.BOLD, 12));
-		UIManager.put("ComboBox.font", new Font(fontName, Font.BOLD, 10));
-		UIManager.put("InternalFrame.font", new Font(fontName, Font.BOLD, 10));
-		UIManager.put("TextField.font", new Font(fontName, Font.BOLD, 10));
+		UIManager.put("OptionPane.font", new Font(fontName, Font.BOLD, largeFont.getSize()));
+		UIManager.put("Label.font", new Font(fontName, Font.BOLD, regularFont.getSize()));
+		UIManager.put("Panel.font", new Font(fontName, Font.BOLD, regularFont.getSize()));
+		UIManager.put("Button.font", new Font(fontName, Font.BOLD, regularFont.getSize()));
+		UIManager.put("Slider.font", new Font(fontName, Font.BOLD, regularFont.getSize()));
+		UIManager.put("Spinner.font", new Font(fontName, Font.BOLD, regularFont.getSize()));
+		UIManager.put("ComboBox.font", new Font(fontName, Font.BOLD, smallFont.getSize()));
+		UIManager.put("InternalFrame.font", new Font(fontName, Font.BOLD, smallFont.getSize()));
+		UIManager.put("TextField.font", new Font(fontName, Font.BOLD, smallFont.getSize()));
 		UIManager.put("InternalFrame.titleFont", new Font(fontName, Font.BOLD,
 				10));
 
@@ -273,70 +280,11 @@ public class Main {
 	}
 
 
-	Color backColor =new Color(67, 67, 67);
 	
 	public static void main(String[] args) {
 
 
-		Font smallFont = new Font("Verdana", Font.BOLD, 10);
-		Font ffont = new Font("Verdana", Font.BOLD, 12);
-		Color foreColor = new Color(202, 202, 202);
-		Color backColor =new Color(67, 67, 67);
-		Color heavierBack  = new Color(57, 57, 57);
-		
-		
-		UIManager.put("Button.font", smallFont);
-		UIManager.put("Label.font", smallFont);
-		UIManager.put("Panel.font", smallFont);
-		UIManager.put("ComboBox.font", smallFont);
-		UIManager.put("InternalFrame.font", smallFont);
-		UIManager.put("Spinner.font", smallFont);
-		UIManager.put("TextField.font", smallFont);
-
-		UIManager.put("OptionPane.font", ffont);
-		UIManager.put("OptionPane.foreground", foreColor);
-		UIManager.put("OptionPane.background", backColor);
-		UIManager.put("OptionPane.border", null);
-
-		UIManager.put("TabbedPane.tabAreaBackground", backColor);
-		UIManager.put("TabbedPane.contentAreaColor ", backColor);
-		UIManager.put("TabbedPane.selected", (new Color(37, 37, 37)));
-		UIManager.put("TabbedPane.background", (heavierBack));
-		UIManager.put("TabbedPane.border", (null));
-		UIManager.put("TabbedPane.contentBorderInsets", new Insets(0, 0, 0, 0));
-		UIManager.put("TabbedPane.tabsOverlapBorder", true);
-		UIManager.put("TabbedPane.borderColor", backColor);
-		UIManager.put("TabbedPane.darkShadow", backColor);
-		UIManager.put("TabbedPane.light", backColor);
-		UIManager.put("TabbedPane.highlight", backColor);
-		UIManager.put("TabbedPane.focus", backColor);
-		UIManager.put("TabbedPane.unselectedBackground", backColor);
-		UIManager.put("TabbedPane.selectHighlight", backColor);
-		UIManager.put("TabbedPane.tabAreaBackground", backColor);
-		UIManager.put("TabbedPane.borderHightlightColor", backColor);
-
-		UIManager.put("ScrollBar.trackHighlightForeground", (new Color(157,
-				157, 157)));
-		UIManager.put("scrollbar", (new Color(57, 57, 157)));
-		UIManager.put("Scrollbar", (new Color(57, 57, 157)));
-		UIManager.put("ScrollBar.thumb", new ColorUIResource(new Color(157,
-				157, 157)));
-		UIManager.put("ScrollBar.thumbHeight", 2);
-		UIManager.put("ScrollBar.background", (heavierBack));
-
-		UIManager.put("InternalFrame.activeTitleBackground",
-				new ColorUIResource(heavierBack));
-		UIManager.put("InternalFrame.inactiveTitleBackground",
-				new ColorUIResource(heavierBack));
-		UIManager.put("InternalFrame.activeTitleForeground",
-				new ColorUIResource(foreColor));
-		UIManager.put("InternalFrame.inactiveTitleForeground",
-				new ColorUIResource(foreColor));
-		UIManager.put("InternalFrame.titleFont", new FontUIResource(new Font(
-				"Verdana", Font.BOLD, 10)));
-
-		// // UIManager.put("InternalFrame.paletteCloseIcon", new
-		// IconUIResource(new Font("Verdana",Font.BOLD,10)));
+	
 
 		if (args.length > 0) {
 			loadFile = (args[0]);
@@ -393,6 +341,102 @@ public class Main {
 			}
 		});
 
+	}
+	
+	public Color timelineInactiveCol = new Color(120,120,120);
+	public Color timelineActiveCol = new Color(202,202,202);
+	public Color timelineHighlightedInactiveCol = new Color(120,120,190);
+	public Color timelineHighlightedActiveCol= new Color(70,70,190);
+	public Color timelineSelectedFrameCol=new Color(100,100,250);
+	public Color timelineSelectedKeyCol=new Color(70,70,250);
+	
+	
+	
+
+	public Font smallFont = new Font("Verdana", Font.BOLD, 10);
+	Font regularFont = new Font("Verdana", Font.BOLD, 12);
+	Font largeFont = new Font("Verdana", Font.BOLD, 14);
+	public Color foreColor = new Color(202, 202, 202);
+	public Color backColor =new Color(67, 67, 67);
+	Color heavierBack  = new Color(57, 57, 57);
+	Color selectedTabColor = new Color(37, 37, 37);
+	Color scrollBarColor1 = new Color(57, 57, 157);
+	Color scrollBarForeground = new Color(157,	157, 157);
+	Color selectedButtonBackColor = new Color(30,30,30);
+	Color buttonBackColor = new Color(77,77,77);
+	Color buttonForeground = new Color(202, 202, 202);
+	public Color topPanelBackground =new Color(37,37,37);
+	public Color topPanelForeground =  new Color(167,167,167);
+
+	public Color palletteBackground =new Color(37,37,37);
+	public Color mainPanelBackground = new Color(27,27,27);
+	
+	public void setUITheme(){
+		
+		applyTheme();
+		pout ("APLLYING "+THEME);
+		UIManager.put("Button.font", smallFont);
+		UIManager.put("Label.font", smallFont);
+		UIManager.put("Panel.font", smallFont);
+		UIManager.put("ComboBox.font", smallFont);
+		UIManager.put("InternalFrame.font", smallFont);
+		UIManager.put("Spinner.font", smallFont);
+		UIManager.put("TextField.font", smallFont);
+
+		UIManager.put("OptionPane.font", regularFont);
+		UIManager.put("OptionPane.foreground", foreColor);
+		UIManager.put("OptionPane.background", backColor);
+		UIManager.put("OptionPane.border", null);
+
+
+		UIManager.put("Panel.foreground", foreColor);
+		UIManager.put("Panel.background", backColor);
+
+
+		UIManager.put("Slider.foreground", foreColor);
+		UIManager.put("Slider.background", backColor);
+		
+
+		UIManager.put("Button.background", buttonBackColor);
+		UIManager.put("Button.foreground", buttonForeground);
+
+		UIManager.put("TabbedPane.tabAreaBackground", backColor);
+		UIManager.put("TabbedPane.contentAreaColor ", backColor);
+		UIManager.put("TabbedPane.selected", (selectedTabColor));
+		UIManager.put("TabbedPane.background", (heavierBack));
+		UIManager.put("TabbedPane.border", (null));
+		UIManager.put("TabbedPane.contentBorderInsets", new Insets(0, 0, 0, 0));
+		UIManager.put("TabbedPane.tabsOverlapBorder", true);
+		UIManager.put("TabbedPane.borderColor", backColor);
+		UIManager.put("TabbedPane.darkShadow", backColor);
+		UIManager.put("TabbedPane.light", backColor);
+		UIManager.put("TabbedPane.highlight", backColor);
+		UIManager.put("TabbedPane.focus", backColor);
+		UIManager.put("TabbedPane.unselectedBackground", backColor);
+		UIManager.put("TabbedPane.selectHighlight", backColor);
+		UIManager.put("TabbedPane.tabAreaBackground", backColor);
+		UIManager.put("TabbedPane.borderHightlightColor", backColor);
+
+		UIManager.put("ScrollBar.trackHighlightForeground", (scrollBarForeground));
+		UIManager.put("scrollbar", (scrollBarColor1));
+		UIManager.put("Scrollbar", (scrollBarColor1));
+		UIManager.put("ScrollBar.thumb", new ColorUIResource(scrollBarForeground));
+		UIManager.put("ScrollBar.thumbHeight", 2);
+		UIManager.put("ScrollBar.background", (heavierBack));
+
+		UIManager.put("InternalFrame.activeTitleBackground",
+				new ColorUIResource(heavierBack));
+		UIManager.put("InternalFrame.inactiveTitleBackground",
+				new ColorUIResource(heavierBack));
+		UIManager.put("InternalFrame.activeTitleForeground",
+				new ColorUIResource(foreColor));
+		UIManager.put("InternalFrame.inactiveTitleForeground",
+				new ColorUIResource(foreColor));
+		UIManager.put("InternalFrame.titleFont", new FontUIResource(new Font(
+				"Verdana", Font.BOLD, 10)));
+
+		// // UIManager.put("InternalFrame.paletteCloseIcon", new
+		// IconUIResource(new Font("Verdana",Font.BOLD,10)));
 	}
 
 	public void setCursor(String cursorName) {
@@ -466,7 +510,7 @@ public class Main {
 
 	public File[] getFiles() {
 		messagePanel.setVisible(true);
-		JFileChooser chooser = new JFileChooser();
+		JFileChooser chooser = new JFileChooser(new File(lastPath));
 		chooser.setMultiSelectionEnabled(true);
 		int returnVal = chooser.showOpenDialog(frame);
 
@@ -483,13 +527,19 @@ public class Main {
 	}
 
 	public String getFilePath() {
-		final JFileChooser fc = new JFileChooser();
+
+		final JFileChooser fc ;
+		if(lastPath!=null)
+			 fc = new JFileChooser(new File(lastPath));
+		else
+fc= new JFileChooser();
 
 		// In response to a button click:
 		int returnVal = fc.showOpenDialog(mainPanel);
 
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			file = fc.getSelectedFile();
+			lastPath=file.getPath();
 			return file.getPath();
 
 		} else {
@@ -502,9 +552,13 @@ public class Main {
 	public void saveNewFile() {
 
 		// TODO: Delete non-conflicting records in folder if not new
-
+		final JFileChooser fc;
 		// Create a file chooser
-		final JFileChooser fc = new JFileChooser();
+		pout("FIFLEPATH = "+filePath);
+		if(filePath!=null)
+		fc = new JFileChooser(new File(filePath));
+		else
+			fc = new JFileChooser();
 
 		// In response to a button click:
 		int returnVal = fc.showSaveDialog(mainPanel);
@@ -513,7 +567,10 @@ public class Main {
 			setProgress(100,100, "Save File to..", true);
 			file = fc.getSelectedFile();
 			fileName = file.getPath();
+			lastPath=filePath;
 			fileShortName = file.getName();
+
+			filePath = fileName.replace(fileShortName,"");
 			saveFile(file, false);
 		} else {
 			setProgress(100,100, "", true);
@@ -682,25 +739,25 @@ public class Main {
 		}
 	}
 
-	public void loadNow(final String filePath) {
+	public void loadNow(final String filePathTMP) {
 
 		Thread t = new Thread() {
 			public void run() {
 
 				
 				
-		if (filePath != null)
-			if (filePath.length() > 2) {
-				String[] strs = canvas.loadStrings(filePath);
+		if (filePathTMP != null)
+			if (filePathTMP.length() > 2) {
+				String[] strs = canvas.loadStrings(filePathTMP);
 				if (strs.length > 0) {
 
 					// cleanLocalFolder();
 					timeline.cleanOutTimeline();
 					
-					fileName = filePath;
+					fileName = filePathTMP;
 
 					fileShortName = file.getName();
-
+					filePath = fileName.replace(fileShortName,"");
 					setConfig(strs[0], file.getPath().replaceAll(extension, ""));
 				}
 			}
@@ -914,7 +971,7 @@ public class Main {
 		frame.setSize(new Dimension(screenWidth, screenHeight));
 
 		mainPanel = new JLayeredPane();
-		mainPanel.setBackground(new Color(27, 27, 27));
+	
 		mainPanel.setOpaque(true);
 		frame.setVisible(true);
 		mainPanel.setVisible(true);
@@ -922,19 +979,21 @@ public class Main {
 		 messageHolder = new EPanel();
 
 		messagePanel.setPreferredSize(new Dimension(screenWidth, screenHeight));
-		messagePanel.setBackground(new Color(47, 47, 47));
+		
 		messagePanel.setBounds(0, 0, screenWidth, screenHeight);
 		messagePanel.setLayout(null);
 		messageTextArea = new JLabel("Loading..");
 
-		int fontSizeToUse = 20;
 
+		mainPanel.setBackground((mainPanelBackground));
+		messagePanel.setBackground(backColor);
 		// Set the label's font size to the newly determined size.
-		messageTextArea.setFont(new Font("Verdana", Font.PLAIN, fontSizeToUse));
-		messageTextArea.setForeground(Color.white);
-		messageHolder.setBackground(new Color(47, 47, 47));
+		messageTextArea.setFont(largeFont);
+		messageTextArea.setForeground(foreColor);
+		messageHolder.setBackground(backColor);
 		messageHolder.setBounds(0, 50, screenWidth, 200);
 		messageHolder.add(messageTextArea);
+		
 
 		progressBar = new JProgressBar(0, 100);
 		progressBar.setVisible(true);
@@ -963,6 +1022,7 @@ public class Main {
 		addCanvas();
 		timeline.loadEmptyLayers();
 
+		addSettingsPanel();
 		addTimelineControls();
 
 		addBrushPane();
@@ -1062,7 +1122,6 @@ public class Main {
 		for (int i = 0; i < filterFrames.size(); i++) {
 			filterFrames.get(i).setPreferredSize(new Dimension(400, 260));
 			filterFrames.get(i).setBounds(200 + i, 200 + i, 400, 300);
-			filterFrames.get(i).setBackground(new Color(255, 255, 255));
 			filterFrames.get(i).setVisible(false);
 		}
 
@@ -1130,21 +1189,40 @@ public class Main {
 
 	}
 
-	public String getWorkSpaceFolder() {
-		return userConfig[0];
+	
+	
+	public void applyUserConfig(){
+		language = "EN";
+		
+		
+		if(userConfig[0]!=null)
+		if(!userConfig[0].equals("null"))
+			workspaceFolder=userConfig[0];
+
+		if(userConfig[1]!=null)
+		if(!userConfig[1].equals("null"))
+			language=userConfig[1];
+
+		if(userConfig[2]!=null)
+		if(!userConfig[2].equals("null"))
+			CACHEMAX=Integer.parseInt(userConfig[2]);
+		
+
+		if(userConfig[3]!=null)
+		if(!userConfig[3].equals("null"))
+			THEME=(userConfig[3]);
+
+		if(userConfig[4]!=null)
+		if(!userConfig[4].equals("null"))
+			LAYOUT=(userConfig[4]);
 	}
 
-	public void getLanguage() {
-		if (userConfig[1] != null)
-			language = userConfig[1];
-		if (language.equals("null")) {
-			language = "EN";
-		}
-	}
 
-	public String getFolderPath() {
+String lastPath;
+	public String getFolderPath(String defaultPath) {
 		JFileChooser chooser;
-		chooser = new JFileChooser();
+		pout("LASTPATH: "+lastPath+" DEFAULT PATH: "+defaultPath);
+		chooser = new JFileChooser(new File(defaultPath));
 		chooser.setCurrentDirectory(new java.io.File("."));
 		chooser.setDialogTitle(translate("Select workspace folder"));
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -1179,12 +1257,12 @@ public void showMainComponents(){
 		
 
 				
-	pout("WHAT IS IT: pc "+pc+" pt:"+pt+" message: "+message+" showp: "+showPercentage);
+	//pout("WHAT IS IT: pc "+pc+" pt:"+pt+" message: "+message+" showp: "+showPercentage);
 	messagePanel.setVisible(false);messagePanel.setVisible(true);
 				messagePanel.setBounds(0,0,screenWidth,screenHeight);
 				hideMainComponents();
 				if (pt == 0) {
-					pout("SHOWING BECUASE PT = 0 " + message);
+				//	pout("SHOWING BECUASE PT = 0 " + message);
 					showMainComponents();
 					messagePanel.setBounds(0,0,0,0);
 				} else {
@@ -1208,17 +1286,114 @@ public void showMainComponents(){
 					}
 				}
 
-				pout("MESSAGE TEXT = "+messageTextArea.getText());
+				//pout("MESSAGE TEXT = "+messageTextArea.getText());
 			
 		
 
 	}
+public void applyTheme(){
+	basicPapplet bp = new basicPapplet();
+	if(THEME==null)
+		THEME="Classic";
+	
+	currentTheme = bp.loadStrings("data/themes/"+THEME);
+	if(currentTheme == null){
+		currentTheme = bp.loadStrings("data/themes/Classic");
+	}
+	
+	
+	for(int i=0;i<currentTheme.length;i++){
+		String ts = currentTheme[i];
+		String[] tss = ts.split("::");
+		if(tss!=null){
+			if(tss.length==2){
+				if(tss[0].toLowerCase().equals("background"))
+					backColor = (hex2Rgb(tss[1]));
+			
+			if(tss[0].toLowerCase().equals("foreground"))
+			foreColor = (hex2Rgb(tss[1]));
+		
+
+		if(tss[0].toLowerCase().equals("selected color"))
+			heavierBack = (hex2Rgb(tss[1]));
+		if(tss[0].toLowerCase().equals("selected tab color"))
+			selectedTabColor = (hex2Rgb(tss[1]));
+		if(tss[0].toLowerCase().equals("scrollbar color"))
+			scrollBarColor1 = (hex2Rgb(tss[1]));
+		if(tss[0].toLowerCase().equals("scrollbar foreground color"))
+			scrollBarForeground = (hex2Rgb(tss[1]));
+		if(tss[0].toLowerCase().equals("scrollbar foreground color"))
+			scrollBarForeground = (hex2Rgb(tss[1]));
+		if(tss[0].toLowerCase().equals("small font size"))
+		smallFont.deriveFont(Integer.parseInt(tss[1]));
+		if(tss[0].toLowerCase().equals("regular font size"))
+		regularFont.deriveFont(Integer.parseInt(tss[1]));
+		if(tss[0].toLowerCase().equals("large font size"))
+		largeFont.deriveFont(Integer.parseInt(tss[1]));
+		if(tss[0].toLowerCase().equals("button background"))
+			buttonBackColor = (hex2Rgb(tss[1]));
+		if(tss[0].toLowerCase().equals("selected button background"))
+			selectedButtonBackColor = (hex2Rgb(tss[1]));
+		if(tss[0].toLowerCase().equals("button foreground"))
+			buttonForeground = (hex2Rgb(tss[1]));
+		if(tss[0].toLowerCase().equals("top panel foreground"))
+			topPanelForeground = (hex2Rgb(tss[1]));
+		if(tss[0].toLowerCase().equals("top panel background"))
+			topPanelBackground = (hex2Rgb(tss[1]));
+		if(tss[0].toLowerCase().equals("pallette background"))
+			palletteBackground = (hex2Rgb(tss[1]));
+		if(tss[0].toLowerCase().equals("main background"))
+			mainPanelBackground = (hex2Rgb(tss[1]));
+		//timeline
+		if(tss[0].toLowerCase().equals("inactive frame"))
+			timelineInactiveCol = (hex2Rgb(tss[1]));
+		if(tss[0].toLowerCase().equals("active frame"))
+			timelineActiveCol = (hex2Rgb(tss[1]));
+		if(tss[0].toLowerCase().equals("highlighted inactive frame"))
+			timelineHighlightedInactiveCol = (hex2Rgb(tss[1]));
+		if(tss[0].toLowerCase().equals("highlighted active frame"))
+			timelineHighlightedActiveCol = (hex2Rgb(tss[1]));
+		if(tss[0].toLowerCase().equals("selected frame"))
+			timelineSelectedFrameCol = (hex2Rgb(tss[1]));
+		if(tss[0].toLowerCase().equals("selected key"))
+			timelineSelectedKeyCol = (hex2Rgb(tss[1]));
+		
+		
+		
+		
+			}
+	}
+		}
+	
+	
+
+	
+	try {
+		Thread.sleep(220);
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	
+	
+	
+	
+	
+}
+public static Color hex2Rgb(String colorStr) {
+    return new Color(
+            Integer.valueOf( colorStr.substring( 1, 3 ), 16 ),
+            Integer.valueOf( colorStr.substring( 3, 5 ), 16 ),
+            Integer.valueOf( colorStr.substring( 5, 7 ), 16 ) );
+}
 
 	public Main() {
 
+		lastPath = System.getProperty("user.home");
+		
 		loadUserConfig();
-		getLanguage();
-		workspaceFolder = getWorkSpaceFolder();
+		applyUserConfig();
+		setUITheme();
 		frame.setTitle("WORKSPACE: " + workspaceFolder);
 		if (workspaceFolder == null) {
 
@@ -1234,7 +1409,7 @@ public void showMainComponents(){
 									+ translate("Do you want to select a different folder?"),
 							"Workspace", JOptionPane.YES_NO_OPTION);
 			if (selectedOption == JOptionPane.YES_OPTION) {
-				String tmp = getFolderPath();
+				String tmp = getFolderPath(workspaceFolder);
 				if (tmp != null) {
 					if (tmp.length() > 1) {
 						workspaceFolder = tmp;
@@ -1432,7 +1607,6 @@ public void showMainComponents(){
 		brushTabbedPane.addTab("Brush Selection", BrushSelectionOps);
 		brushOptionsPane.add(brushTabbedPane);
 		
-		brushOptionsPane.setBackground(backColor);
 		brushOptionsPane.setTitle(translate("Brush"));
 		brushOptionsPane.setClosable(true); 
 		brushOptionsPane.setResizable(true);
@@ -1483,6 +1657,14 @@ public void showMainComponents(){
 		tlFrame.add(timelineScrollPane);
 
 	}
+	
+	SettingsPanel settingsPanel;
+	public void addSettingsPanel(){
+		settingsPanel = new SettingsPanel(this);
+		settingsPanel.setVisible(false);
+		settingsPanel.setBounds(10,100,420,400);
+		mainPanel.add(settingsPanel);
+	}
 
 	public EInternalFrame canvasFrame;
 
@@ -1526,10 +1708,7 @@ public void showMainComponents(){
 	
 	public void displaySettings(){
 
-		SettingsPanel sp = new SettingsPanel(this);
-		sp.setVisible(true);
-		sp.setBounds(10,100,320,400);
-		mainPanel.add(sp);
+		settingsPanel.setVisible(true);
 	}
 	
 	JMenuItem mntmSave;
@@ -1820,6 +1999,13 @@ public void showMainComponents(){
 		JMenu mntmLanguage = new JMenu(translate("Set Language.."));
 		mntmHelp.add(mntmLanguage);
 
+		JMenuItem mntmLanguageRestart1 = new JMenuItem(
+				translate("Requires Restart"));
+		mntmLanguage.add(mntmLanguageRestart1);
+		mntmLanguageRestart1.setEnabled(false);
+		
+
+		mnFile.addSeparator();
 		JMenuItem mntmLanguageAfrikaans = new JMenuItem(translate("Afrikaans"));
 		mntmLanguage.add(mntmLanguageAfrikaans);
 
@@ -2611,5 +2797,7 @@ public void showMainComponents(){
 		toolBar.colorButton.setBackground(c);
 		topPanel.colorButton.setBackground(c);
 	}
+	
+
 
 }

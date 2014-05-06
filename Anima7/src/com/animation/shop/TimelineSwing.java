@@ -37,6 +37,7 @@ Color highlightInactive = new Color(120,120,190);
 Color highlightActive = new Color(70,70,190);
 Color selectedFrameCol=new Color(100,100,250);
 Color selectedKeyCol=new Color(70,70,250);
+
 Image emptyIcon;
 Font f1 = new Font("Verdana", Font.PLAIN, 10);
 Font f2 = new Font("Verdana", Font.PLAIN, 8);
@@ -55,6 +56,15 @@ ArrayList<TimelineLayer> layers = new ArrayList<TimelineLayer>();
 
 	public TimelineSwing(int lc, int fc,Main parent){
 
+		
+		inactive = parent.timelineInactiveCol;
+		active   = parent.timelineActiveCol;
+		highlightInactive =parent.timelineHighlightedInactiveCol;
+		highlightActive = parent.timelineHighlightedActiveCol;
+		selectedFrameCol =parent.timelineSelectedFrameCol;
+		selectedKeyCol=parent.timelineSelectedKeyCol;
+		
+		
 		 yoff=parent.timelineButtonHeight;
 		Image eyeImage =null;
 		Image maskImage =null;

@@ -13,8 +13,7 @@ public EButton(){
 	styleMe();
 }
 public void styleMe(){
-	setBackground(new Color(60,60,60));
-	setForeground(new Color(202,202,202));
+
 
 	//setFont(new Font("Verdana", Font.BOLD, 10)); 
 }

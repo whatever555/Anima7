@@ -110,8 +110,6 @@ public class TimelineControls extends EInternalFrame {
 		transparencyOfLayersPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 		toggleTrans = new EButton();
 		toggleTrans.setText("Toggle Layer Transparency");
-		toggleTrans.setFont(parent.smallFont);
-		toggleTrans.setBackground(activeCol);
 		transparencyOfLayersPanel.setPreferredSize(new Dimension(180, 20));
 		toggleTrans.setPreferredSize(new Dimension(180, 20));
 		transparencyOfLayersPanel.add(toggleTrans);
@@ -236,11 +234,11 @@ parent.FPS = (int) (fpsSpinber.getValue());
         	if(myActionName.equals("transToggle")){
         		if(parent.canvas.transValue==255){
         			parent.canvas.transValue = 125;
-        			toggleTrans.setBackground(activeCol);
+        			toggleTrans.setBackground(parent.buttonBackColor);
         		}
         			else{
         			parent.canvas.transValue = 255;
-        			toggleTrans.setBackground(inactiveCol);
+        			toggleTrans.setBackground(parent.selectedButtonBackColor);
         			
         			}
         	}else

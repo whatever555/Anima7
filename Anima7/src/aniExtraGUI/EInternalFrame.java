@@ -19,8 +19,6 @@ public class EInternalFrame extends JInternalFrame {
 	}
 
 	public void styleMe(){
-		setBackground(new Color(67,67,67));
-		setForeground(new Color(202,202,202));
 		javax.swing.plaf.basic.BasicInternalFrameUI ui = 
 			    new javax.swing.plaf.basic.BasicInternalFrameUI(this); 
 			this.setUI(ui); 

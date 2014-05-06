@@ -19,7 +19,7 @@ Main parent;
 		this.parent=parent;
 		this.setLayout(null);
 		this.setVisible(false);
-		this.setBackground(new Color(27,27,27));
+		this.setBackground(parent.palletteBackground);
 	}
 	
 	public void update(){

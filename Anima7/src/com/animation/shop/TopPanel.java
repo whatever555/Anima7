@@ -31,8 +31,8 @@ public class TopPanel extends EPanel{
 	Main parent;
 	
 	
-	Color bgCol = new Color(37,37,37);
-	Color fCol  = new Color(167,167,167);
+	Color bgCol;
+	Color fCol;
 	Image maxIcon,minIcon;
 	 boolean maxBool=false;
 	 final EButton minCanvas = new EButton();
@@ -52,8 +52,11 @@ squareSelectExtrasPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 	
 	public void showMe(){
 
-		this.setBackground(bgCol);
-		this.setForeground(fCol);
+		bgCol = parent.topPanelBackground;
+		fCol = parent.topPanelForeground;
+		
+		this.setBackground(parent.topPanelBackground);
+		this.setForeground(parent.topPanelForeground);
 		this.setLayout(new FlowLayout(FlowLayout.LEADING));
 
 		addColorSelect();
