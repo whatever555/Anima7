@@ -26,6 +26,7 @@ Main parent;
 		 ArrayList<ToolButton> toolButtonsList = new ArrayList<ToolButton>();
 		 
 		 
+		 
 		public void showMe(){
 this.setClosable(true); 
 			this.setResizable(true);
@@ -73,6 +74,8 @@ this.setClosable(true);
 			for(ToolButton tb: toolButtonsList){
 				tb.selected=false;
 				tb.setBackground(null);
+
+				setBackground(parent.buttonBackColor);
 				
 			}
 		}

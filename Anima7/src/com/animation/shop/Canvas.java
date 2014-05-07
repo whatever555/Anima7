@@ -237,11 +237,18 @@ viewHeight = ch;
 	public void resizeMe(int w, int h){
 		size(w, h);
 	}
-
-		 
-	public void zoom(int z){
-		viewWidth+=z;
-		viewHeight+=z;
+	int zoomLevel=100;
+public void zoom(int z){
+	zoomLevel = z;
+	zoomZ();
+}
+	public void zoomZ(){
+		if(zoomLevel<20){
+			zoomLevel=20;
+		}
+		finaliseFrame(parent.CURRENTLAYER,parent.CURRENTFRAME);
+		viewWidth=(parent.CANVASWIDTH/100)*zoomLevel;
+		viewHeight=(parent.CANVASHEIGHT/100)*zoomLevel;
 		frame.setResizable(true);
 		parent.canvasPanel.setPreferredSize(new Dimension(viewWidth, viewHeight));
 		setPreferredSize(new Dimension(viewWidth, viewHeight));

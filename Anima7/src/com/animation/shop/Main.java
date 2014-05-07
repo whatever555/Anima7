@@ -35,7 +35,6 @@ import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
@@ -46,12 +45,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
-import javax.swing.WindowConstants;
 import javax.swing.colorchooser.ColorSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.InternalFrameListener;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 
@@ -62,6 +58,7 @@ import aniExtraGUI.EPanel;
 import aniExtraGUI.EScrollPane;
 import aniExtraGUI.ETabbedPane;
 import aniExtraGUI.LayerOptionsFrame;
+import aniExtraGUI.ScreenInfoPane;
 import aniExtraGUI.SettingsPanel;
 import aniFilters.FilterFrame;
 
@@ -75,30 +72,26 @@ public class Main {
 
 	// 44H
 	// TODO LIST
+	//LIQUIDIFY
+	//SMUDGE
+	//CLONE
+	//GRADIENT
+	//CROP TWO TYPES
+	//
 	//FIX EXTRA LOADING LAYERS
-	// PROGRESS BAR FOR MESSAGES (2H)
-	// PREVIEW LOFI IMAGES
 	// MAKE SAVING AND LOADING MORE ELEGANT [NO MISSING FILES] CLEANING ETC (4H)
 	// SIMPLE BRUSHES (2H)
 	// Clean ICONS (3H)
 	// DRAG / MOVE KEYS (7H)
-	// SETTINGS MENU (5H)
 	// IMPORT EXPORT SVGS
-	// stageholders
 	// rotate transforms (2H)
 	// dashed/resizing ink
-	// layer properties (blending options)
-	// MOVE SCROLL ON ZOOM // SLIDER ZOOM
+	// MOVE SCROLL ON ZOOM // SLIDER ZOOM ////////////////////////////
 	// TWEENS + expand drawing area larger than stage(3H)
 	// CURSORS (1H)
-	// AUDIO
 	// fix ALPHA issue ON paste MASK
-	// ERASER (done as polygon select maybe?)
-	// Styling and Skins (4H)
 	// fix undos (8H)
 	// Workspace memory
-	// order algorithm for JFrames/layout
-	// tidy copy paste etc
 	JProgressBar progressBar;
 
 	public String[] currentTheme;
@@ -114,10 +107,13 @@ public class Main {
 	int screenHeight;// = Toolkit.getDefaultToolkit().getScreenSize().height;
 
 	EInternalFrame brushOptionsPane;
+	EInternalFrame screenOptionsPane;
+	
 	boolean MUTE = false;
 	boolean pasting = false;
 	boolean ISLOADED = false;
 
+	
 
 	public String THEME = "Classic";
 	public String LAYOUT = "Classic";
@@ -1027,6 +1023,8 @@ fc= new JFileChooser();
 
 		addBrushPane();
 		
+		addScreenOptionsPane();
+		
 		// addColorPicker();
 		// snooze("after color picker options");
 		addPreviousColourList();
@@ -1102,7 +1100,9 @@ fc= new JFileChooser();
 		brushOptionsPane.setBounds(CANVASWIDTH + extraX, extraY, defaultPanelWidth,
 				defaultPanelHeight);
 
-	
+
+		screenOptionsPane.setBounds(CANVASWIDTH + extraX, extraY+defaultPanelHeight+5, defaultPanelWidth,
+				defaultPanelHeight);
 
 		extraX += 5;
 		timelineControls.setBounds(
@@ -1134,6 +1134,7 @@ fc= new JFileChooser();
 		toolBar.setVisible(true);
 		prevColPanel.setVisible(true);
 		brushOptionsPane.setVisible(true);
+		screenOptionsPane.setVisible(true);
 		historyPanel.setVisible(true);
 		historyPanel.update();
 
@@ -1146,6 +1147,7 @@ fc= new JFileChooser();
 		mainPanel.add(prevColPanel);
 		mainPanel.add(canvasFrame);
 		mainPanel.add(brushOptionsPane);
+		mainPanel.add(screenOptionsPane);
 		mainPanel.add(historyPanel);
 		mainPanel.add(toolBar);
 		EPanel bug_workaround = new EPanel();
@@ -1592,6 +1594,24 @@ public static Color hex2Rgb(String colorStr) {
 		prevColPanel = new PreviousColours(this);
 		prevColPanel.setBorder(null);
 
+	}
+	
+	ScreenInfoPane screenInfoPane;
+	
+	public void addScreenOptionsPane(){
+		screenOptionsPane = new EInternalFrame();
+		screenInfoPane = new ScreenInfoPane(this);
+		
+
+		ETabbedPane tb= new ETabbedPane();
+		tb.addTab("Screen",screenInfoPane);
+		
+		screenOptionsPane.setTitle(translate("Screen"));
+		screenOptionsPane.setClosable(true); 
+		screenOptionsPane.setResizable(true);
+		screenOptionsPane.setDefaultCloseOperation(1);
+		
+		screenOptionsPane.add(tb);
 	}
 
 	public void addBrushPane() {

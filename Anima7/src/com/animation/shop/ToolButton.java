@@ -53,11 +53,12 @@ boolean selected =false;
 					
 				parent.refreshList();
 				selected = true;
-				setBackground(Color.white);
+				setBackground(parent.parent.selectedButtonBackColor);
+				if(!toolName.equals("zoomin") && !toolName.equals("zoomout")){
 				parent.parent.currentTool = toolName;
 				
 				parent.parent.canvas.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-				
+				}
 				
 				if(toolName.equals("Eraser")){
 					parent.parent.timeline.shiffleTable(parent.parent.CURRENTFRAME,parent.parent.CURRENTLAYER,(byte)0,false);
@@ -91,12 +92,12 @@ boolean selected =false;
 								}
 							else
 								if(toolName.equals("zoomin")){
-								parent.parent.canvas.zoom(100);
+								parent.parent.canvas.zoom(parent.parent.canvas.zoomLevel+10);
 									}
 								else
 									if(toolName.equals("zoomout")){
 
-						parent.parent.canvas.zoom(-100);
+										parent.parent.canvas.zoom(parent.parent.canvas.zoomLevel-10);
 										}
 									else
 										if(toolName.equals("dropper")){
