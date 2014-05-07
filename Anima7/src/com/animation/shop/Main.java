@@ -84,7 +84,7 @@ public class Main {
 	// Clean ICONS (3H)
 	// DRAG / MOVE KEYS (7H)
 	// IMPORT EXPORT SVGS
-	// rotate transforms (2H)
+	// rotate transforms (2H) /// now
 	// dashed/resizing ink
 	// MOVE SCROLL ON ZOOM // SLIDER ZOOM ////////////////////////////
 	// TWEENS + expand drawing area larger than stage(3H)

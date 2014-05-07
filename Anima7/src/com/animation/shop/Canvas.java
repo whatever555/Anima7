@@ -401,6 +401,26 @@ public void zoom(int z){
 					}
 
 				}
+				else		if (rotating) {
+						if (rotateDirection.indexOf("NE") > -1){
+							if(mouseX<clipBoardX+clipBoardWidth);
+							rotateValue+=(mouseX-pmouseX);
+						}
+						if (rotateDirection.indexOf("NW") > -1) {
+							rotateValue+=(mouseX-pmouseX);
+						}
+						if (rotateDirection.indexOf("SW") > -1)
+							clipBoardHeight += mouseY
+									- (clipBoardY + clipBoardHeight);
+						if (resizeDirection.indexOf("SE") > -1) {
+
+							clipBoardHeight -= (mouseY - clipBoardY);
+
+							clipBoardY = mouseY;
+						}
+
+					
+				}
 
 			} else {
 
@@ -409,6 +429,7 @@ public void zoom(int z){
 
 				} else {
 					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+					checkRotate(mouseX, mouseY);
 				}
 			}
 
@@ -455,6 +476,7 @@ public void zoom(int z){
 
 	}
 	
+	int rotateValue=0;
 	public void addImagesToNewKeyFrameThread(final File[] files){
 		if(files == null){
 			parent.setProgress(100,100,"Cancelled By User",true);
@@ -912,6 +934,67 @@ int jutra = 0;
 
 	}
 
+	
+	String rotateDirection;
+	String skewDirection;
+	public void checkRotate(int x, int y) {
+
+		int imgx = min(clipBoardX, clipBoardX + clipBoardWidth);
+		int imgxw = max(clipBoardX, clipBoardX + clipBoardWidth);
+		int imgy = min(clipBoardY, clipBoardY + clipBoardHeight);
+		int imgyh = max(clipBoardY, clipBoardY + clipBoardHeight);
+
+		boolean north = false, west = false, south = false, east = false;
+
+		if (clipBoardHeight > 0) {
+			north = (y < imgy && y > imgy - 10);
+			south = (y < imgyh +10 && y > imgyh);
+		} else {
+			south = (y < imgy && y > imgy -10);
+			north = (y < imgyh +10 && y > imgyh);
+		}
+
+		if (clipBoardWidth > 0) {
+
+			west = (x > imgx -10 && x < imgx);
+			east = (x < imgxw +10 && x > imgxw );
+		} else {
+			east = (x > imgx -10 && x < imgx );
+			west = (x < imgxw  +10 && x > imgxw );
+
+		}
+		rotating = true;
+		moving = false;
+		if (north && east) {
+			rotateDirection = "NE";
+			parent.setCursor("rotate");
+		} else if (north && west) {
+			rotateDirection = "NW";
+			parent.setCursor("rotate");
+		} else if (south && east) {
+			rotateDirection = "SE";
+			parent.setCursor("rotate");
+		} else if (south && west) {
+			rotateDirection = "SW";
+			parent.setCursor("rotate");
+		} else if (east) {
+			skewDirection = "E";
+			parent.setCursor("skew");
+		} else if (west) {
+			skewDirection = "W";
+			parent.setCursor("skew");
+		} else if (north) {
+			skewDirection = "N";
+			parent.setCursor("skew");
+		} else if (south) {
+			skewDirection = "S";
+			parent.setCursor("skew");
+		} else if (rotating) {
+			rotating = false;
+		}
+
+	}
+	
 	public void mousePressed() {
 	//	loop();
 		prevXPos = mouseX;
