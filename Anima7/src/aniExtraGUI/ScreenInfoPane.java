@@ -28,7 +28,7 @@ ESlider zoomSlider;
 		EPanel ep = new EPanel();
 		ep.setLayout(new FlowLayout(FlowLayout.LEADING));
 		
-		zoomSlider = new ESlider(20, 250, 100);
+		zoomSlider = new ESlider(20, 450, 100);
 		zoomSlider.addChangeListener(new MyChangeListener("zoom"));
 		
 		ELabel label = new ELabel("Zoom Level: ");
