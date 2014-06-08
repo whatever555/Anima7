@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="libs/jsminim.jar"/>
 	<classpathentry kind="lib" path="libs/tritonus_aos.jar"/>
 	<classpathentry kind="lib" path="libs/tritonus_share.jar"/>
+	<classpathentry kind="lib" path="libs/JGoogleAnalytics_0.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

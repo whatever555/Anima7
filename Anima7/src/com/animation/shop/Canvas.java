@@ -46,6 +46,7 @@ public class Canvas extends PApplet {
 	
 	private static final long serialVersionUID = 1L;
 	
+	ArrayList<UserAction> userActions;
 	// for recording
 	AudioInput in;
 	AudioRecorder recorder;
@@ -177,7 +178,7 @@ PImage selectMask;
 		Object ftemp = this;
 	public void setup() {
 	
-		 
+		userActions= new ArrayList<UserAction>();
 		  
 		  
 		while (ftemp!=null && !(ftemp instanceof Frame)) {
@@ -520,7 +521,8 @@ public void zoom(int z){
 		//parent.messagePanel.setVisible(false);
 	}
 	public void loadNewFile(String folder,int maxlayers,int maxframes){
-		
+		println("Loading "+folder);
+		userActions= new ArrayList<UserAction>();
 		File fl = new File(folder);
 		String fname = fl.getName();
 		
@@ -529,9 +531,7 @@ public void zoom(int z){
 folder=folder.replaceAll(".anima","");
 		parent.currentActionIndex=0;
 		
-		parent.historicChanges= new ArrayList<SimpleRow>();
-		parent.ACTIONTYPE=new ArrayList<String>();
-		parent.historicImages=new ArrayList<PImage>();
+		
 int progressTotal = parent.lastFrame+1;
 		for(int f=0;f<=parent.lastFrame;f++){
 			parent.setProgress(f,progressTotal, "Loading "+fname,true);
@@ -550,7 +550,7 @@ int progressTotal = parent.lastFrame+1;
 		if(parent.timeline.layers.get(l).jbs.get(f).isKey || f==0){
 			PImage tmp =loadImagex(folder+"/"+parent.timeline.layers.get(l).layerID+"_"+f+".png");
 			if(tmp!=null){
-				
+				println("laoding an image");
 				parent.timeline.layers.get(l).jbs.get(f).isKey=true;
 				String sp = savePath(parent.workspaceFolder+"/data/" + parent.tmpName + "/"
 						+ parent.timeline.layers.get(l).layerID + "_" + f + ".png");
@@ -784,8 +784,8 @@ int jutra = 0;
 
 			parent.setProgress(1,100,"Exporting Animated Gif",false);
 			aniGIF = new AnimatedGifEncoder();
-		aniGIF.start(location+".png");
-		System.out.println(location+".png");
+		aniGIF.start(location+".gif");
+		System.out.println(location+".gif");
 		aniGIF.setDelay(1000/parent.FPS); 
 		}
 		
@@ -870,10 +870,16 @@ int jutra = 0;
 		tmp=null;
 
 		parent.setProgress(100,100,"Complete",false);
+		if(createAnimatedGIF){
+			shareFilePaths.add(location);
+			println(location);
+		}
+		
 			}};
 		t.start();
 	}
 	
+	public ArrayList<String> shareFilePaths = new ArrayList<String>();
 	public void checkResize(int x, int y) {
 
 		int imgx = min(clipBoardX, clipBoardX + clipBoardWidth);
@@ -1216,25 +1222,24 @@ boolean PLAYINGSOUND=false;
 	}
 	int AUDIOLAYER = -1;
 	public void addAudioToKeyFrame(int cl,int cf,String audioPath){
+		cf=getKeyFrame(cf, getLayerIndex(cl));
 		if(audioPath!=null)
 			if(audioPath.length()>3){
 		if(AUDIOLAYER == -1){
 			AUDIOLAYER = cl;
+			parent.timeline.layers.get(cl).isAudioLayer=true;
 			parent.timeline.layers.get(cl).setBackground(new Color(30,30,67));
 			//TODO ADD EXPLAINING JOPTIONPANE MESSAGE
 		}
 		if(AUDIOLAYER == cl){
-		if(!parent.timeline.layers.get(cl).isMask){
 			AUDIOLAYER = cl;
 			if(!recording)
 		player = minim.loadFile(audioPath, 2048);
 		parent.timeline.layers.get(cl).jbs.get(cf).hasAudio=true;
 		parent.timeline.layers.get(cl).jbs.get(cf).audioFile=audioPath;
 		parent.timeline.layers.get(cl).jbs.get(cf).setIcon(parent.timeline.audioIcon);
-		}
-		else{
-			//TODO WARNING MESSAGE
-		}
+		
+		
 		}else{
 			//TODO WARNING MESSAGE about having only one audio layer
 		}
@@ -1291,6 +1296,12 @@ boolean PLAYINGSOUND=false;
 				
 				unsaved = true;
 
+				currentlySaving++;
+				if (currentlySaving > 999)
+					currentlySaving = 0;
+
+			
+			
 				new Thread() {
 					public void run() {
 						setSave(currentlySaving, false, parent.CURRENTLAYER,
@@ -1314,12 +1325,8 @@ boolean PLAYINGSOUND=false;
 
 					}
 				}.start();
-				
-				currentlySaving++;
-				if (currentlySaving > 999)
-					currentlySaving = 0;
-
-			} 
+			}
+			
 			if (parent.currentTool.equals("Eraser")) {
 				eraseInitialized=false;
 				tempGraphic.endDraw();
@@ -1328,6 +1335,11 @@ boolean PLAYINGSOUND=false;
 				currentFrameGraphic.clear();
 				currentFrameGraphic.image(tempDispImage2,0,0);
 				currentFrameGraphic.endDraw();
+				
+				currentlySaving++;
+				if (currentlySaving > 999)
+					currentlySaving = 0;
+				
 				new Thread() {
 					public void run() {
 						setSave(currentlySaving, false, parent.CURRENTLAYER,
@@ -1338,9 +1350,7 @@ boolean PLAYINGSOUND=false;
 
 				
 				
-				currentlySaving++;
-				if (currentlySaving > 999)
-					currentlySaving = 0;
+				
 
 			} 
 			else if (parent.currentTool.equals("bucket")) {
@@ -1352,14 +1362,28 @@ boolean PLAYINGSOUND=false;
 
 	// OK
 	public void cleanActions() {
-		while (parent.historicChanges.size() > parent.currentActionIndex + 1) {
-			parent.historicChanges.remove(parent.currentActionIndex + 1);
-			parent.ACTIONTYPE.remove(parent.currentActionIndex + 1);
-			parent.historicImages.remove(parent.currentActionIndex + 1);
+		//TODO use maxActions here
+		if(parent.currentActionIndex>parent.MAXACTIONS){
+			parent.currentActionIndex=parent.MAXACTIONS;
+		}
+		
+		if(!justDoneADo)
+		while (userActions.size() > parent.currentActionIndex + 1) {
+			
+			userActions.remove(0);
 
 		}
+		else
+		while (userActions.size() > parent.currentActionIndex + 1) {
+				
+				userActions.remove(userActions.size()-1);
+
+		}
+		justDoneADo=false;
 	}
 
+	boolean justDoneADo = false; //set to true when either undo or redo is preformed
+	
 	public void printInkToGraphic() {
 
 		currentFrameGraphic.beginDraw();
@@ -1390,6 +1414,7 @@ boolean PLAYINGSOUND=false;
 
 				actioning = true;
 				saveAction(cl, cf, message);
+				actioning = false;
 			}
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -1430,19 +1455,31 @@ boolean PLAYINGSOUND=false;
 
 			}
 
-			if(parent.currentActionIndex>parent.MAXACTIONS){
-				parent.currentActionIndex=parent.MAXACTIONS;
-			}
+if(justDoneADo)
+	cleanActions();
+
+if(!label.equals("Keyframe Added") && !label.equals("KEYADDFIX")  && !label.equals("KEYREMOVEFIX") && !label.equals("Keyframe Removed") &&  (lastSavedLayer!=cl || lastSavedFrame!=ck)){
+	parent.currentActionIndex++;
+	
+	
+	userActions.add(new UserAction("Change Frame",cl,ck,loadImageFromDisk(cl,ck),parent));
+	
+	cleanActions();
+	lastSavedLayer=cl;
+	lastSavedFrame=ck;
+}
+
+			parent.currentActionIndex++;
+			
+			if(label.equals("KEYREMOVEFIX" )|| label.equals("KeyFrame Removed") )
+				userActions.add(new UserAction(label,cl,cf,emptyImage,parent));
+				else
+			userActions.add(new UserAction(label,cl,ck,currentFrameGraphic,parent));
 			cleanActions();
-			parent.currentActionIndex =  parent.ACTIONTYPE.size();
+			//parent.historicImages.add(loadImageFromDisk(cl, ck));
 
-			parent.historicImages.add(loadImageFromDisk(cl, ck));
-
-			parent.historicChanges.add(new SimpleRow(cl, getKeyFrame(cf, getLayerIndex(cl))));
-			parent.ACTIONTYPE.add(label);
 			parent.historyPanel.update();
 
-			parent.currentActionIndex =  parent.ACTIONTYPE.size();
 
 			allowActions = true;
 			saving = false;
@@ -1450,10 +1487,13 @@ boolean PLAYINGSOUND=false;
 
 	
 	}
+	int lastSavedFrame=0;
+	int lastSavedLayer=0;
 
 	// one check
-	public void undo() {
-
+	public void undo(boolean finishOnMe) {
+		
+		//println("UNDOING: "+parent.currentActionIndex);
 		if (actioning) {
 			parent.currentActionIndex--;
 			actioning = false;
@@ -1461,87 +1501,52 @@ boolean PLAYINGSOUND=false;
 		if (parent.currentActionIndex > 0) {
 			parent.currentActionIndex--;
 			int ca = parent.currentActionIndex;
-			int cl = parent.historicChanges.get(ca).y;
-			int cl_index = getLayerIndex(cl);
-			int cf = parent.historicChanges.get(ca).x;
-			int ck = getKeyFrame(cf, cl_index);
+		
 
-			if (parent.ACTIONTYPE.size() > ca + 1)
-				if (parent.ACTIONTYPE.get(ca + 1) != null) {
-					if (parent.ACTIONTYPE.get(ca + 1).equals("Keyframe Added")) {
-						parent.timeline.layers.get(getLayerIndex(parent.historicChanges
-								.get(ca + 1).y)).jbs.get(parent.historicChanges
-								.get(ca + 1).x).isKey=false;
-					}
-					if (parent.ACTIONTYPE.get(ca + 1)
-							.equals("Keyframe Removed")) {
-						parent.timeline.layers.get(getLayerIndex(parent.historicChanges
-								.get(ca + 1).y)).jbs.get(parent.historicChanges
-								.get(ca + 1).x).isKey=true;
-
-					//TIMELINEICONS
-						//	parent.timeline.layers.get(cl_index).jbs.get(cf).setIcon(new ImageIcon(
-					//			parent.timeline.emptyIcon));
-
-					}
-
-				}
-
-			saveImageToDisk((parent.historicImages.get(ca).get()), cl, ck);
-			// repaint();
-
-			if (parent.ACTIONTYPE.get(ca).equals("Keyframe Added")) {
-				parent.timeline.layers.get(cl_index).jbs.get(cf).isKey=true;
-			}
-			if (parent.ACTIONTYPE.get(ca).equals("Keyframe Removed")) {
-				parent.timeline.layers.get(cl_index).jbs.get(cf).isKey=false;
-				
-				//TIMELINEICONS
-			//	parent.timeline.layers.get(cl_index).jbs.get(cf).setIcon(new ImageIcon(
-			//			parent.timeline.emptyIcon));
-
+			
+			userActions.get(ca).revertToMe();
+			
+			if(finishOnMe){
+				int cl = userActions.get(ca).y;
+				int cf = userActions.get(ca).x;
+				parent.timeline.shiffleTable(cf, cl, 0,true);
+				parent.CURRENTLAYER = cl;
+				parent.CURRENTFRAME = cf;
+				justDoneADo=true;
 			}
 
-			parent.timeline.shiffleTable(cf, cl, 0,false);
-			parent.CURRENTLAYER = cl;
-			parent.CURRENTFRAME = cf;
 		} else {
 			parent.currentActionIndex = 0;
 		}
 
 	}
 
-	public void redo() {
+	public void redo(boolean finishOnMe) {
 
 		parent.currentActionIndex++;
 
-		if (parent.currentActionIndex < parent.historicChanges.size()) {
+		if (parent.currentActionIndex < userActions.size()) {
 			int ca = parent.currentActionIndex;
-			int cl = parent.historicChanges.get(ca).y;
-			int cl_index = getLayerIndex(cl);
-			int cf = parent.historicChanges.get(ca).x;
-			int ck = getKeyFrame(cf,cl_index);
+			
 
-			// TODO: Is this needed HERE
-			currentFrameGraphic.beginDraw();
-			currentFrameGraphic.clear();
-			currentFrameGraphic.endDraw();
+			
 
-			saveImageToDisk((parent.historicImages.get(ca).get()), cl, ck);
+			userActions.get(ca).revertToMe();
 
-			if (parent.ACTIONTYPE.get(ca).equals("Keyframe Added")) {
-				parent.timeline.layers.get(cl_index).jbs.get(cf).isKey=true;
+			if(finishOnMe){
+				int cl = userActions.get(ca).y;
+				int cf = userActions.get(ca).x;
+				parent.timeline.shiffleTable(cf, cl, 0,true);
+				parent.CURRENTLAYER = cl;
+				parent.CURRENTFRAME = cf;
+				justDoneADo=true;
 			}
-			if (parent.ACTIONTYPE.get(ca).equals("Keyframe Removed")) {
-				parent.timeline.layers.get(cl_index).jbs.get(cf).isKey=false;
-			}
-
-			parent.timeline.shiffleTable(cf, cl, 0,false);
-			parent.CURRENTLAYER = cl;
-			parent.CURRENTFRAME = cf;
+			
 		} else {
-			parent.currentActionIndex = parent.historicChanges.size();
+			parent.currentActionIndex = userActions.size()-1;
 		}
+		
+		
 
 	}
   
@@ -1695,7 +1700,7 @@ boolean PLAYINGSOUND=false;
 		tmpG.background(0,0);
 		
 		if(AUDIOLAYER>-1)
-		if(parent.timeline.layers.get(AUDIOLAYER).jbs.get(parent.CURRENTFRAME).isKey){
+		if(parent.timeline.layers.get((AUDIOLAYER)).jbs.get(parent.CURRENTFRAME).isKey){
 		stopAudio();
 		if(parent.timeline.layers.get(AUDIOLAYER).jbs.get(parent.CURRENTFRAME).hasAudio && parent.playPreviewBool){
 			playAudio(parent.timeline.layers.get(AUDIOLAYER).jbs.get(parent.CURRENTFRAME).audioFile);
@@ -2037,13 +2042,21 @@ return true;
 	PImage tempImg;
 	public void finaliseFrame(int layer, int frame) {
 
+		boolean unused = finaliseFrameBool(layer,frame);
+
+	}
+	
+	public boolean finaliseFrameBool(int layer, int frame){
+		boolean ret=false;
 		if (parent.pasting) {
+			ret=true;
 			parent.canvas.finalisePaste();
 			keyEdited = true;
 			unsaved=true;
 		}
 
 		if (unsaved) {
+			ret=true;
 			saveAction(layer, frame, "Paint");
 
 		}
@@ -2053,7 +2066,7 @@ return true;
 		int lk = getKeyFrame(frame, getLayerIndex(layer));
 
 		if (keyEdited) {
-
+			ret=true;
 			tempImg = currentFrameGraphic.get();
 			saveImageToDisk(tempImg.get(), layer, lk);
 			tempImg=null;
@@ -2063,27 +2076,28 @@ return true;
 
 
 		}
+		return ret;
 		/*
 		 * if(parent.currentTool.equals("move")){
 		 * 
 		 * parent.currentTool="brush"; }
 		 */
-
 	}
 
 	public void showNewFrame(int layer, int frame,int hideLayer) {
-		
 		parent.CURRENTLAYER = layer;
 		parent.CURRENTFRAME = frame;
-
+if(currentFrameGraphic!=null){
 		currentFrameGraphic.beginDraw();
 		currentFrameGraphic.clear();
 		currentFrameGraphic.endDraw();
+
 		unsaved = false;
 		parent.pasting = false;
 
 		keyEdited = false;
 		layDownFrames(hideLayer);
+}
 	}
 
 	public void initImages(boolean isLoading) {
@@ -2675,6 +2689,8 @@ return pg;
 			
 		}else
 		if (apply) {
+
+			parent.tracker.track("APPLYFILTER|"+filterName,true);
 			keyEdited = true;
 			unsaved = true;
 			PImage tmp = currentFrameGraphic.get();

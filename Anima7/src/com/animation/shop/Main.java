@@ -53,13 +53,17 @@ import javax.swing.plaf.FontUIResource;
 
 import listeners.TimelineButtonActionListener;
 import processing.core.PImage;
+import MyTracking.Tracker;
 import aniExtraGUI.EInternalFrame;
+import aniExtraGUI.ELabel;
 import aniExtraGUI.EPanel;
 import aniExtraGUI.EScrollPane;
 import aniExtraGUI.ETabbedPane;
 import aniExtraGUI.LayerOptionsFrame;
 import aniExtraGUI.ScreenInfoPane;
 import aniExtraGUI.SettingsPanel;
+import aniExtraGUI.ShareFrame;
+import aniExtraGUI.WarningFrame;
 import aniFilters.FilterFrame;
 
 /**
@@ -67,30 +71,30 @@ import aniFilters.FilterFrame;
  * 
  */
 public class Main {
-	//
-	// SHAPES (2H = 1.2)
-
-	// 44H
-	// TODO LIST
-	//LIQUIDIFY
-	//SMUDGE
-	//CLONE
-	//GRADIENT
-	//CROP TWO TYPES
-	//
-	//FIX EXTRA LOADING LAYERS
+	
+	
+	//IMMEDIATE LIST
+	// GRAPHIC TABLET
 	// MAKE SAVING AND LOADING MORE ELEGANT [NO MISSING FILES] CLEANING ETC (4H)
-	// SIMPLE BRUSHES (2H)
+	// fix ALPHA issue ON paste MASK
 	// Clean ICONS (3H)
+	// CENTER ZOOM TOOL // SLIDER ZOOM FIX
+	
+	
+	//LONG FINGER LIST
+	// INSTALL/UNINSTALL NATIVE
+	// LIQUIDIFY
+	// SMUDGE
+	// CLONE
+	// GRADIENT
+	// CROP TWO TYPES
+	//
+	// FIX EXTRA LOADING LAYERS
+	// SIMPLE BRUSHES (2H)
 	// DRAG / MOVE KEYS (7H)
-	// IMPORT EXPORT SVGS
-	// rotate transforms (2H) /// now
-	// dashed/resizing ink
-	// MOVE SCROLL ON ZOOM // SLIDER ZOOM ////////////////////////////
 	// TWEENS + expand drawing area larger than stage(3H)
 	// CURSORS (1H)
-	// fix ALPHA issue ON paste MASK
-	// fix undos (8H)
+	
 	// Workspace memory
 	JProgressBar progressBar;
 
@@ -98,7 +102,7 @@ public class Main {
 	public String THEMESFOLDER;
 	public String PLUGINSFOLDER;
 	
-	int MAXACTIONS = 5;
+	int MAXACTIONS = 50;
 	public boolean LOADED = false;
 	int layerIndex = 0;
 	int timelineButtonWidth;
@@ -155,13 +159,11 @@ public class Main {
 	int fillInaccuracy = 12;
 	int selectInaccuracy = 12;
 	// ## UNDO REDO VARS
-	int MAXUNDOS = 5;
-	ArrayList<String> ACTIONTYPE = new ArrayList<String>();
 	int CHANGECOUNT = 0;
 	int LASTCHANGEINDEX = 0;
 	int currentActionIndex = 0;
-	ArrayList<PImage> historicImages = new ArrayList<PImage>();
-	ArrayList<SimpleRow> historicChanges = new ArrayList<SimpleRow>();
+	//ArrayList<PImage> historicImages = new ArrayList<PImage>();
+	//ArrayList<SimpleRow> historicChanges = new ArrayList<SimpleRow>();
 	ArrayList<SimpleRow> selectShapePoints = new ArrayList<SimpleRow>();
 	boolean UNDOKEYCHECK = false;
 	// ##
@@ -459,6 +461,7 @@ public class Main {
 				hotSpot = new Point(23, 12);
 
 			try {
+				System.out.println(cursorName);
 				image = ImageIO.read(getClass().getResource(
 						"/data/icons/tools/" + cursorName + ".png"));
 				Cursor cursor = toolkit.createCustomCursor(image, hotSpot,
@@ -1019,6 +1022,7 @@ fc= new JFileChooser();
 		timeline.loadEmptyLayers();
 
 		addSettingsPanel();
+		addShareFrame();
 		addTimelineControls();
 
 		addBrushPane();
@@ -1044,6 +1048,7 @@ fc= new JFileChooser();
 		timeline.showMe();
 		canvas.initImages(false);
 
+		addWarningFrame();
 		addFilterFrame();
 		addLayerOptionsFrame();
 		addActions();
@@ -1150,6 +1155,7 @@ fc= new JFileChooser();
 		mainPanel.add(screenOptionsPane);
 		mainPanel.add(historyPanel);
 		mainPanel.add(toolBar);
+		mainPanel.add(warningFrame);
 		EPanel bug_workaround = new EPanel();
 
 		mainPanel.add(bug_workaround);
@@ -1158,6 +1164,10 @@ fc= new JFileChooser();
 		messagePanel.setBounds(0,0,0,0);
 		mainPanel.setPreferredSize(new Dimension(screenWidth, screenHeight));
 
+		warningFrame.setBounds(50,50,400,320);
+		warningFrame.setPreferredSize(new Dimension(400, 320));
+
+		
 		scMain = new EScrollPane();
 
 		scMain.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -1167,9 +1177,35 @@ fc= new JFileChooser();
 		frame.getContentPane().add(scMain);
 
 		frame.setVisible(true);
+		
+		
+	if(!tracker.isUpToDate()){
+				
+			showUpdateMessage();
+		}
 
 	}
 
+	
+	public void showUpdateMessage(){
+		displayWarningMessage(("Update Available"),("<html>There is a newer version available.<br/>Please visit http://imaga.me to download the newer version</html>"),"http://imaga.me","Download Now");
+		
+	}
+	
+	
+	public void displayWarningMessage(String title, String message,String link,String link_text){
+		warningFrame.warningBody.setText(translate(message));
+		warningFrame.setTitle(translate(title));
+		warningFrame.linkBut.setVisible(false);
+		warningFrame.setVisible(true);
+		if(link!=null){
+
+			warningFrame.linkValue=link;
+			warningFrame.linkBut.setText(translate(link_text));
+			warningFrame.linkBut.setVisible(true);
+
+		}
+	}
 	public String[] userConfig;
 
 	public void loadUserConfig() {
@@ -1217,6 +1253,8 @@ fc= new JFileChooser();
 		if(userConfig[4]!=null)
 		if(!userConfig[4].equals("null"))
 			LAYOUT=(userConfig[4]);
+		
+		
 	}
 
 
@@ -1260,7 +1298,8 @@ public void showMainComponents(){
 
 				
 	//pout("WHAT IS IT: pc "+pc+" pt:"+pt+" message: "+message+" showp: "+showPercentage);
-	messagePanel.setVisible(false);messagePanel.setVisible(true);
+	messagePanel.setVisible(false);
+	messagePanel.setVisible(true);
 				messagePanel.setBounds(0,0,screenWidth,screenHeight);
 				hideMainComponents();
 				if (pt == 0) {
@@ -1283,6 +1322,7 @@ public void showMainComponents(){
 					if (percent >= 100) {
 						messageTextArea.setText("");
 						showMainComponents();
+
 						messagePanel.setBounds(0,0,0,0);
 						
 					}
@@ -1388,13 +1428,25 @@ public static Color hex2Rgb(String colorStr) {
             Integer.valueOf( colorStr.substring( 3, 5 ), 16 ),
             Integer.valueOf( colorStr.substring( 5, 7 ), 16 ) );
 }
-
+Tracker tracker;
+public String APPID = null;
 	public Main() {
-
+		tracker = new Tracker();
+		tracker.getAppId();
+		tracker.track("LOADINGMAIN",true);
+		
+		//Google analytics tracking code for Library Finder
+		
+		  
 		lastPath = System.getProperty("user.home");
 		
 		loadUserConfig();
 		applyUserConfig();
+		if(workspaceFolder!=null){
+			File wf = new File(workspaceFolder);
+			if(!wf.exists())
+				workspaceFolder=null;
+		}
 		setUITheme();
 		frame.setTitle("WORKSPACE: " + workspaceFolder);
 		if (workspaceFolder == null) {
@@ -1434,7 +1486,7 @@ public static Color hex2Rgb(String colorStr) {
 			loadNow(loadFile);
 		}
 		LOADED = true;
-
+		timeline.shiffleTable(CURRENTFRAME,CURRENTLAYER,0,true);
 	}
 
 	public void addActions() {
@@ -1551,7 +1603,13 @@ public static Color hex2Rgb(String colorStr) {
 		toolBar.setVisible(false);
 
 	}
-
+	
+	WarningFrame warningFrame;
+	public void addWarningFrame(){
+		warningFrame=new WarningFrame(this);
+		warningFrame.setVisible(false);
+		
+	}
 	LayerOptionsFrame LOF;
 
 	public void addLayerOptionsFrame() {
@@ -1679,11 +1737,18 @@ public static Color hex2Rgb(String colorStr) {
 	}
 	
 	SettingsPanel settingsPanel;
+	ShareFrame shareFrame;
 	public void addSettingsPanel(){
 		settingsPanel = new SettingsPanel(this);
 		settingsPanel.setVisible(false);
 		settingsPanel.setBounds(10,100,420,400);
 		mainPanel.add(settingsPanel);
+	}
+	public void addShareFrame(){
+		shareFrame = new ShareFrame(this);
+		shareFrame.setVisible(false);
+		shareFrame.setBounds(10,100,420,400);
+		mainPanel.add(shareFrame);
 	}
 
 	public EInternalFrame canvasFrame;
@@ -1729,6 +1794,11 @@ public static Color hex2Rgb(String colorStr) {
 	public void displaySettings(){
 
 		settingsPanel.setVisible(true);
+	}
+	
+	public void displayShareOptions(){
+shareFrame.update();
+		shareFrame.setVisible(true);
 	}
 	
 	JMenuItem mntmSave;
@@ -1806,6 +1876,11 @@ public static Color hex2Rgb(String colorStr) {
 		JMenuItem mnExportTFF = new JMenuItem("TIFF " + translate("Images"));
 		mntmExport.add(mnExportTFF);
 
+		mnFile.addSeparator();
+		
+		JMenuItem mntmShare = new JMenuItem(translate("Share..") + "..");
+		mnFile.add(mntmShare);
+		
 		mnFile.addSeparator();
 		
 		JMenuItem mntmPreferences = new JMenuItem(translate("Preferences") + "..");
@@ -2070,6 +2145,11 @@ public static Color hex2Rgb(String colorStr) {
 		mntmPreferences.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				displaySettings();
+			}
+		});
+		mntmShare.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				displayShareOptions();
 			}
 		});
 		
@@ -2648,14 +2728,17 @@ public static Color hex2Rgb(String colorStr) {
 
 		mntmUndo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				canvas.undo();
+				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
+				canvas.undo(true);
+				
 				// System.out.println("UNDO"+currentActionIndex);
 			}
 		});
 
 		mntmRedo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				canvas.redo();
+				canvas.finaliseFrame(CURRENTLAYER,CURRENTFRAME);
+				canvas.redo(true);
 			}
 		});
 

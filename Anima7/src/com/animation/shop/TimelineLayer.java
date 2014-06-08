@@ -26,6 +26,8 @@ public class TimelineLayer extends EPanel {
 	int yoff;
 	boolean isMask = false;
 	boolean hasMask = false;
+	int audioCount=0;
+	boolean isAudioLayer=false;
 	int maskOf = -1;
 	int myMask = -1;
 	ArrayList<TimelineButton> jbs = new ArrayList<TimelineButton>();
@@ -87,6 +89,7 @@ public class TimelineLayer extends EPanel {
 			parent.timeline.layers.get(maskOfIndex).repaint();
 			parent.timeline.revalidate();
 			parent.timeline.repaint();
+			
 
 		}
 	}
@@ -138,6 +141,9 @@ public class TimelineLayer extends EPanel {
 		 return parent.translate(str);
 	 }
 	public void deleteMe() {
+		if(isAudioLayer){
+			parent.canvas.AUDIOLAYER = -1;
+		}
 		if (hasMask) {
 			parent.timeline.layers.get(parent.canvas.getLayerIndex(myMask))
 					.deleteMe();
@@ -236,6 +242,7 @@ public class TimelineLayer extends EPanel {
 		lineArea.add(this.labelArea);
 	}
 public void moveUp(){
+	
 	int myIndex = parent.canvas.getLayerIndex(layerID);
 	if(myIndex>0){
 		int swapIndex = myIndex-1;
@@ -263,6 +270,13 @@ public void moveUp(){
 				parent.timeline.layers.get(myIndex).revalidate();
 				parent.timeline.layers.get(swapIndex).repaint();
 				parent.timeline.layers.get(myIndex).repaint();
+				
+				if(parent.canvas.AUDIOLAYER == myIndex){
+					parent.canvas.AUDIOLAYER = swapIndex;
+				}
+				if(parent.canvas.AUDIOLAYER == swapIndex){
+					parent.canvas.AUDIOLAYER = myIndex;
+				}
 				break;
 			}
 			swapIndex--;
@@ -298,6 +312,13 @@ public void moveDown(){
 				parent.timeline.layers.get(myIndex).revalidate();
 				parent.timeline.layers.get(swapIndex).repaint();
 				parent.timeline.layers.get(myIndex).repaint();
+				
+				if(parent.canvas.AUDIOLAYER == myIndex){
+					parent.canvas.AUDIOLAYER = swapIndex;
+				}
+				if(parent.canvas.AUDIOLAYER == swapIndex){
+					parent.canvas.AUDIOLAYER = myIndex;
+				}
 				break;
 			}
 			swapIndex++;

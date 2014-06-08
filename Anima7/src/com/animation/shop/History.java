@@ -55,19 +55,23 @@ EScrollPane sc = new EScrollPane();
 	 }
 	Image img;
 	public void update(){
+		
 		panelArea.removeAll();
 		int y=0;
 		
-			for(int j = parent.ACTIONTYPE.size() - 1; j >= 0; j--){
-				
+		//top down loop
+		if(parent.canvas.userActions!=null)
+			for(int j = parent.canvas.userActions.size() - 1; j >= 0; j--){
+				if(!parent.canvas.userActions.get(j).name.equals("KEYADDFIX") && !parent.canvas.userActions.get(j).name.equals("KEYREMOVEFIX")){
 				EButton jb = new EButton();
-				jb.setText(translate(parent.ACTIONTYPE.get(j)));
+				jb.setText(translate(parent.canvas.userActions.get(j).name));
 				jb.setPreferredSize(new Dimension(this.getWidth(),28));
 				jb.setMaximumSize(new Dimension(this.getWidth(),28));
 				jb.setBounds(0,(y*30),this.getWidth(),28);
 			jb.setBorder(null);
 				try {
-					img = ImageIO.read(getClass().getResource("/data/icons/actions/"+parent.ACTIONTYPE.get(j).replaceAll("\\s","")+".png"));
+					//TODO final static images here
+					img = ImageIO.read(getClass().getResource("/data/icons/actions/"+parent.canvas.userActions.get(j).name.replaceAll("\\s","")+".png"));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -79,8 +83,8 @@ EScrollPane sc = new EScrollPane();
 				
 				y++;
 				
-				jb.addActionListener(new MyActionListener(j));
-			
+				jb.addActionListener(new MyActionListenerZ(j));
+				}
 		}
 		
 			panelArea.repaint();
@@ -91,29 +95,35 @@ EScrollPane sc = new EScrollPane();
 	}
 	
 
-    private class MyActionListener implements ActionListener {
-
+    private class MyActionListenerZ implements ActionListener {
+//TODO the problem here is that the currentActionIndex is dynamic and myActionIndex refers to a static number
         int myActionIndex;
 
-        public MyActionListener(int a) {
+        public MyActionListenerZ(int a) {
            this.myActionIndex = a;
         }
         
 
         public void actionPerformed(ActionEvent e) {
-    		if(myActionIndex>parent.currentActionIndex){
-				while(parent.currentActionIndex!=myActionIndex){
-					parent.canvas.redo();
-					//System.out.println("REDOING: "+parent.currentActionIndex);
+        if(myActionIndex>parent.currentActionIndex){
+				while(parent.currentActionIndex<myActionIndex-1){
+					parent.canvas.redo(false);
+				
 				}
+				if(parent.currentActionIndex==myActionIndex-1)
+				parent.canvas.redo(true);
 				}
 				else{
-				while(parent.currentActionIndex!=myActionIndex){
 					
-					parent.canvas.undo();
-					//System.out.println("UNDOING: "+parent.currentActionIndex);
+				while(parent.currentActionIndex>myActionIndex+1){
+					
+					parent.canvas.undo(false);
 				}	
+
+				if(parent.currentActionIndex==myActionIndex+1)
+				parent.canvas.undo(true);
 				}
+
         }
     }
 }

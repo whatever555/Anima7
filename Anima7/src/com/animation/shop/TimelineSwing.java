@@ -142,6 +142,8 @@ ArrayList<TimelineLayer> layers = new ArrayList<TimelineLayer>();
 		revalidate();
 		repaint();
 
+		
+
 	}
 	
 	
@@ -205,9 +207,12 @@ public void addNewLayer(int y, boolean maskBool,int maskOf, String label){
 		repaint();
 	}
 	
+	
+	
 
 
 	public void toggleKeyFrame(int y, int x,boolean forceKey){
+		
 		
 		parent.canvas.currentFrameGraphic.beginDraw();
 		parent.canvas.currentFrameGraphic.clear();
@@ -220,19 +225,29 @@ public void addNewLayer(int y, boolean maskBool,int maskOf, String label){
 		int index =parent.canvas.getLayerIndex(y);
 		if(forceKey){
 			if(!layers.get(index).jbs.get(x).isKey){
+				
 				layers.get(index).jbs.get(x).isKey=true;
 				if(x>parent.lastFrame)
 					parent.lastFrame=x;
 				
 			}
-		}else
+		}else if(x!=0){
 		if(layers.get(index).jbs.get(x).isKey){
-			layers.get(index).jbs.get(x).isKey=false;
+
+			parent.canvas.saveAction(y,x,"KEYADDFIX");
+		
+			
+			layers.get(index).jbs.get(x).removeMe();
 			parent.canvas.layDownFrames(-1);
+
 			parent.canvas.saveAction(y,x,"Keyframe Removed");
 			if(x>=parent.lastFrame)
 				parent.getLastFrame();
 			}else{
+
+				parent.canvas.saveAction(y,x,"KEYREMOVEFIX");
+			
+				
 				layers.get(index).jbs.get(x).isKey=true;
 			
 			parent.canvas.saveAction(y,x,"Keyframe Added");
@@ -240,6 +255,7 @@ public void addNewLayer(int y, boolean maskBool,int maskOf, String label){
 				parent.lastFrame=x;
 			parent.canvas.layDownFrames(-1);
 			}
+		}
 		
 	}
 
@@ -305,6 +321,7 @@ public void addNewLayer(int y, boolean maskBool,int maskOf, String label){
 					
 			
 				repaint();
+				if(clickBut!=2)
 		parent.canvas.showNewFrame(y,x,-1);
 	}
 		

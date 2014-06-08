@@ -22,6 +22,8 @@ TimelineLayer myLayer;
 boolean isKey=false;
 boolean selected=false;
 boolean hasImage=false;
+boolean unedited=true;
+
 public TimelineButton(Main parent,TimelineLayer myLayer,int frameID){
 	this.parent=parent;
 	this.myLayer=myLayer;
@@ -32,6 +34,54 @@ public TimelineButton(Main parent,TimelineLayer myLayer,int frameID){
 	myLayer.add(this);
 	this.addActionListener(parent.timelineButtonActionListener);
 	this.setActionCommand(myLayer.layerID+"-"+frameID);
+}
+
+public TimelineButton(TimelineButton tb){
+	this.parent=tb.parent;
+	this.myLayer=tb.myLayer;
+	this.frameID=tb.frameID;
+	this.w=parent.timelineButtonWidth;
+	this.h=parent.timelineButtonHeight;
+	this.x=tb.x;
+	this.y=tb.y;
+	this.layerID=tb.layerID;
+	this.w=tb.w;
+	this.h=tb.h;
+	this.isKey=tb.isKey;
+	this.audioFile=tb.audioFile;
+	this.hasAudio=tb.hasAudio;
+	this.selected=tb.selected;
+	this.unedited=tb.unedited;
+	fixMe();
+	myLayer.add(this);
+	this.addActionListener(parent.timelineButtonActionListener);
+	this.setActionCommand(myLayer.layerID+"-"+frameID);
+	
+	this.setBackground(tb.getBackground());
+}
+
+public void updateVars(TimelineButton tb){
+	this.parent=tb.parent;
+	this.myLayer=tb.myLayer;
+	this.frameID=tb.frameID;
+	this.w=parent.timelineButtonWidth;
+	this.h=parent.timelineButtonHeight;
+	this.x=tb.x;
+	this.y=tb.y;
+	this.layerID=tb.layerID;
+	this.w=tb.w;
+	this.h=tb.h;
+	this.isKey=tb.isKey;
+	this.audioFile=tb.audioFile;
+	this.hasAudio=tb.hasAudio;
+	this.selected=tb.selected;
+	this.unedited=tb.unedited;
+	this.setBackground(tb.getBackground());
+	//fixMe();
+	//myLayer.add(this);
+	//this.addActionListener(parent.timelineButtonActionListener);
+//	this.setActionCommand(myLayer.layerID+"-"+frameID);
+
 }
 
 public void fixMe(){
@@ -46,6 +96,15 @@ public void fixMe(){
 	
 }
 
+public void removeMe(){
+	audioFile="";
+	hasAudio=false;
+	isKey=false;
+	selected=false;
+	hasImage=false;
+
+	
+}
 
 
 	
