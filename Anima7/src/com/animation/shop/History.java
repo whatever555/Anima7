@@ -24,9 +24,10 @@ public class History extends EInternalFrame {
 	private static final long serialVersionUID = 1L;
 Main parent;
 EPanel panelArea;
-EScrollPane sc = new EScrollPane();
+EScrollPane sc;
 	public History(Main parent){
 		this.parent=parent;
+		 sc = new EScrollPane(parent.scrollBarForeground);
 		this.setVisible(false);
 		
 		showMe();

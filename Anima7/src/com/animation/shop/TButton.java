@@ -18,7 +18,7 @@ public class TButton extends EButton{
 	
 	public TButton(String str){
 		 super();
-		this.setBorder(null);
+		//this.setBorder(null);
 		this.setText(str);
 		
 	 }

@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -189,7 +191,22 @@ public class SettingsPanel extends EInternalFrame{
 		        public void actionPerformed(ActionEvent e) {
 		        	if(myActionName.equals("theme")){
 		        		parent.THEME = (String) themeList.getSelectedItem();
-		        		parent.applyTheme();
+		        	
+		        		parent.setUITheme();
+		        		  try
+		                  {
+		                     //UIManager.setLookAndFeel(parent.frame);
+		                     SwingUtilities.updateComponentTreeUI(parent.frame);
+		                  }
+		                  catch (Exception e1)
+		                  {
+		                     e1.printStackTrace();
+		                  }
+		        			parent.setUIOnExtras();
+		        		parent.frame.revalidate();
+		        		parent.frame.repaint();
+
+		        		parent.timeline.colorMePink();
 		        	}
 		        	
 		        	changeActionCount++;

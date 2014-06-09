@@ -41,7 +41,7 @@ public class TimelineLayer extends EPanel {
 	
 	public TimelineLayer(Main parent, int layerID, boolean isMask) {
 		this.isMask = isMask;
-		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		lineArea = new EPanel();
 		//lineArea.setBackground(parent.timeline.bgCol);
 		lineArea.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));

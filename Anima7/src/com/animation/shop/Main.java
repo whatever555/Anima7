@@ -31,6 +31,7 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -45,6 +46,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.colorchooser.ColorSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -55,7 +57,6 @@ import listeners.TimelineButtonActionListener;
 import processing.core.PImage;
 import MyTracking.Tracker;
 import aniExtraGUI.EInternalFrame;
-import aniExtraGUI.ELabel;
 import aniExtraGUI.EPanel;
 import aniExtraGUI.EScrollPane;
 import aniExtraGUI.ETabbedPane;
@@ -94,6 +95,40 @@ public class Main {
 	// DRAG / MOVE KEYS (7H)
 	// TWEENS + expand drawing area larger than stage(3H)
 	// CURSORS (1H)
+	
+	
+	public ColorUIResource timelineInactiveCol = new ColorUIResource(120,120,120);
+	public ColorUIResource timelineActiveCol = new ColorUIResource(202,202,202);
+	public ColorUIResource timelineHighlightedInactiveCol = new ColorUIResource(120,120,190);
+	public ColorUIResource timelineHighlightedActiveCol= new ColorUIResource(70,70,190);
+	public ColorUIResource timelineSelectedFrameCol=new ColorUIResource(100,100,250);
+	public ColorUIResource timelineSelectedKeyCol=new ColorUIResource(70,70,250);
+	
+	
+	
+
+	public FontUIResource smallFont = new FontUIResource("Verdana", Font.BOLD, 10);
+	Font regularFont = new Font("Verdana", Font.BOLD, 12);
+	Font largeFont = new Font("Verdana", Font.BOLD, 14);
+	public ColorUIResource foreColor = new ColorUIResource(202, 202, 202);
+	public ColorUIResource backColor =new ColorUIResource(67, 67, 67);
+	ColorUIResource frameTitleBackground  = new ColorUIResource(57, 57, 57);
+	ColorUIResource frameTitleForeground  = new ColorUIResource(202, 202, 202);
+	ColorUIResource selectedTabColor = new ColorUIResource(37, 37, 37);
+	ColorUIResource scrollBarColor1 = new ColorUIResource(57, 57, 157);
+	ColorUIResource scrollBarForeground = new ColorUIResource(157,	157, 157);
+	ColorUIResource selectedButtonBackColor = new ColorUIResource(30,30,30);
+	ColorUIResource buttonBackColor = new ColorUIResource(77,77,77);
+	ColorUIResource  buttonForeground = new ColorUIResource(202, 202, 202);
+	public ColorUIResource topPanelBackground =new ColorUIResource(37,37,37);
+	public ColorUIResource topPanelForeground =  new ColorUIResource(167,167,167);
+
+	public ColorUIResource palletteBackground =new ColorUIResource(37,37,37);
+	public ColorUIResource mainPanelBackground = new ColorUIResource(27,27,27);
+	
+	public ColorUIResource frameBorderColor = new ColorUIResource(67,67,67);
+	
+	
 	
 	// Workspace memory
 	JProgressBar progressBar;
@@ -208,7 +243,7 @@ public class Main {
 	JLabel messageTextArea;
 	boolean CTRL = false;
 	boolean SHIFT = false;
-	static JFrame frame = new JFrame();
+	public static JFrame frame = new JFrame();
 
 	public void initVars() {
 		currentTool = "brush";
@@ -248,16 +283,16 @@ public class Main {
 			fontName = "MS Mincho";
 		}
 
-		UIManager.put("OptionPane.font", new Font(fontName, Font.BOLD, largeFont.getSize()));
-		UIManager.put("Label.font", new Font(fontName, Font.BOLD, regularFont.getSize()));
-		UIManager.put("Panel.font", new Font(fontName, Font.BOLD, regularFont.getSize()));
-		UIManager.put("Button.font", new Font(fontName, Font.BOLD, regularFont.getSize()));
-		UIManager.put("Slider.font", new Font(fontName, Font.BOLD, regularFont.getSize()));
-		UIManager.put("Spinner.font", new Font(fontName, Font.BOLD, regularFont.getSize()));
-		UIManager.put("ComboBox.font", new Font(fontName, Font.BOLD, smallFont.getSize()));
-		UIManager.put("InternalFrame.font", new Font(fontName, Font.BOLD, smallFont.getSize()));
-		UIManager.put("TextField.font", new Font(fontName, Font.BOLD, smallFont.getSize()));
-		UIManager.put("InternalFrame.titleFont", new Font(fontName, Font.BOLD,
+		UIManager.put("OptionPane.font", new FontUIResource(fontName, Font.BOLD, largeFont.getSize()));
+		UIManager.put("Label.font", new FontUIResource(fontName, Font.BOLD, regularFont.getSize()));
+		UIManager.put("Panel.font", new FontUIResource(fontName, Font.BOLD, regularFont.getSize()));
+		UIManager.put("Button.font", new FontUIResource(fontName, Font.BOLD, regularFont.getSize()));
+		UIManager.put("Slider.font", new FontUIResource(fontName, Font.BOLD, regularFont.getSize()));
+		UIManager.put("Spinner.font", new FontUIResource(fontName, Font.BOLD, regularFont.getSize()));
+		UIManager.put("ComboBox.font", new FontUIResource(fontName, Font.BOLD, smallFont.getSize()));
+		UIManager.put("InternalFrame.font", new FontUIResource(fontName, Font.BOLD, smallFont.getSize()));
+		UIManager.put("TextField.font", new FontUIResource(fontName, Font.BOLD, smallFont.getSize()));
+		UIManager.put("InternalFrame.titleFont", new FontUIResource(fontName, Font.BOLD,
 				10));
 
 		EN_TRANS = loadTranslations("EN");
@@ -341,98 +376,173 @@ public class Main {
 
 	}
 	
-	public Color timelineInactiveCol = new Color(120,120,120);
-	public Color timelineActiveCol = new Color(202,202,202);
-	public Color timelineHighlightedInactiveCol = new Color(120,120,190);
-	public Color timelineHighlightedActiveCol= new Color(70,70,190);
-	public Color timelineSelectedFrameCol=new Color(100,100,250);
-	public Color timelineSelectedKeyCol=new Color(70,70,250);
-	
-	
-	
 
-	public Font smallFont = new Font("Verdana", Font.BOLD, 10);
-	Font regularFont = new Font("Verdana", Font.BOLD, 12);
-	Font largeFont = new Font("Verdana", Font.BOLD, 14);
-	public Color foreColor = new Color(202, 202, 202);
-	public Color backColor =new Color(67, 67, 67);
-	Color heavierBack  = new Color(57, 57, 57);
-	Color selectedTabColor = new Color(37, 37, 37);
-	Color scrollBarColor1 = new Color(57, 57, 157);
-	Color scrollBarForeground = new Color(157,	157, 157);
-	Color selectedButtonBackColor = new Color(30,30,30);
-	Color buttonBackColor = new Color(77,77,77);
-	Color buttonForeground = new Color(202, 202, 202);
-	public Color topPanelBackground =new Color(37,37,37);
-	public Color topPanelForeground =  new Color(167,167,167);
-
-	public Color palletteBackground =new Color(37,37,37);
-	public Color mainPanelBackground = new Color(27,27,27);
+	
+	public void setUIOnExtras(){
+		
+		javax.swing.plaf.basic.BasicInternalFrameUI ui = 
+			    new javax.swing.plaf.basic.BasicInternalFrameUI(canvasFrame);
+				canvasFrame.setUI(ui);
+		ui = new javax.swing.plaf.basic.BasicInternalFrameUI(tlFrame);
+				tlFrame.setUI(ui);
+		ui = new javax.swing.plaf.basic.BasicInternalFrameUI(historyPanel);
+		historyPanel.setUI(ui);
+		ui = new javax.swing.plaf.basic.BasicInternalFrameUI(timelineControls);
+		timelineControls.setUI(ui);
+		ui = new javax.swing.plaf.basic.BasicInternalFrameUI(brushOptionsPane);
+		brushOptionsPane.setUI(ui);
+		ui = new javax.swing.plaf.basic.BasicInternalFrameUI(screenOptionsPane);
+		screenOptionsPane.setUI(ui);
+		ui = new javax.swing.plaf.basic.BasicInternalFrameUI(toolBar);
+		toolBar.setUI(ui);
+		ui = new javax.swing.plaf.basic.BasicInternalFrameUI(warningFrame);
+		warningFrame.setUI(ui);
+		
+		
+		ui = new javax.swing.plaf.basic.BasicInternalFrameUI(LOF);
+		LOF.setUI(ui);
+		
+		for(int i=0;i<filterFrames.size();i++){
+		ui = new javax.swing.plaf.basic.BasicInternalFrameUI(filterFrames.get(i));
+		filterFrames.get(i).setUI(ui);
+		}
+		ui = new javax.swing.plaf.basic.BasicInternalFrameUI(settingsPanel);
+		settingsPanel.setUI(ui);
+		
+	
+		scMain.styleMe(scrollBarForeground);
+		timelineScrollPane.styleMe(scrollBarForeground);
+		penOps.sc.styleMe(scrollBarForeground);
+		historyPanel.sc.styleMe(scrollBarForeground);
+		
+	}
+	
+	
 	
 	public void setUITheme(){
 		
+		timelineInactiveCol = new ColorUIResource(120,120,120);
+		timelineActiveCol = new ColorUIResource(202,202,202);
+		timelineHighlightedInactiveCol = new ColorUIResource(120,120,190);
+		timelineHighlightedActiveCol= new ColorUIResource(70,70,190);
+		timelineSelectedFrameCol=new ColorUIResource(100,100,250);
+		timelineSelectedKeyCol=new ColorUIResource(70,70,250);
+		
+		
+		
+
+		smallFont = new FontUIResource("Verdana", Font.BOLD, 10);
+		regularFont = new Font("Verdana", Font.BOLD, 12);
+		largeFont = new Font("Verdana", Font.BOLD, 14);
+		foreColor = new ColorUIResource(202, 202, 202);
+		backColor =new ColorUIResource(67, 67, 67);
+		frameTitleBackground  = new ColorUIResource(57, 57, 57);
+		selectedTabColor = new ColorUIResource(37, 37, 37);
+		scrollBarColor1 = new ColorUIResource(57, 57, 157);
+		scrollBarForeground = new ColorUIResource(157,	157, 157);
+		selectedButtonBackColor = new ColorUIResource(30,30,30);
+		buttonBackColor = new ColorUIResource(77,77,77);
+		buttonForeground = new ColorUIResource(202, 202, 202);
+		topPanelBackground =new ColorUIResource(37,37,37);
+		topPanelForeground =  new ColorUIResource(167,167,167);
+
+		palletteBackground =new ColorUIResource(37,37,37);
+		mainPanelBackground = new ColorUIResource(27,27,27);
+		
+		frameBorderColor = new ColorUIResource(67,67,67);
+		
+		
 		applyTheme();
+		if(timeline!=null){
+			if(timeline.inactive!=null)
+			timeline.refreshColours();
+		}
+		
+		initTranslations();
 		pout ("APLLYING "+THEME);
 		UIManager.put("Button.font", smallFont);
-		UIManager.put("Label.font", smallFont);
-		UIManager.put("Panel.font", smallFont);
-		UIManager.put("ComboBox.font", smallFont);
-		UIManager.put("InternalFrame.font", smallFont);
-		UIManager.put("Spinner.font", smallFont);
-		UIManager.put("TextField.font", smallFont);
+		UIManager.put("Label.font",  smallFont);
+		UIManager.put("Panel.font",  smallFont);
+		UIManager.put("ComboBox.font",  smallFont);
+		UIManager.put("InternalFrame.font",  smallFont);
+		UIManager.put("Spinner.font",  smallFont);
+		UIManager.put("TextField.font",  smallFont);
 
-		UIManager.put("OptionPane.font", regularFont);
+		
+
+		
+		UIManager.put("OptionPane.font",  regularFont);
+		
 		UIManager.put("OptionPane.foreground", foreColor);
-		UIManager.put("OptionPane.background", backColor);
+		UIManager.put("OptionPane.background",backColor);
 		UIManager.put("OptionPane.border", null);
 
 
+		UIManager.put("Label.foreground", foreColor);
+		
 		UIManager.put("Panel.foreground", foreColor);
-		UIManager.put("Panel.background", backColor);
+		UIManager.put("Panel.background",backColor);
 
 
 		UIManager.put("Slider.foreground", foreColor);
-		UIManager.put("Slider.background", backColor);
+		UIManager.put("Slider.background",backColor);
 		
 
 		UIManager.put("Button.background", buttonBackColor);
 		UIManager.put("Button.foreground", buttonForeground);
 
-		UIManager.put("TabbedPane.tabAreaBackground", backColor);
-		UIManager.put("TabbedPane.contentAreaColor ", backColor);
+		UIManager.put("TabbedPane.tabAreaBackground",backColor);
+		UIManager.put("TabbedPane.contentAreaColor ",backColor);
 		UIManager.put("TabbedPane.selected", (selectedTabColor));
-		UIManager.put("TabbedPane.background", (heavierBack));
+		UIManager.put("TabbedPane.background", (frameTitleBackground));
+		UIManager.put("TabbedPane.foreground", (foreColor));
 		UIManager.put("TabbedPane.border", (null));
 		UIManager.put("TabbedPane.contentBorderInsets", new Insets(0, 0, 0, 0));
 		UIManager.put("TabbedPane.tabsOverlapBorder", true);
-		UIManager.put("TabbedPane.borderColor", backColor);
-		UIManager.put("TabbedPane.darkShadow", backColor);
-		UIManager.put("TabbedPane.light", backColor);
-		UIManager.put("TabbedPane.highlight", backColor);
-		UIManager.put("TabbedPane.focus", backColor);
-		UIManager.put("TabbedPane.unselectedBackground", backColor);
-		UIManager.put("TabbedPane.selectHighlight", backColor);
-		UIManager.put("TabbedPane.tabAreaBackground", backColor);
-		UIManager.put("TabbedPane.borderHightlightColor", backColor);
-
-		UIManager.put("ScrollBar.trackHighlightForeground", (scrollBarForeground));
-		UIManager.put("scrollbar", (scrollBarColor1));
-		UIManager.put("Scrollbar", (scrollBarColor1));
-		UIManager.put("ScrollBar.thumb", new ColorUIResource(scrollBarForeground));
+		UIManager.put("TabbedPane.borderColor",backColor);
+		UIManager.put("TabbedPane.darkShadow",backColor);
+		UIManager.put("TabbedPane.shadow",backColor);
+		UIManager.put("TabbedPane.light",backColor);
+		UIManager.put("TabbedPane.highlight",backColor);
+		UIManager.put("TabbedPane.focus",backColor);
+		UIManager.put("TabbedPane.unselectedBackground",backColor);
+		UIManager.put("TabbedPane.selectHighlight",backColor);
+		UIManager.put("TabbedPane.tabAreaBackground",backColor);
+		UIManager.put("TabbedPane.borderHightlightColor",backColor);
+		
+		UIManager.put("ScrollBar.trackHighlightForeground", scrollBarForeground);
+		UIManager.put("scrollbar", scrollBarColor1);
+		UIManager.put("Scrollbar", scrollBarColor1);
+		UIManager.put("ScrollBar.thumb", scrollBarForeground);
 		UIManager.put("ScrollBar.thumbHeight", 2);
-		UIManager.put("ScrollBar.background", (heavierBack));
+		UIManager.put("ScrollBar.background",frameTitleBackground);
 
 		UIManager.put("InternalFrame.activeTitleBackground",
-				new ColorUIResource(heavierBack));
+				frameTitleBackground);
 		UIManager.put("InternalFrame.inactiveTitleBackground",
-				new ColorUIResource(heavierBack));
+				frameTitleBackground);
 		UIManager.put("InternalFrame.activeTitleForeground",
-				new ColorUIResource(foreColor));
+				foreColor);
 		UIManager.put("InternalFrame.inactiveTitleForeground",
-				new ColorUIResource(foreColor));
-		UIManager.put("InternalFrame.titleFont", new FontUIResource(new Font(
-				"Verdana", Font.BOLD, 10)));
+				frameTitleForeground);
+		UIManager.put("InternalFrame.activeTitleForeground",
+				frameTitleForeground);
+		UIManager.put("InternalFrame.titleFont", (regularFont));
+		UIManager.put("InternalFrame.foreground",
+				foreColor);
+		UIManager.put("InternalFrame.background",
+				backColor);
+		UIManager.put("InternalFrame.background",
+				backColor);
+		UIManager.put("InternalFrame.border",
+				BorderFactory.createMatteBorder(
+				        2, 2, 2, 2, frameBorderColor));	
 
+		Border empty = BorderFactory.createEmptyBorder();
+		UIManager.put("Button.border", empty);
+
+		
+		 System.out.println("scorllbar thumbg "+UIManager.getColor("ScrollBar.thumb"));
 		// // UIManager.put("InternalFrame.paletteCloseIcon", new
 		// IconUIResource(new Font("Verdana",Font.BOLD,10)));
 	}
@@ -1168,7 +1278,7 @@ fc= new JFileChooser();
 		warningFrame.setPreferredSize(new Dimension(400, 320));
 
 		
-		scMain = new EScrollPane();
+		scMain = new EScrollPane(scrollBarForeground);
 
 		scMain.setPreferredSize(new Dimension(screenWidth, screenHeight));
 		scMain.setBounds(0, 0, screenWidth, screenHeight);
@@ -1350,21 +1460,23 @@ public void applyTheme(){
 		if(tss!=null){
 			if(tss.length==2){
 				if(tss[0].toLowerCase().equals("background"))
-					backColor = (hex2Rgb(tss[1]));
+					backColor = (ColorUIResource)(hex2Rgb(tss[1]));
 			
 			if(tss[0].toLowerCase().equals("foreground"))
-			foreColor = (hex2Rgb(tss[1]));
+			foreColor = (ColorUIResource) (hex2Rgb(tss[1]));
 		
 
-		if(tss[0].toLowerCase().equals("selected color"))
-			heavierBack = (hex2Rgb(tss[1]));
+			if(tss[0].toLowerCase().equals("frame border color"))
+				frameBorderColor = (ColorUIResource)(hex2Rgb(tss[1]));
+			if(tss[0].toLowerCase().equals("frame title back color"))
+				frameTitleBackground = (ColorUIResource)(hex2Rgb(tss[1]));
+			if(tss[0].toLowerCase().equals("frame title color"))
+				frameTitleForeground = (ColorUIResource)(hex2Rgb(tss[1]));
 		if(tss[0].toLowerCase().equals("selected tab color"))
-			selectedTabColor = (hex2Rgb(tss[1]));
+			selectedTabColor = (ColorUIResource)(hex2Rgb(tss[1]));
 		if(tss[0].toLowerCase().equals("scrollbar color"))
-			scrollBarColor1 = (hex2Rgb(tss[1]));
-		if(tss[0].toLowerCase().equals("scrollbar foreground color"))
-			scrollBarForeground = (hex2Rgb(tss[1]));
-		if(tss[0].toLowerCase().equals("scrollbar foreground color"))
+			scrollBarColor1 = (ColorUIResource)(hex2Rgb(tss[1]));
+		if(tss[0].toLowerCase().equals("scrollbar foreground"))
 			scrollBarForeground = (hex2Rgb(tss[1]));
 		if(tss[0].toLowerCase().equals("small font size"))
 		smallFont.deriveFont(Integer.parseInt(tss[1]));
@@ -1373,32 +1485,32 @@ public void applyTheme(){
 		if(tss[0].toLowerCase().equals("large font size"))
 		largeFont.deriveFont(Integer.parseInt(tss[1]));
 		if(tss[0].toLowerCase().equals("button background"))
-			buttonBackColor = (hex2Rgb(tss[1]));
+			buttonBackColor = (ColorUIResource)(hex2Rgb(tss[1]));
 		if(tss[0].toLowerCase().equals("selected button background"))
-			selectedButtonBackColor = (hex2Rgb(tss[1]));
+			selectedButtonBackColor = (ColorUIResource)(hex2Rgb(tss[1]));
 		if(tss[0].toLowerCase().equals("button foreground"))
-			buttonForeground = (hex2Rgb(tss[1]));
+			 buttonForeground = (ColorUIResource)(hex2Rgb(tss[1]));
 		if(tss[0].toLowerCase().equals("top panel foreground"))
-			topPanelForeground = (hex2Rgb(tss[1]));
+			topPanelForeground = (ColorUIResource)(hex2Rgb(tss[1]));
 		if(tss[0].toLowerCase().equals("top panel background"))
-			topPanelBackground = (hex2Rgb(tss[1]));
+			topPanelBackground = (ColorUIResource)(hex2Rgb(tss[1]));
 		if(tss[0].toLowerCase().equals("pallette background"))
-			palletteBackground = (hex2Rgb(tss[1]));
+			palletteBackground = (ColorUIResource)(hex2Rgb(tss[1]));
 		if(tss[0].toLowerCase().equals("main background"))
-			mainPanelBackground = (hex2Rgb(tss[1]));
+			mainPanelBackground = (ColorUIResource)(hex2Rgb(tss[1]));
 		//timeline
 		if(tss[0].toLowerCase().equals("inactive frame"))
-			timelineInactiveCol = (hex2Rgb(tss[1]));
+			timelineInactiveCol = (ColorUIResource)(hex2Rgb(tss[1]));
 		if(tss[0].toLowerCase().equals("active frame"))
-			timelineActiveCol = (hex2Rgb(tss[1]));
+			timelineActiveCol = (ColorUIResource)(hex2Rgb(tss[1]));
 		if(tss[0].toLowerCase().equals("highlighted inactive frame"))
-			timelineHighlightedInactiveCol = (hex2Rgb(tss[1]));
+			timelineHighlightedInactiveCol = (ColorUIResource)(hex2Rgb(tss[1]));
 		if(tss[0].toLowerCase().equals("highlighted active frame"))
-			timelineHighlightedActiveCol = (hex2Rgb(tss[1]));
+			timelineHighlightedActiveCol = (ColorUIResource) (hex2Rgb(tss[1]));
 		if(tss[0].toLowerCase().equals("selected frame"))
-			timelineSelectedFrameCol = (hex2Rgb(tss[1]));
+			timelineSelectedFrameCol = (ColorUIResource)(hex2Rgb(tss[1]));
 		if(tss[0].toLowerCase().equals("selected key"))
-			timelineSelectedKeyCol = (hex2Rgb(tss[1]));
+			timelineSelectedKeyCol = (ColorUIResource)(hex2Rgb(tss[1]));
 		
 		
 		
@@ -1422,8 +1534,8 @@ public void applyTheme(){
 	
 	
 }
-public static Color hex2Rgb(String colorStr) {
-    return new Color(
+public static ColorUIResource hex2Rgb(String colorStr) {
+    return new ColorUIResource(
             Integer.valueOf( colorStr.substring( 1, 3 ), 16 ),
             Integer.valueOf( colorStr.substring( 3, 5 ), 16 ),
             Integer.valueOf( colorStr.substring( 5, 7 ), 16 ) );
@@ -1714,12 +1826,12 @@ public String APPID = null;
 	public void addTimelineControls() {
 		timelineControls = new TimelineControls(this);
 	}
-
+	EScrollPane timelineScrollPane;
 	public void addTimeline() {
 		tlFrame = new EInternalFrame(translate("Timeline"));
 		timeline = new TimelineSwing(MAXLAYERS, MAXFRAMES, this);
 
-		EScrollPane timelineScrollPane = new EScrollPane();
+		timelineScrollPane = new EScrollPane(scrollBarForeground);
 		// timelineScrollPane.add(timeline);
 
 		timelineScrollPane.setViewportView(timeline);

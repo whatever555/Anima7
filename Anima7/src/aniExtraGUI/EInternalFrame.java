@@ -1,12 +1,16 @@
 package aniExtraGUI;
 
-import java.awt.Color;
-
-import javax.swing.BorderFactory;
 import javax.swing.JInternalFrame;
 
 public class EInternalFrame extends JInternalFrame {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	javax.swing.plaf.basic.BasicInternalFrameUI ui = 
+		    new javax.swing.plaf.basic.BasicInternalFrameUI(this); 
 	public EInternalFrame(){
 		super();
 		styleMe();
@@ -19,12 +23,10 @@ public class EInternalFrame extends JInternalFrame {
 	}
 
 	public void styleMe(){
-		javax.swing.plaf.basic.BasicInternalFrameUI ui = 
-			    new javax.swing.plaf.basic.BasicInternalFrameUI(this); 
+	
 			this.setUI(ui); 
-//this.setBorder(null);
-setBorder(BorderFactory.createMatteBorder(
-        2, 2, 2, 2, new Color(0,0,0)));
+		
+
 	}
 	
 			

@@ -45,7 +45,7 @@ public class BrushSelection extends EPanel {
 			
 			
 
-			sc = new EScrollPane();
+			sc = new EScrollPane(parent.scrollBarForeground);
 			sc.setBounds(0,0,WIDTH,HEIGHT);
 			
 			

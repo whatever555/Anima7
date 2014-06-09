@@ -47,7 +47,7 @@ ColorButton colorButton;
 		int WIDTH = 260;
 		int HEIGHT= 220;
 		
-		sc = new EScrollPane();
+		sc = new EScrollPane(parent.scrollBarForeground);
 
 		sc.setBounds(0,0,WIDTH,HEIGHT);
 		//sc.setHorizontalScrollBarPolicy(EScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);

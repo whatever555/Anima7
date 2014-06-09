@@ -16,7 +16,7 @@ public ELabel(String str){
 	styleMe();
 }
 public void styleMe(){
-	setForeground(new Color(202,202,202));
+	//setForeground(new Color(202,202,202));
 //	setFont(new Font("Verdana", Font.BOLD, 10)); 
 	
 }

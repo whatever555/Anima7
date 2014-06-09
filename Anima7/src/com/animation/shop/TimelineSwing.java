@@ -1,6 +1,5 @@
 package com.animation.shop;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -11,6 +10,7 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.plaf.ColorUIResource;
 
 import processing.core.PImage;
 import aniExtraGUI.EButton;
@@ -31,12 +31,12 @@ PImage trans;
 
 
 int stkCol = 67;
-Color inactive = new Color(120,120,120);
-Color active   = new Color(202,202,202);
-Color highlightInactive = new Color(120,120,190);
-Color highlightActive = new Color(70,70,190);
-Color selectedFrameCol=new Color(100,100,250);
-Color selectedKeyCol=new Color(70,70,250);
+ColorUIResource inactive = new ColorUIResource(120,120,120);
+ColorUIResource active   = new ColorUIResource(202,202,202);
+ColorUIResource highlightInactive = new ColorUIResource(120,120,190);
+ColorUIResource highlightActive = new ColorUIResource(70,70,190);
+ColorUIResource selectedFrameCol=new ColorUIResource(100,100,250);
+ColorUIResource selectedKeyCol=new ColorUIResource(70,70,250);
 
 Image emptyIcon;
 Font f1 = new Font("Verdana", Font.PLAIN, 10);
@@ -57,12 +57,6 @@ ArrayList<TimelineLayer> layers = new ArrayList<TimelineLayer>();
 	public TimelineSwing(int lc, int fc,Main parent){
 
 		
-		inactive = parent.timelineInactiveCol;
-		active   = parent.timelineActiveCol;
-		highlightInactive =parent.timelineHighlightedInactiveCol;
-		highlightActive = parent.timelineHighlightedActiveCol;
-		selectedFrameCol =parent.timelineSelectedFrameCol;
-		selectedKeyCol=parent.timelineSelectedKeyCol;
 		
 		
 		 yoff=parent.timelineButtonHeight;
@@ -88,6 +82,8 @@ ArrayList<TimelineLayer> layers = new ArrayList<TimelineLayer>();
 		upIcon = new ImageIcon(upImage);
 		downIcon = new ImageIcon(downImage);
 		this.parent=parent;
+
+		refreshColours();
 		this.lc=lc;
 		this.fc=fc;
 		this.w = (int) (((fc*parent.timelineButtonWidth)+xoff)+100);
@@ -102,6 +98,15 @@ ArrayList<TimelineLayer> layers = new ArrayList<TimelineLayer>();
 		}
 		
 		
+	}
+	
+	public void refreshColours(){
+		inactive = parent.timelineInactiveCol;
+		active   = parent.timelineActiveCol;
+		highlightInactive =parent.timelineHighlightedInactiveCol;
+		highlightActive = parent.timelineHighlightedActiveCol;
+		selectedFrameCol =parent.timelineSelectedFrameCol;
+		selectedKeyCol=parent.timelineSelectedKeyCol;
 	}
 	
 	public void setFramesLength(){
@@ -257,6 +262,27 @@ public void addNewLayer(int y, boolean maskBool,int maskOf, String label){
 			}
 		}
 		
+	}
+	
+	public void colorMePink(){
+		for(int i=0;i<parent.MAXFRAMES;i++){
+		for(int p = 0;p<parent.MAXLAYERS;p++){
+			
+			if(!layers.get(p).jbs.get(i).isKey){
+				layers.get(p).jbs.get(i).setBackground(inactive);
+			}else{	
+				layers.get(p).jbs.get(i).setBackground(active);
+				
+			}
+
+			//layers.get(p).jbs.get(i).repaint();
+			
+			
+			
+			}
+		}
+		shiffleTable(parent.CURRENTFRAME,parent.CURRENTLAYER,0,true);
+		repaint();
 	}
 
 	public void shiffleTable(int x, int y,int clickBut,boolean newFile){

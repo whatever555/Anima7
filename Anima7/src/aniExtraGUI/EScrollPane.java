@@ -5,18 +5,23 @@ import java.awt.Dimension;
 
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
 public class EScrollPane extends JScrollPane{
-public EScrollPane(){
+	ColorUIResource thumbColor;
+public EScrollPane(ColorUIResource c){
 	super();
-	styleMe();
+	this.thumbColor=c;
+	styleMe(c);
 }
 
-public void styleMe(){
+public void styleMe(ColorUIResource c){
+	final Color cc = (Color)c;
 	setBorder(null);
 	this.viewport.setBorder(null);
 	this.setOpaque(false);
+	
 	this.getVerticalScrollBar().setUI(new BasicScrollBarUI()
     {   
         @Override
@@ -30,7 +35,7 @@ public void styleMe(){
         }
         @Override 
         protected void configureScrollBarColors(){
-        	this.thumbColor = new Color(87,87,87);
+        	this.thumbColor = (Color)cc;
         	
         }
       
@@ -50,16 +55,18 @@ public void styleMe(){
 
         @Override 
         protected void configureScrollBarColors(){
-        	this.thumbColor = new Color(87,87,87);
+        	this.thumbColor = cc;
         	
         }
     });
 }
 private JButton createZeroButton() {
+	
     JButton jbutton = new JButton();
     jbutton.setPreferredSize(new Dimension(0, 0));
     jbutton.setMinimumSize(new Dimension(0, 0));
     jbutton.setMaximumSize(new Dimension(0, 0));
+    jbutton.setBackground(thumbColor);
     return jbutton;
 }
 }

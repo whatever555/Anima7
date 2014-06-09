@@ -187,6 +187,8 @@ PImage selectMask;
 		if (ftemp!=null) {
 		  frame = (Frame) ftemp;
 		}
+		
+		
 
 viewWidth = cw;
 viewHeight = ch;
@@ -262,6 +264,10 @@ public void zoom(int z){
 
 			frame.setResizable(false);
 	  showNewFrame(parent.CURRENTLAYER,parent.CURRENTFRAME,-1);
+	 
+	  stroke(0);
+		fill(200);
+		rect(0,0,viewWidth,viewHeight);
 		
 	}
 	boolean recording=false;
@@ -2690,7 +2696,7 @@ return pg;
 		}else
 		if (apply) {
 
-			parent.tracker.track("APPLYFILTER|"+filterName,true);
+			//parent.tracker.track("APPLYFILTER|"+filterName,true);
 			keyEdited = true;
 			unsaved = true;
 			PImage tmp = currentFrameGraphic.get();
