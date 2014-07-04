@@ -861,6 +861,7 @@ fc= new JFileChooser();
 
 	public void loadNow(final String filePathTMP) {
 
+		
 		Thread t = new Thread() {
 			public void run() {
 
@@ -875,8 +876,11 @@ fc= new JFileChooser();
 					timeline.cleanOutTimeline();
 					
 					fileName = filePathTMP;
+					if(fileName.equals("data/blank/emptyFile.anima"))
+						fileShortName = "emptyFile";
+					else
+						fileShortName = file.getName();
 
-					fileShortName = file.getName();
 					filePath = fileName.replace(fileShortName,"");
 					setConfig(strs[0], file.getPath().replaceAll(extension, ""));
 				}
@@ -893,14 +897,18 @@ fc= new JFileChooser();
 	public void newFile(){
 		
 	}
-	public void loadNewFile() {
+	public void loadNewFile(final boolean newFileBool) {
 
+		
 		System.out.println("THE START");
 		Thread t = new Thread() {
 			public void run() {
 
-			
+				if(newFileBool==true)
+					setProgress(2,100, "New File:", false);
+				else{
 				setProgress(2,100, "Loading File:", false);
+				}
 				messagePanel.setVisible(true);
 				LOADED = false;
 
@@ -920,14 +928,30 @@ fc= new JFileChooser();
 
 						saveInit(true,false);
 					} else if (selectedOption == JOptionPane.NO_OPTION) {
-						setProgress(1,100, "Choose File to Load", false);
+						if(newFileBool==true){
+
+							setProgress(1,100, "Creating New File", false);
+							loadNow("data/blank/emptyFile.anima");
+							file = new File("data/blank/emptyFile.anima");
+						}
+						else{
+							setProgress(1,100, "Choose File to Load", false);
 						loadNow(getFilePath());
+						}
 					} else {
 
 					}
 				} else {
-					setProgress(1,100, "Choose File to Load", false);
+					if(newFileBool==true){
+
+						setProgress(1,100, "Creating New File", false);
+						loadNow("data/blank/emptyFile.anima");
+						file = new File("data/blank/emptyFile.anima");
+					}
+					else{
+						setProgress(1,100, "Choose File to Load", false);
 					loadNow(getFilePath());
+					}
 				}
 				System.out.println("THE END");
 				LOADED = true;
@@ -1034,9 +1058,9 @@ fc= new JFileChooser();
 						}
 						timelineControls.fpsSpinber.setValue(FPS);
 					} else if (parts[0].equals("FOLDER")) {
-						
-						setProgress(1,100, "Loading "+parts[1],false); 
-						canvas.loadNewFile(parts[1], MAXLAYERS, MAXFRAMES);
+
+						setProgress(1,100, "Loading "+folderName,false); 
+						canvas.loadNewFile(folderName, MAXLAYERS, MAXFRAMES);
 						
 					}
 			}
@@ -1345,6 +1369,8 @@ fc= new JFileChooser();
 		tmp = null;
 		bp = null;
 	}
+	
+
 
 	public void saveUserConfig() {
 		basicPapplet bp = new basicPapplet();
@@ -2601,7 +2627,7 @@ shareFrame.update();
 				canvas.finaliseFrame(CURRENTLAYER, CURRENTFRAME);
 
 				canvas.showNewFrame(CURRENTLAYER, CURRENTFRAME, -1);
-				loadNewFile();
+				loadNewFile(false);
 
 			}
 		});
@@ -2610,7 +2636,7 @@ shareFrame.update();
 				canvas.finaliseFrame(CURRENTLAYER, CURRENTFRAME);
 
 				canvas.showNewFrame(CURRENTLAYER, CURRENTFRAME, -1);
-				newFile();
+				loadNewFile(true);
 
 			}
 		});
