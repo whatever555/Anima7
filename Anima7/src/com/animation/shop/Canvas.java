@@ -92,8 +92,8 @@ PImage selectMask;
 	int currentlySaving = 0; // currenT Action that is being saved
 
 	List<Integer> inkCuts;
-	int cw; // canvas width
-	int ch; // canvas height
+	public int cw; // canvas width
+	public int ch; // canvas height
 	Main parent;
 	public int bgColor = color(255,255,255);
 
@@ -174,7 +174,7 @@ PImage selectMask;
 			return (Image) tmp.getNative();
 			
 		}
-		Frame frame;
+		public Frame frame;
 		Object ftemp = this;
 	public void setup() {
 	
@@ -203,7 +203,6 @@ viewHeight = ch;
 		selectMask = loadImage("graphics/selectMask.gif");
 
 		size(cw, ch);
-
 		  frameRate(200);
 		initInk();
 
@@ -240,8 +239,10 @@ viewHeight = ch;
 	public void resizeMe(int w, int h){
 		size(w, h);
 	}
-	int zoomLevel=100;
+	public int zoomLevel=100;
 public void zoom(int z){
+	cw=parent.CANVASWIDTH;
+	ch=parent.CANVASHEIGHT;
 	zoomLevel = z;
 	zoomZ();
 }
@@ -266,7 +267,8 @@ public void zoom(int z){
 	  showNewFrame(parent.CURRENTLAYER,parent.CURRENTFRAME,-1);
 	 
 	  stroke(0);
-		fill(200);
+	  //TODO WHY WAS THIS GREY?
+		fill(bgColor);
 		rect(0,0,viewWidth,viewHeight);
 		
 	}
@@ -1740,7 +1742,7 @@ if(!label.equals("Keyframe Added") && !label.equals("KEYADDFIX")  && !label.equa
 					
 					}
 					
-				tmpG.image(tmp, 0, 0);
+				tmpG.image(tmp, 0, 0,parent.CANVASWIDTH,parent.CANVASHEIGHT);
 				}
 				tmp=null;
 			}
@@ -1771,7 +1773,8 @@ if(!label.equals("Keyframe Added") && !label.equals("KEYADDFIX")  && !label.equa
 						tmp=drawMaskedAdvanced(tmp,maskImage);
 						
 					}
-					tmpG.image(tmp, 0, 0);
+
+					tmpG.image(tmp, 0, 0,parent.CANVASWIDTH,parent.CANVASHEIGHT);
 					tmp=null;
 				}
 		}
@@ -1798,8 +1801,8 @@ if(!label.equals("Keyframe Added") && !label.equals("KEYADDFIX")  && !label.equa
 				
 			}
 		if(tmp!=null){
-		tmpG.image(tmp, 0, 0);
-
+		
+		tmpG.image(tmp, 0, 0,parent.CANVASWIDTH,parent.CANVASHEIGHT);
 		currentFrameGraphic.beginDraw();
 		
 		currentFrameGraphic.image(tmp, 0,0);
@@ -1824,6 +1827,7 @@ if(!label.equals("Keyframe Added") && !label.equals("KEYADDFIX")  && !label.equa
 
 tmpG.endDraw();
 		image(tmpG,0,0,viewHeight,viewWidth);
+
 		background(bgColor, 255);
 		image(tmpG,0,0,viewWidth,viewHeight);
 		getTempDispImage();

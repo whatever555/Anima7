@@ -63,6 +63,7 @@ import aniExtraGUI.ETabbedPane;
 import aniExtraGUI.LayerOptionsFrame;
 import aniExtraGUI.ScreenInfoPane;
 import aniExtraGUI.SettingsPanel;
+import aniExtraGUI.ResizePanel;
 import aniExtraGUI.ShareFrame;
 import aniExtraGUI.WarningFrame;
 import aniFilters.FilterFrame;
@@ -182,8 +183,8 @@ public class Main {
 	int MAXFRAMES = 700;
 	public int CURRENTFRAME = 0;
 	public int CURRENTLAYER = 0;
-	int CANVASWIDTH = 620;
-	int CANVASHEIGHT = 400;
+	public int CANVASWIDTH = 620;
+	public int CANVASHEIGHT = 400;
 
 	Color PENCOLOR = new Color(0, 0, 0);
 	int PENSIZE = 15;
@@ -223,7 +224,7 @@ public class Main {
 	PreviousColours prevColPanel;
 
 	public Canvas canvas;
-	ScrollPane canvasSc;
+	public ScrollPane canvasSc;
 	PenOptions penOps;
 	History historyPanel;
 	public TimelineButtonActionListener timelineButtonActionListener;
@@ -409,11 +410,21 @@ public class Main {
 		ui = new javax.swing.plaf.basic.BasicInternalFrameUI(settingsPanel);
 		settingsPanel.setUI(ui);
 		
+		ui = new javax.swing.plaf.basic.BasicInternalFrameUI(resizePanel);
+		resizePanel.setUI(ui);
 	
 		scMain.styleMe(scrollBarForeground);
 		timelineScrollPane.styleMe(scrollBarForeground);
 		penOps.sc.styleMe(scrollBarForeground);
 		historyPanel.sc.styleMe(scrollBarForeground);
+		
+		
+		mainPanel.setBackground((mainPanelBackground));
+		messagePanel.setBackground(backColor);
+		// Set the label's font size to the newly determined size.
+		messageTextArea.setFont(largeFont);
+		messageTextArea.setForeground(foreColor);
+		messageHolder.setBackground(backColor);
 		
 	}
 	
@@ -515,7 +526,7 @@ public class Main {
 		UIManager.put("Scrollbar", scrollBarColor1);
 		UIManager.put("ScrollBar.thumb", scrollBarForeground);
 		UIManager.put("ScrollBar.thumbHeight", 2);
-		UIManager.put("ScrollBar.background",frameTitleBackground);
+		UIManager.put("ScrollBar.background",scrollBarColor1);
 
 		UIManager.put("InternalFrame.activeTitleBackground",
 				frameTitleBackground);
@@ -879,6 +890,9 @@ fc= new JFileChooser();
 		t.start();
 	}
 
+	public void newFile(){
+		
+	}
 	public void loadNewFile() {
 
 		System.out.println("THE START");
@@ -1132,6 +1146,7 @@ fc= new JFileChooser();
 		timeline.loadEmptyLayers();
 
 		addSettingsPanel();
+		addResizePanel();
 		addShareFrame();
 		addTimelineControls();
 
@@ -1856,6 +1871,13 @@ public String APPID = null;
 		settingsPanel.setBounds(10,100,420,400);
 		mainPanel.add(settingsPanel);
 	}
+	ResizePanel resizePanel;
+	public void addResizePanel(){
+		resizePanel = new ResizePanel(this);
+		resizePanel.setVisible(false);
+		resizePanel.setBounds(10,100,400,200);
+		mainPanel.add(resizePanel);
+	}
 	public void addShareFrame(){
 		shareFrame = new ShareFrame(this);
 		shareFrame.setVisible(false);
@@ -1865,7 +1887,7 @@ public String APPID = null;
 
 	public EInternalFrame canvasFrame;
 
-	EPanel canvasPanel;
+	public EPanel canvasPanel;
 
 	public void addCanvas() {
 		canvas = new Canvas(CANVASWIDTH, CANVASHEIGHT, this);
@@ -1901,6 +1923,12 @@ public String APPID = null;
 		canvas.repaint();
 
 	}
+public void displayResizeOptions(){
+resizePanel.updateMe();
+	resizePanel.setVisible(true);
+	
+}
+
 
 	
 	public void displaySettings(){
@@ -2007,6 +2035,13 @@ shareFrame.update();
 				InputEvent.CTRL_DOWN_MASK);
 		mnExit.setAccelerator(tmpKey);
 
+		
+		final JMenu mnImage = new JMenu(translate("Image"));
+		menuBar.add(mnImage);
+
+		final JMenuItem mntmResize = new JMenuItem(translate("Resize..") + "..");
+		mnImage.add(mntmResize);
+		
 		JMenu mnLayers = new JMenu(translate("Layers"));
 		menuBar.add(mnLayers);
 
@@ -2254,6 +2289,11 @@ shareFrame.update();
 
 		// //#####ACTIONS#####////
 
+		mntmResize.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				displayResizeOptions();
+			}
+		});
 		mntmPreferences.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				displaySettings();
@@ -2562,6 +2602,15 @@ shareFrame.update();
 
 				canvas.showNewFrame(CURRENTLAYER, CURRENTFRAME, -1);
 				loadNewFile();
+
+			}
+		});
+		mntmNew.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				canvas.finaliseFrame(CURRENTLAYER, CURRENTFRAME);
+
+				canvas.showNewFrame(CURRENTLAYER, CURRENTFRAME, -1);
+				newFile();
 
 			}
 		});

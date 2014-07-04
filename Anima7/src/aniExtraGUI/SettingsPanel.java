@@ -207,6 +207,8 @@ public class SettingsPanel extends EInternalFrame{
 		        		parent.frame.repaint();
 
 		        		parent.timeline.colorMePink();
+		        		
+		        
 		        	}
 		        	
 		        	changeActionCount++;
