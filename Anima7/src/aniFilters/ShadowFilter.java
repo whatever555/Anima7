@@ -15,7 +15,7 @@ public class ShadowFilter extends AbstractBufferedImageOp {
 	static final long serialVersionUID = 6310370419462785691L;
 	
 	private int radius = 5;
-	private int xOffset = 5;
+	private int xOffset = -5;
 	private int yOffset = 5;
 	private float opacity = 0.5f;
 	private boolean addMargins = false;

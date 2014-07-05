@@ -105,6 +105,7 @@ public class Main {
 	public ColorUIResource timelineHighlightedActiveCol= new ColorUIResource(70,70,190);
 	public ColorUIResource timelineSelectedFrameCol=new ColorUIResource(100,100,250);
 	public ColorUIResource timelineSelectedKeyCol=new ColorUIResource(70,70,250);
+	public ColorUIResource canvasBackgroundColor=new ColorUIResource(125,125,125);
 	
 	
 	
@@ -594,6 +595,10 @@ public class Main {
 		 System.out.println("scorllbar thumbg "+UIManager.getColor("ScrollBar.thumb"));
 		// // UIManager.put("InternalFrame.paletteCloseIcon", new
 		// IconUIResource(new Font("Verdana",Font.BOLD,10)));
+		 
+		 if(canvasPanel!=null){
+			 canvasPanel.setBackground(canvasBackgroundColor);
+		 }
 	}
 
 	public void setCursor(String cursorName) {
@@ -1295,7 +1300,7 @@ fc= new JFileChooser();
 
 		int tlHeight = screenHeight - (CANVASHEIGHT + extraY + 45) - 40;
 		tlHeight = Math.max(tlHeight, 120);
-		tlFrame.setBounds(20, CANVASHEIGHT + extraY + 45, (screenWidth - 40),
+		tlFrame.setBounds(20, CANVASHEIGHT + extraY + 45, (screenWidth - 60),
 				tlHeight);
 
 		extraX += 25;
@@ -1606,6 +1611,8 @@ public void applyTheme(){
 			timelineSelectedFrameCol = (ColorUIResource)(hex2Rgb(tss[1]));
 		if(tss[0].toLowerCase().equals("selected key"))
 			timelineSelectedKeyCol = (ColorUIResource)(hex2Rgb(tss[1]));
+		if(tss[0].toLowerCase().equals("canvas background"))
+			canvasBackgroundColor = (ColorUIResource)(hex2Rgb(tss[1]));
 		
 		
 		
@@ -1972,13 +1979,14 @@ public String APPID = null;
 
 	public void addCanvas() {
 		canvas = new Canvas(CANVASWIDTH, CANVASHEIGHT, this);
-
+		
 		canvas.setVisible(true);
 
 		canvasPanel = new EPanel();
 		canvasPanel.setBounds(0, -10, CANVASWIDTH, CANVASHEIGHT);
 		canvasPanel.setVisible(true);
 
+		 canvasPanel.setBackground(canvasBackgroundColor);
 		canvas.setBounds(0, 0, CANVASWIDTH, CANVASHEIGHT);
 
 		canvasPanel.add(canvas);
@@ -2010,7 +2018,10 @@ resizePanel.updateMe();
 	
 }
 
-
+public void setCanvasBGColor(Color c){
+	
+	 canvasPanel.setBackground(c);
+}
 	
 	public void displaySettings(){
 
@@ -2246,17 +2257,23 @@ shareFrame.update();
 		mntmVisiToggle.add(mntmToggleHistory);
 		
 		mntmVisiToggle.addSeparator();
-		final JMenuItem mntmToggleHideAll = new JMenuItem(translate("History"));
+		final JMenuItem mntmToggleHideAll = new JMenuItem(translate("Hide All"));
 		mntmVisiToggle.add(mntmToggleHideAll);
 		
-		final JMenuItem mntmToggleShowAll = new JMenuItem(translate("History"));
+		final JMenuItem mntmToggleShowAll = new JMenuItem(translate("Show All"));
 		mntmVisiToggle.add(mntmToggleShowAll);
 		
-	
+
 
 		JMenuItem mntmChangeBGColor = new JMenuItem(
 				translate("Change Background Color.."));
 		mnView.add(mntmChangeBGColor);
+		
+
+
+		JMenuItem mntmChangeCanvasBGColor = new JMenuItem(
+				translate("Change Canvas Background Color.."));
+		mnView.add(mntmChangeCanvasBGColor);
 
 		final JMenu mnFilters = new JMenu(translate("Filters"));
 		menuBar.add(mnFilters);
@@ -2690,6 +2707,16 @@ shareFrame.update();
 				canvas.finaliseFrame(CURRENTLAYER, CURRENTFRAME);
 
 				canvas.showNewFrame(CURRENTLAYER, CURRENTFRAME, -1);
+
+			}
+		});
+		
+
+		mntmChangeCanvasBGColor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+				setCanvasBGColor(colorPick3((canvasPanel.getBackground())));
+				
 
 			}
 		});
@@ -3195,6 +3222,11 @@ toolBar.setVisible(false);
 
 	public int colorPick2(Color c) {
 		return JColorChooser.showDialog(frame, "", c).getRGB();
+
+	}
+	
+	public Color colorPick3(Color c) {
+		return JColorChooser.showDialog(frame, "", c);
 
 	}
 

@@ -22,6 +22,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.TargetDataLine;
+import javax.swing.JOptionPane;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
@@ -383,8 +384,9 @@ public void zoom(int z){
 
 			parent.pasting = true;
 			background(bgColor);
-			image(tempDispImage, 0, 0, width, height);
-			image(currentFrameGraphic, 0, 0, width, height);
+			image(tempDispImage, 0, 0,viewWidth,viewHeight);
+			if(currentFrameGraphic!=null)
+			image(currentFrameGraphic, 0, 0,viewWidth,viewHeight);
 
 			if (drawBool) {
 				if (moving) {
@@ -437,8 +439,8 @@ public void zoom(int z){
 					checkResize(mouseX, mouseY);
 
 				} else {
-					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-					checkRotate(mouseX, mouseY);
+				//	setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				//	checkRotate(mouseX, mouseY);
 				}
 			}
 
@@ -778,6 +780,16 @@ int jutra = 0;
 	SWFExport outSWF;
 	
 	public void exportImages(final boolean createAnimatedGIF,final boolean createSWF,final String STRextension,final String location){
+	
+		boolean trans=false;
+		int selectedOption = JOptionPane.showConfirmDialog(null,
+				translate("Make background transparent?"),
+				translate("Choose Transparent or Background Color"), JOptionPane.YES_NO_OPTION);
+	
+		if (selectedOption == JOptionPane.YES_OPTION){
+				trans =true;
+	}
+		final boolean transparent =trans;
 		Thread t = new Thread() {
 			public void run() {
 				parent.setProgress(1,100,"Exporting",false);
@@ -806,7 +818,9 @@ int jutra = 0;
 			parent.setProgress(x,progressTotal,"Exporting:",true);
 			tmp.beginDraw();
 			tmp.clear();
-			//tmp.background(0,0);
+			if(transparent==true)
+			tmp.background(0,0);
+			else
 			tmp.background(bgColor);
 			for(int y= (parent.MAXLAYERS-1);y>=0;y--){
 				
@@ -951,7 +965,8 @@ int jutra = 0;
 	
 	String rotateDirection;
 	String skewDirection;
-	public void checkRotate(int x, int y) {
+
+	/*public void checkRotate(int x, int y) {
 
 		int imgx = min(clipBoardX, clipBoardX + clipBoardWidth);
 		int imgxw = max(clipBoardX, clipBoardX + clipBoardWidth);
@@ -1007,7 +1022,7 @@ int jutra = 0;
 			rotating = false;
 		}
 
-	}
+	}*/
 	
 	public void mousePressed() {
 	//	loop();
@@ -1288,7 +1303,7 @@ boolean PLAYINGSOUND=false;
 			unsaved=true;
 			keyEdited=true;
 				currentFrameGraphic.beginDraw();
-				currentFrameGraphic.image(tempGraphic.get(),0,0,parent.CANVASWIDTH,parent.CANVASHEIGHT);
+				currentFrameGraphic.image(tempGraphic.get(),0,0,viewWidth,viewHeight);
 				currentFrameGraphic.endDraw();
 				saveAction(parent.CURRENTLAYER,parent.CURRENTFRAME,"Shape");
 				finaliseFrame(parent.CURRENTLAYER,parent.CURRENTFRAME);
@@ -1341,7 +1356,8 @@ boolean PLAYINGSOUND=false;
 				unsaved = true;
 				currentFrameGraphic.beginDraw();
 				currentFrameGraphic.clear();
-				currentFrameGraphic.image(tempDispImage2,0,0);
+				//TODO this might cause an issue?
+				currentFrameGraphic.image(tempDispImage2,0,0,viewWidth,viewHeight);
 				currentFrameGraphic.endDraw();
 				
 				currentlySaving++;
@@ -1397,7 +1413,7 @@ boolean PLAYINGSOUND=false;
 		currentFrameGraphic.beginDraw();
 
 		// todo might need a .get()
-		currentFrameGraphic.image(tempGraphic.get(),0,0,parent.CANVASWIDTH,parent.CANVASHEIGHT);
+		currentFrameGraphic.image(tempGraphic.get(),0,0,viewWidth,viewHeight);
 
 		currentFrameGraphic.endDraw();
 
@@ -1805,7 +1821,7 @@ if(!label.equals("Keyframe Added") && !label.equals("KEYADDFIX")  && !label.equa
 		tmpG.image(tmp, 0, 0,parent.CANVASWIDTH,parent.CANVASHEIGHT);
 		currentFrameGraphic.beginDraw();
 		
-		currentFrameGraphic.image(tmp, 0,0);
+		currentFrameGraphic.image(tmp, 0,0,viewWidth,viewHeight);
 		currentFrameGraphic.endDraw();
 		}
 		}else{
@@ -2012,6 +2028,17 @@ return true;
 		saveImageToDisk(emptyImage, cl, ck);
 	}
 
+	public void resizeFrameGraphic(){
+		PImage tmp = currentFrameGraphic.get();
+		currentFrameGraphic.clear();
+		currentFrameGraphic = new PGraphics();
+		currentFrameGraphic = createGraphics(parent.CANVASWIDTH,parent.CANVASHEIGHT);
+		currentFrameGraphic.beginDraw();
+		currentFrameGraphic.background(0,0);
+		currentFrameGraphic.image(tmp,0,0,parent.CANVASWIDTH,parent.CANVASHEIGHT);
+		currentFrameGraphic.endDraw();
+		
+	}
 	public void addToCache(PImage img, int cl, int ck) {
 
 		if (!((parent.cachedImagesNames.contains("image" + cl + "_" + ck)))) {
@@ -2184,7 +2211,8 @@ if(currentFrameGraphic!=null){
 		}
 
 		background(bgColor);
-		image(tempDispImage, 0, 0);
+		//todo this might cause an issue
+		image(tempDispImage, 0, 0,viewWidth,viewHeight);
 		image(floatingClipBoard, clipBoardX, clipBoardY);
 		
 		parent.currentTool = "move";

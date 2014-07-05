@@ -3,21 +3,16 @@ package aniExtraGUI;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import processing.core.PGraphics;
+import processing.core.PImage;
 
 import com.animation.shop.Main;
-import com.animation.shop.TButton;
-import com.animation.shop.basicPapplet;
 
 public class ResizePanel extends EInternalFrame{
 
@@ -159,10 +154,12 @@ public class ResizePanel extends EInternalFrame{
 						if(parent.LOADED==true){
 							parent.CANVASWIDTH = (int)widthSizeSlider.getValue();
 							parent.CANVASHEIGHT =(int) heightSizeSlider.getValue();
+							System.out.println("RESIZING GRAPHIC "+parent.CANVASWIDTH+"  H: "+parent.CANVASHEIGHT);
+							
+							parent.canvas.resizeFrameGraphic();
+							
 							parent.canvas.finaliseFrame(parent.CURRENTLAYER, parent.CURRENTFRAME);
 							parent.canvas.showNewFrame(parent.CURRENTLAYER, parent.CURRENTFRAME,-1);
-							parent.canvas.currentFrameGraphic = new PGraphics();
-							parent.canvas.currentFrameGraphic = parent.canvas.createGraphics(parent.CANVASWIDTH, parent.CANVASHEIGHT);
 					parent.canvas.zoom(parent.canvas.zoomLevel);
 
 					parent.canvas.showNewFrame(parent.CURRENTLAYER, parent.CURRENTLAYER,-1);

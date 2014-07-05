@@ -102,7 +102,7 @@ public class FilterFrame extends EInternalFrame {
 		}else
 			if(options.equals("SHADING")){
 				filters.add("Shadow");
-				filterPanes.add(new FilterPane("Shadow",parent,this,new String[]{"Radius","Offset X","Offset Y", "Opacity"},new int[]{0,0,0,0},new int[]{100,100,100,100},new float[]{0,0,0,50}));
+				filterPanes.add(new FilterPane("Shadow",parent,this,new String[]{"Radius","Offset X","Offset Y", "Opacity"},new int[]{0,-100,-100,0},new int[]{100,100,100,100},new float[]{0,0,0,50}));
 				filters.add("Rays");
 				filterPanes.add(new FilterPane("Rays",parent,this,new String[]{"Opacity","Threshold","Strength"},new int[]{0,0,0},new int[]{100,100,100},new float[]{100,0,50,0}));
 				
