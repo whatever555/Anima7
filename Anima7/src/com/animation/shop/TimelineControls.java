@@ -51,9 +51,9 @@ public class TimelineControls extends EInternalFrame {
 
 		this.setTitle(translate("Timeline Controls"));
 		this.setLayout(new BorderLayout());
+		this.setDefaultCloseOperation(1);
 		this.setClosable(true);
 		this.setResizable(true);
-		this.setDefaultCloseOperation(1);
 
 	
 		EPanel panelArea = new EPanel();

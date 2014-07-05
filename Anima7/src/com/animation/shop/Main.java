@@ -333,7 +333,26 @@ public class Main {
 						tlFrame.setVisible(false);
 					else
 						tlFrame.setVisible(true);
-	}
+				else
+					if(str.equals("history"))
+						if(historyPanel.isVisible())
+							historyPanel.setVisible(false);
+						else
+							historyPanel.setVisible(true);
+		
+					else
+						if(str.equals("screenOptions"))
+							if(screenOptionsPane.isVisible())
+								screenOptionsPane.setVisible(false);
+							else
+								screenOptionsPane.setVisible(true);
+	else
+		if(str.equals("tools"))
+			if(toolBar.isVisible())
+				toolBar.setVisible(false);
+			else
+				toolBar.setVisible(true);
+}
 	public static void main(String[] args) {
 
 
@@ -1324,7 +1343,6 @@ fc= new JFileChooser();
 		brushOptionsPane.setVisible(true);
 		screenOptionsPane.setVisible(true);
 		historyPanel.setVisible(true);
-		historyPanel.setDefaultCloseOperation(1);
 		
 		historyPanel.update();
 
@@ -1848,7 +1866,6 @@ public String APPID = null;
 	public void addScreenOptionsPane(){
 		screenOptionsPane = new EInternalFrame();
 		screenInfoPane = new ScreenInfoPane(this);
-		screenOptionsPane.setDefaultCloseOperation(1);
 		
 
 		ETabbedPane tb= new ETabbedPane();
@@ -1857,7 +1874,7 @@ public String APPID = null;
 		screenOptionsPane.setTitle(translate("Screen"));
 		screenOptionsPane.setClosable(true); 
 		screenOptionsPane.setResizable(true);
-		screenOptionsPane.setDefaultCloseOperation(1);
+		//screenOptionsPane.setDefaultCloseOperation(1);
 		
 		screenOptionsPane.add(tb);
 	}
@@ -1879,7 +1896,6 @@ public String APPID = null;
 		brushOptionsPane.setTitle(translate("Brush"));
 		brushOptionsPane.setClosable(true); 
 		brushOptionsPane.setResizable(true);
-		brushOptionsPane.setDefaultCloseOperation(1);
 	}
 
 	BrushSelection BrushSelectionOps;
@@ -2222,12 +2238,19 @@ shareFrame.update();
 		final JMenuItem mntmToggleTimelineOptions = new JMenuItem(translate("Timeline Options"));
 		mntmVisiToggle.add(mntmToggleTimelineOptions);
 		
-		final JMenuItem mntmToggleStageOptions = new JMenuItem(translate("View Options"));
+		final JMenuItem mntmToggleStageOptions = new JMenuItem(translate("Screen Options"));
 		mntmVisiToggle.add(mntmToggleStageOptions);
 		
 		
 		final JMenuItem mntmToggleHistory = new JMenuItem(translate("History"));
 		mntmVisiToggle.add(mntmToggleHistory);
+		
+		mntmVisiToggle.addSeparator();
+		final JMenuItem mntmToggleHideAll = new JMenuItem(translate("History"));
+		mntmVisiToggle.add(mntmToggleHideAll);
+		
+		final JMenuItem mntmToggleShowAll = new JMenuItem(translate("History"));
+		mntmVisiToggle.add(mntmToggleShowAll);
 		
 	
 
@@ -2933,7 +2956,33 @@ shareFrame.update();
 		mntmToggleStageOptions.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
-				toggleVisiblity("stageOptions");
+				toggleVisiblity("screenOptions");
+			}
+		});
+
+		mntmToggleShowAll.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+tlFrame.setVisible(true);
+screenOptionsPane.setVisible(true);
+brushOptionsPane.setVisible(true);
+historyPanel.setVisible(true);
+timelineControls.setVisible(true);
+toolBar.setVisible(true);
+			
+			}
+		});
+		
+		mntmToggleHideAll.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+tlFrame.setVisible(false);
+screenOptionsPane.setVisible(false);
+brushOptionsPane.setVisible(false);
+historyPanel.setVisible(false);
+timelineControls.setVisible(false);
+toolBar.setVisible(false);
+			
 			}
 		});
 

@@ -15,6 +15,7 @@ public class ToolsBar extends EInternalFrame{
 	private static final long serialVersionUID = 1L;
 Main parent;
 		public ToolsBar(Main parent){
+			this.setDefaultCloseOperation(1);
 			this.parent = parent;
 			showMe();
 		}
@@ -28,10 +29,10 @@ Main parent;
 		 
 		 
 		public void showMe(){
+			this.setDefaultCloseOperation(1);
 this.setClosable(true); 
 			this.setResizable(true);
-			this.setDefaultCloseOperation(1);
-			
+
 			EPanel toolsPanel = new EPanel();
 			toolsPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 			toolsPanel.setBounds(0,0,WIDTH,HEIGHT);

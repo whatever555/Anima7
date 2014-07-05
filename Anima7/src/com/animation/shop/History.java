@@ -38,9 +38,9 @@ EScrollPane sc;
 	public void showMe(){
 		this.setTitle(translate("History"));
 		this.setLayout(new BorderLayout());
+		this.setDefaultCloseOperation(1);
 		this.setClosable(true);
 		this.setResizable(true);
-		this.setDefaultCloseOperation(1);
 
 	
 		panelArea=new EPanel();
