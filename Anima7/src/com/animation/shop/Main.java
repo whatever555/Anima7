@@ -54,6 +54,7 @@ import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 
 import listeners.TimelineButtonActionListener;
+import processing.core.PGraphics;
 import processing.core.PImage;
 import MyTracking.Tracker;
 import aniExtraGUI.EInternalFrame;
@@ -737,6 +738,8 @@ fc= new JFileChooser();
 		
 		setProgress(98,100, "Saving " + file.getName(), true);
 		fileConfigString = "";
+		fileConfigString += "CANVASWIDTH::" + CANVASWIDTH + ":::";
+		fileConfigString += "CANVASHEIGHT::" + CANVASHEIGHT + ":::";
 		fileConfigString += "BGCOL::" + canvas.bgColor + ":::";
 		fileConfigString += "FPS::" + FPS + ":::";
 		fileConfigString += "LASTFRAME::" + lastFrame + ":::";
@@ -962,6 +965,10 @@ fc= new JFileChooser();
 
 	public void setConfig(String line, String folderName) {
 
+//defaults
+		CANVASWIDTH = 620;
+		CANVASHEIGHT = 400;
+		
 		setProgress(2,100, "Loading Configurations:", false);
 		
 		try {
@@ -995,6 +1002,10 @@ fc= new JFileChooser();
 						MAXLAYERS = Integer.parseInt(parts[1]);
 					} else if (parts[0].equals("LASTFRAME")) {
 						lastFrame = Integer.parseInt(parts[1]);
+					} else if (parts[0].equals("CANVASHEIGHT")) {
+						CANVASHEIGHT = Integer.parseInt(parts[1]);
+					} else if (parts[0].equals("CANVASWIDTH")) {
+						CANVASWIDTH = Integer.parseInt(parts[1]);
 					} else if (parts[0].equals("MAXFRAMES")) {
 						if (lastFrame > MAXFRAMES
 								|| Integer.parseInt(parts[1]) < MAXFRAMES) {
@@ -1061,7 +1072,11 @@ fc= new JFileChooser();
 
 						setProgress(1,100, "Loading "+folderName,false); 
 						canvas.loadNewFile(folderName, MAXLAYERS, MAXFRAMES);
-						
+						canvas.currentFrameGraphic = new PGraphics();
+						canvas.currentFrameGraphic = canvas.createGraphics(CANVASWIDTH, CANVASHEIGHT);
+				canvas.zoom(canvas.zoomLevel);
+
+				canvas.showNewFrame(CURRENTLAYER, CURRENTLAYER,-1);
 					}
 			}
 		}
@@ -2062,7 +2077,7 @@ shareFrame.update();
 		mnExit.setAccelerator(tmpKey);
 
 		
-		final JMenu mnImage = new JMenu(translate("Image"));
+		final JMenu mnImage = new JMenu(translate("Attributes"));
 		menuBar.add(mnImage);
 
 		final JMenuItem mntmResize = new JMenuItem(translate("Resize..") + "..");
