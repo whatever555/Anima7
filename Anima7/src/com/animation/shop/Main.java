@@ -315,7 +315,25 @@ public class Main {
 	}
 
 
-	
+	public void toggleVisiblity(String str){
+		if(str.equals("timelineOptions"))
+			if(timelineControls.isVisible())
+				timelineControls.setVisible(false);
+			else
+				timelineControls.setVisible(true);
+		else
+			if(str.equals("brushOptions"))
+				if(brushOptionsPane.isVisible())
+					brushOptionsPane.setVisible(false);
+				else
+					brushOptionsPane.setVisible(true);
+			else
+				if(str.equals("timeline"))
+					if(tlFrame.isVisible())
+						tlFrame.setVisible(false);
+					else
+						tlFrame.setVisible(true);
+	}
 	public static void main(String[] args) {
 
 
@@ -1299,12 +1317,15 @@ fc= new JFileChooser();
 		LOF.setVisible(false);
 		canvasFrame.setVisible(true);
 		timelineControls.setVisible(true);
+		timelineControls.setDefaultCloseOperation(1);
 		tlFrame.setVisible(true);
 		toolBar.setVisible(true);
 		prevColPanel.setVisible(true);
 		brushOptionsPane.setVisible(true);
 		screenOptionsPane.setVisible(true);
 		historyPanel.setVisible(true);
+		historyPanel.setDefaultCloseOperation(1);
+		
 		historyPanel.update();
 
 		for (int i = 0; i < filterFrames.size(); i++)
@@ -1827,6 +1848,7 @@ public String APPID = null;
 	public void addScreenOptionsPane(){
 		screenOptionsPane = new EInternalFrame();
 		screenInfoPane = new ScreenInfoPane(this);
+		screenOptionsPane.setDefaultCloseOperation(1);
 		
 
 		ETabbedPane tb= new ETabbedPane();
@@ -1843,7 +1865,8 @@ public String APPID = null;
 	public void addBrushPane() {
 		brushOptionsPane = new EInternalFrame();
 		ETabbedPane brushTabbedPane= new ETabbedPane();
-		
+
+		brushOptionsPane.setDefaultCloseOperation(1);
 		
 		penOps = new PenOptions(this);
 
@@ -1886,7 +1909,8 @@ public String APPID = null;
 	public void addTimeline() {
 		tlFrame = new EInternalFrame(translate("Timeline"));
 		timeline = new TimelineSwing(MAXLAYERS, MAXFRAMES, this);
-
+		tlFrame.setDefaultCloseOperation(1);
+		
 		timelineScrollPane = new EScrollPane(scrollBarForeground);
 		// timelineScrollPane.add(timeline);
 
@@ -2182,20 +2206,30 @@ shareFrame.update();
 		final JMenu mnView = new JMenu(translate("View"));
 		menuBar.add(mnView);
 
-		final JMenuItem mntmToggleTimeline = new JMenuItem(
-				translate("Hide Timeline"));
-		mnView.add(mntmToggleTimeline);
+		JMenu mntmVisiToggle = new JMenu(translate("Show/Hide .."));
+		mnView.add(mntmVisiToggle);
+		
+		final JMenuItem mntmToggleTimeline = new JMenuItem(translate("Timeline"));
+		mntmVisiToggle.add(mntmToggleTimeline);
 
-		final JMenuItem mntmToggleTools = new JMenuItem(translate("Hide Tools"));
-		mnView.add(mntmToggleTools);
 
-		JMenuItem mntmToggleBrush = new JMenuItem(
-				translate("Show Brush Options"));
-		mnView.add(mntmToggleBrush);
+		final JMenuItem mntmToggleTools = new JMenuItem(translate("Tools"));
+		mntmVisiToggle.add(mntmToggleTools);
+		
+		final JMenuItem mntmToggleBrushOptions = new JMenuItem(translate("Brush Options"));
+		mntmVisiToggle.add(mntmToggleBrushOptions);
 
-		JMenuItem mntmToggleOnion = new JMenuItem(translate("Toggle")
-				+ " Onion Skin");
-		mnView.add(mntmToggleOnion);
+		final JMenuItem mntmToggleTimelineOptions = new JMenuItem(translate("Timeline Options"));
+		mntmVisiToggle.add(mntmToggleTimelineOptions);
+		
+		final JMenuItem mntmToggleStageOptions = new JMenuItem(translate("View Options"));
+		mntmVisiToggle.add(mntmToggleStageOptions);
+		
+		
+		final JMenuItem mntmToggleHistory = new JMenuItem(translate("History"));
+		mntmVisiToggle.add(mntmToggleHistory);
+		
+	
 
 		JMenuItem mntmChangeBGColor = new JMenuItem(
 				translate("Change Background Color.."));
@@ -2858,6 +2892,50 @@ shareFrame.update();
 				// showFilterFrameOnTop();
 			}
 		});
+		
+		
+		mntmToggleTimeline.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+				toggleVisiblity("timeline");
+			}
+		});
+		
+		mntmToggleTimelineOptions.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+				toggleVisiblity("timelineOptions");
+			}
+		});
+		
+		mntmToggleBrushOptions.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+				toggleVisiblity("brushOptions");
+			}
+		});
+
+		mntmToggleHistory.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+				toggleVisiblity("history");
+			}
+		});
+
+		mntmToggleTools.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+				toggleVisiblity("tools");
+			}
+		});
+		
+
+		mntmToggleStageOptions.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+				toggleVisiblity("stageOptions");
+			}
+		});
 
 		mntmSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -2944,12 +3022,9 @@ shareFrame.update();
 			}
 		});
 
-		mntmToggleTools.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				// sketch.cleanPGS();
-				// System.out.println("OUTOUT: "+selectedX);
-			}
-		});
+	
+		
+		
 
 		mntmBrushColor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
