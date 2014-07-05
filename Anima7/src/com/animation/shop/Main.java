@@ -2275,6 +2275,13 @@ shareFrame.update();
 				translate("Change Canvas Background Color.."));
 		mnView.add(mntmChangeCanvasBGColor);
 
+		
+
+		JMenuItem mntmToggleCanvasBorder = new JMenuItem(
+				translate("Toggle Canvas Border"));
+		mnView.add(mntmToggleCanvasBorder);
+
+		
 		final JMenu mnFilters = new JMenu(translate("Filters"));
 		menuBar.add(mnFilters);
 
@@ -2717,6 +2724,19 @@ shareFrame.update();
 
 				setCanvasBGColor(colorPick3((canvasPanel.getBackground())));
 				
+
+			}
+		});
+
+		mntmToggleCanvasBorder.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+				if(canvas.showCanvasBorder)
+					canvas.showCanvasBorder=false;
+				else{
+					canvas.showCanvasBorder=true;
+					canvas.drawBorder();
+				}
 
 			}
 		});

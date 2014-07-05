@@ -92,6 +92,8 @@ PImage selectMask;
 
 	int currentlySaving = 0; // currenT Action that is being saved
 
+	boolean showCanvasBorder=true;
+	
 	List<Integer> inkCuts;
 	public int cw; // canvas width
 	public int ch; // canvas height
@@ -209,6 +211,7 @@ viewHeight = ch;
 
 		ellipseMode(CORNER);
 		background(bgColor);
+		
 		currentFrameGraphic = new PGraphics();
 		currentFrameGraphic = createGraphics(cw, ch);
 		tempGraphic=new PGraphics();
@@ -234,7 +237,7 @@ viewHeight = ch;
 
 		saveAction(0, 0, "Create");
 		layDownFrames(-1);
-		
+		drawBorder();
 
 	}
 	public void resizeMe(int w, int h){
@@ -267,10 +270,7 @@ public void zoom(int z){
 			frame.setResizable(false);
 	  showNewFrame(parent.CURRENTLAYER,parent.CURRENTFRAME,-1);
 	 
-	  stroke(0);
-	  //TODO WHY WAS THIS GREY?
-		fill(bgColor);
-		rect(0,0,viewWidth,viewHeight);
+	 
 		
 	}
 	boolean recording=false;
@@ -384,6 +384,7 @@ public void zoom(int z){
 
 			parent.pasting = true;
 			background(bgColor);
+		
 			image(tempDispImage, 0, 0,viewWidth,viewHeight);
 			if(currentFrameGraphic!=null)
 			image(currentFrameGraphic, 0, 0,viewWidth,viewHeight);
@@ -478,7 +479,7 @@ public void zoom(int z){
 						clipBoardHeight);
 
 			}
-
+			drawBorder();
 		}
 		
 		if(recording){
@@ -647,9 +648,10 @@ int jutra = 0;
 								max(selectBeginY, mouseY) - min(selectBeginY, mouseY));
 					}
 				background(bgColor);
+
 				image(tempDispImage,0,0,viewWidth,viewHeight);
 				image(tempGraphic.get(),0,0,viewWidth,viewHeight);
-				
+				drawBorder();	
 			}
 	 }else
 		if (parent.currentTool.equals("selectRect")
@@ -701,6 +703,7 @@ int jutra = 0;
 			}
 			tempGraphic.endDraw();
 			background(bgColor);
+			
 			image(tempDispImage,0,0,viewWidth,viewHeight);
 			
 			PImage tmp = selectMask.get();
@@ -709,6 +712,7 @@ int jutra = 0;
 			 image( addBorderToImage(tmp,false,0,0),0,0,viewWidth,viewHeight);
 			 tmp=null;
 			noTint();
+			drawBorder();
 			}
 		}
 	}
@@ -731,9 +735,11 @@ int jutra = 0;
 	 	tmp=null;
 
 		background(bgColor);
+		
 		image(tempDispImage,0,0,viewWidth,viewHeight);
 		image(tg.get(),0,0,viewWidth,viewHeight);
 		tg=null;
+		drawBorder();
 	 
 	}
 		}
@@ -1303,7 +1309,7 @@ boolean PLAYINGSOUND=false;
 			unsaved=true;
 			keyEdited=true;
 				currentFrameGraphic.beginDraw();
-				currentFrameGraphic.image(tempGraphic.get(),0,0,viewWidth,viewHeight);
+				currentFrameGraphic.image(tempGraphic.get(),0,0,parent.CANVASWIDTH,parent.CANVASHEIGHT);
 				currentFrameGraphic.endDraw();
 				saveAction(parent.CURRENTLAYER,parent.CURRENTFRAME,"Shape");
 				finaliseFrame(parent.CURRENTLAYER,parent.CURRENTFRAME);
@@ -1357,7 +1363,7 @@ boolean PLAYINGSOUND=false;
 				currentFrameGraphic.beginDraw();
 				currentFrameGraphic.clear();
 				//TODO this might cause an issue?
-				currentFrameGraphic.image(tempDispImage2,0,0,viewWidth,viewHeight);
+				currentFrameGraphic.image(tempDispImage2,0,0,parent.CANVASWIDTH,parent.CANVASHEIGHT);
 				currentFrameGraphic.endDraw();
 				
 				currentlySaving++;
@@ -1413,7 +1419,7 @@ boolean PLAYINGSOUND=false;
 		currentFrameGraphic.beginDraw();
 
 		// todo might need a .get()
-		currentFrameGraphic.image(tempGraphic.get(),0,0,viewWidth,viewHeight);
+		currentFrameGraphic.image(tempGraphic.get(),0,0,parent.CANVASWIDTH,parent.CANVASHEIGHT);
 
 		currentFrameGraphic.endDraw();
 
@@ -1821,7 +1827,7 @@ if(!label.equals("Keyframe Added") && !label.equals("KEYADDFIX")  && !label.equa
 		tmpG.image(tmp, 0, 0,parent.CANVASWIDTH,parent.CANVASHEIGHT);
 		currentFrameGraphic.beginDraw();
 		
-		currentFrameGraphic.image(tmp, 0,0,viewWidth,viewHeight);
+		currentFrameGraphic.image(tmp, 0,0,parent.CANVASWIDTH,parent.CANVASHEIGHT);
 		currentFrameGraphic.endDraw();
 		}
 		}else{
@@ -1845,11 +1851,13 @@ tmpG.endDraw();
 		image(tmpG,0,0,viewHeight,viewWidth);
 
 		background(bgColor, 255);
+		
 		image(tmpG,0,0,viewWidth,viewHeight);
 		getTempDispImage();
 		
 		//tempDispImage=tmpG.get();
 		tmpG=null;
+		drawBorder();
 	}
 	
 	public void setBlending(int x){
@@ -2182,6 +2190,24 @@ if(currentFrameGraphic!=null){
 		img.updatePixels();
 		return img;
 	}
+	
+	public void drawBorder(){
+		if(showCanvasBorder){
+		int fillCol = 0;
+		int tcol =(int) (red(bgColor) + blue(bgColor) + green(bgColor))/3;
+		if(abs(fillCol - tcol)<124)
+			fillCol=255;
+		
+		println("differnece = "+abs(fillCol - tcol));
+		
+		strokeWeight(1);
+		  stroke(fillCol,125);
+			fill(0,0);
+			rect(0,0,viewWidth-1,viewHeight-1);
+
+		}
+		
+	}
 
 	public void pasteFromClipBoard(boolean clearClipBoard, String saveMessage) {
 
@@ -2211,10 +2237,11 @@ if(currentFrameGraphic!=null){
 		}
 
 		background(bgColor);
+		
 		//todo this might cause an issue
 		image(tempDispImage, 0, 0,viewWidth,viewHeight);
 		image(floatingClipBoard, clipBoardX, clipBoardY);
-		
+		 drawBorder();
 		parent.currentTool = "move";
 		parent.setCursor("move");
 		keyEdited = true;
@@ -2599,7 +2626,7 @@ tempGraphic=createGraphics(viewWidth,viewHeight);
 		pg.beginDraw();
 		pg.background(0,0);
 		if(fillTool)
-			pg.image(currentFrameGraphic.get(),0,0);
+			pg.image(currentFrameGraphic.get(),0,0,viewWidth,viewHeight);
 		pg.endDraw();
 		pg.loadPixels();
 		int[][] checked = new int[width][height];
@@ -2762,7 +2789,7 @@ return pg;
 			tmp = spherifyFilter(tmp,(int)(amounts[0]),amounts[1]);
 			else if(filterName.equals("Boxify"))
 			tmp = boxifyFilter(tmp,(int)(amounts[0]),amounts[1],amounts[2]);
-			currentFrameGraphic.image(tmp, 0, 0);
+			currentFrameGraphic.image(tmp, 0, 0,parent.CANVASWIDTH,parent.CANVASHEIGHT);
 			currentFrameGraphic.endDraw();
 
 			new Thread() {
@@ -2966,6 +2993,8 @@ bristle=constrain(bristle,0,hairyness);
   }
   pg.endDraw();
   pg.filter(BLUR,1);
+
+  pg.ellipseMode(CORNER);
   return pg.get();
 
 }
@@ -3029,9 +3058,9 @@ bristle = constrain(bristle,0,cv.length);
 				tmp.popMatrix();
 			}
 		tmp.endDraw();
+		rectMode(CORNER);
 		return tmp.get();
 		
 	}
-	
 	}
 
