@@ -8,6 +8,8 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
@@ -98,6 +100,7 @@ public class Main {
 	// TWEENS + expand drawing area larger than stage(3H)
 	// CURSORS (1H)
 	
+	public GraphicsDevice gd;
 	
 	public ColorUIResource timelineInactiveCol = new ColorUIResource(120,120,120);
 	public ColorUIResource timelineActiveCol = new ColorUIResource(202,202,202);
@@ -605,7 +608,7 @@ public class Main {
 		Image image;
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Point hotSpot;
-
+		
 		if (cursorName.equals("brush") || cursorName.equals("Eraser")) {
 			if (PENSIZE > 78 || PENSIZE < 5) {
 				canvas.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
@@ -1170,10 +1173,14 @@ fc= new JFileChooser();
 	EPanel messageHolder ;
 	public void loadApplication() {
 
-		screenWidth = (int) (Toolkit.getDefaultToolkit().getScreenSize().width - 50);
-		screenHeight = (int) (Toolkit.getDefaultToolkit().getScreenSize().height - 50);
+		gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		//screenWidth = (int) (Toolkit.getDefaultToolkit().getScreenSize().width - 50);
+		//screenHeight = (int) (Toolkit.getDefaultToolkit().getScreenSize().height - 50);
+		
+		screenWidth = gd.getDisplayMode().getWidth();
+		screenHeight = gd.getDisplayMode().getHeight();
+		System.out.println("WIDENSS: : "+screenWidth);
 		frame.setSize(new Dimension(screenWidth, screenHeight));
-
 		mainPanel = new JLayeredPane();
 	
 		mainPanel.setOpaque(true);
@@ -1279,9 +1286,8 @@ fc= new JFileChooser();
 	TopPanel topPanel;
 
 	public void initShow() {
-
-		screenWidth = (int) (Toolkit.getDefaultToolkit().getScreenSize().width - 50);
-		screenHeight = (int) (Toolkit.getDefaultToolkit().getScreenSize().height - 50);
+		screenWidth = gd.getDisplayMode().getWidth()-50;
+		screenHeight = gd.getDisplayMode().getHeight()-50;
 		int extraX = 40;
 		int extraY = 32;
 
