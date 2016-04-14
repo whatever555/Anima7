@@ -188,8 +188,8 @@ public class Main {
 	int MAXFRAMES = 700;
 	public int CURRENTFRAME = 0;
 	public int CURRENTLAYER = 0;
-	public int CANVASWIDTH = 620;
-	public int CANVASHEIGHT = 400;
+	public int CANVASWIDTH = 800;
+	public int CANVASHEIGHT = 600;
 
 	Color PENCOLOR = new Color(0, 0, 0);
 	int PENSIZE = 15;
