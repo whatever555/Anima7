@@ -84,7 +84,7 @@ public class Main {
 	// fix ALPHA issue ON paste MASK
 	// Clean ICONS (3H)
 	// CENTER ZOOM TOOL // SLIDER ZOOM FIX
-	
+	// FUNCTIONALLITY -- STOP RENDERING FILTERS WHEN NEW ONE IS CALLED
 	
 	//LONG FINGER LIST
 	// INSTALL/UNINSTALL NATIVE
@@ -99,6 +99,8 @@ public class Main {
 	// DRAG / MOVE KEYS (7H)
 	// TWEENS + expand drawing area larger than stage(3H)
 	// CURSORS (1H)
+	// OPTIMISE FILTERS
+	
 	
 	public GraphicsDevice gd;
 	
