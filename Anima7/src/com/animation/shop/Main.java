@@ -2353,6 +2353,9 @@ shareFrame.update();
 		JMenuItem mnPaintStyle1 = new JMenuItem(translate("Style 1.."));
 		mntmPainting.add(mnPaintStyle1);
 
+		JMenuItem mnPaintStyle2 = new JMenuItem(translate("Style 2.."));
+		mntmPainting.add(mnPaintStyle2);
+
 		final JMenu mnBrush = new JMenu(translate("Brush"));
 		menuBar.add(mnBrush);
 
@@ -2800,6 +2803,22 @@ shareFrame.update();
 
 				filterFrames.get(getFilterFrameIndex("PAINTING")).showFilter(
 						"Painting Style 1");
+				filterFrames.get(getFilterFrameIndex("PAINTING")).setVisible(
+						true);
+
+				// filterFrame.setBounds(201,201,200,300);
+				// showFilterFrameOnTop();
+			}
+		});
+
+		mnPaintStyle2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				canvas.finaliseFrame(CURRENTLAYER, CURRENTFRAME);
+
+				canvas.showNewFrame(CURRENTLAYER, CURRENTFRAME, -1);
+
+				filterFrames.get(getFilterFrameIndex("PAINTING")).showFilter(
+						"Painting Style 2");
 				filterFrames.get(getFilterFrameIndex("PAINTING")).setVisible(
 						true);
 

@@ -2586,6 +2586,9 @@ public class Canvas extends PApplet {
 			else if (filterName.equals("Painting Style 1"))
 				previewThumb = paintingSytle1(previewThumb, (int) (amounts[0]), (int) (amounts[1]), (int) (amounts[2]),
 						(int) (amounts[3]));
+			else if (filterName.equals("Painting Style 2"))
+				previewThumb = splashPaint(previewThumb, (int) (amounts[0]), (int) (amounts[1]), (int) (amounts[2]),
+						(int) (amounts[3]));
 			else if (filterName.equals("Polar Filter"))
 				previewThumb = polarFilter(previewThumb, (float) (amounts[0] / 100), (float) (amounts[1]));
 			else if (filterName.equals("Arcy Filter"))
@@ -2628,6 +2631,9 @@ public class Canvas extends PApplet {
 						(float) (amounts[2] / 360));
 			else if (filterName.equals("Painting Style 1"))
 				tmp = paintingSytle1(tmp, (int) (amounts[0]), (int) (amounts[1]), (int) (amounts[2]),
+						(int) (amounts[3]));
+			else if (filterName.equals("Painting Style 2"))
+				tmp = splashPaint(tmp, (int) (amounts[0]), (int) (amounts[1]), (int) (amounts[2]),
 						(int) (amounts[3]));
 			else if (filterName.equals("Polar Filter"))
 				tmp = polarFilter(tmp, (float) (amounts[0] / 100), (float) (amounts[1]));
@@ -2788,7 +2794,6 @@ public class Canvas extends PApplet {
 	}
 
 	public PImage paintingSytle1(PImage img, int inaccuracy, int brush_hairs, int hairyness, int intensity) {
-
 		int bristle = hairyness;
 		PGraphics pg = createGraphics(img.width, img.height);
 		pg.loadPixels();
@@ -2858,6 +2863,54 @@ public class Canvas extends PApplet {
 		pg.ellipseMode(CORNER);
 		return pg.get();
 
+	}
+
+	public PImage splashPaint(PImage img, int minBrushSize, int maxBrushSize, int roughness, int brushNum) {
+		PGraphics pg = createGraphics(img.width, img.height);
+		pg.loadPixels();
+		img.loadPixels();
+		pg.fill(0, 0);
+		strokeWeight(0);
+		pg.noFill();
+		pg.beginDraw();
+		// pg.fill(0,0);
+		pg.image(img, 0, 0);
+		pg.ellipseMode(CENTER);
+		int siz = minBrushSize;
+		Boolean gettingLarger = true;
+		PImage brush = loadImage("brushes/1/"+brushNum+".png");
+		pg.noFill();
+		for (int y = 0; y < img.height; y += siz) {
+			for (int x = 0; x < img.width; x += siz) {
+				int loc = y * img.width + x;
+				int c = img.pixels[loc];
+				int csum = (int) (red(c) + green(c) + blue(c));
+				pg.tint(red(c), green(c), blue(c), alpha(c));
+				pg.pushMatrix();
+				
+				pg.translate(x, y);
+				pg.rotate(random(0,360)*TWO_PI/360);
+				pg.image(brush, 0, 0, siz, siz);
+				pg.popMatrix();
+				if (maxBrushSize > maxBrushSize) {
+					if (gettingLarger) {
+						siz += (int) random(1, roughness);
+						if (siz > maxBrushSize) {
+							gettingLarger = false;
+						}
+					} else {
+						siz -= (int) random(1, roughness);
+						if (siz < minBrushSize) {
+							gettingLarger = false;
+						}
+					}
+				}
+			}
+		}
+
+		pg.endDraw();
+		pg.ellipseMode(CORNER);
+		return pg.get();
 	}
 
 	int[][] cv;
