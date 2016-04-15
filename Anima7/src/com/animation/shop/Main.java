@@ -1337,8 +1337,8 @@ fc= new JFileChooser();
 				extraY, (int) (defaultPanelWidth * .2), defaultPanelHeight * 2);
 
 		for (int i = 0; i < filterFrames.size(); i++) {
-			filterFrames.get(i).setPreferredSize(new Dimension(400, 260));
-			filterFrames.get(i).setBounds(200 + i, 200 + i, 400, 300);
+			filterFrames.get(i).setPreferredSize(new Dimension(400, 340));
+			filterFrames.get(i).setBounds(200 + i, 200 + i, 400, 340);
 			filterFrames.get(i).setVisible(false);
 		}
 
@@ -2356,6 +2356,12 @@ shareFrame.update();
 		JMenuItem mnPaintStyle2 = new JMenuItem(translate("Style 2.."));
 		mntmPainting.add(mnPaintStyle2);
 
+		JMenuItem mnPaintStyle3 = new JMenuItem(translate("Style 3.."));
+		mntmPainting.add(mnPaintStyle3);
+
+		JMenuItem mnPaintStyle4 = new JMenuItem(translate("Style 4.."));
+		mntmPainting.add(mnPaintStyle4);
+
 		final JMenu mnBrush = new JMenu(translate("Brush"));
 		menuBar.add(mnBrush);
 
@@ -2802,7 +2808,7 @@ shareFrame.update();
 				canvas.showNewFrame(CURRENTLAYER, CURRENTFRAME, -1);
 
 				filterFrames.get(getFilterFrameIndex("PAINTING")).showFilter(
-						"Painting Style 1");
+						"Paint 1");
 				filterFrames.get(getFilterFrameIndex("PAINTING")).setVisible(
 						true);
 
@@ -2818,7 +2824,39 @@ shareFrame.update();
 				canvas.showNewFrame(CURRENTLAYER, CURRENTFRAME, -1);
 
 				filterFrames.get(getFilterFrameIndex("PAINTING")).showFilter(
-						"Painting Style 2");
+						"Paint 2");
+				filterFrames.get(getFilterFrameIndex("PAINTING")).setVisible(
+						true);
+
+				// filterFrame.setBounds(201,201,200,300);
+				// showFilterFrameOnTop();
+			}
+		});
+
+		mnPaintStyle3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				canvas.finaliseFrame(CURRENTLAYER, CURRENTFRAME);
+
+				canvas.showNewFrame(CURRENTLAYER, CURRENTFRAME, -1);
+
+				filterFrames.get(getFilterFrameIndex("PAINTING")).showFilter(
+						"Paint 3");
+				filterFrames.get(getFilterFrameIndex("PAINTING")).setVisible(
+						true);
+
+				// filterFrame.setBounds(201,201,200,300);
+				// showFilterFrameOnTop();
+			}
+		});
+
+		mnPaintStyle4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				canvas.finaliseFrame(CURRENTLAYER, CURRENTFRAME);
+
+				canvas.showNewFrame(CURRENTLAYER, CURRENTFRAME, -1);
+
+				filterFrames.get(getFilterFrameIndex("PAINTING")).showFilter(
+						"Paint 4");
 				filterFrames.get(getFilterFrameIndex("PAINTING")).setVisible(
 						true);
 

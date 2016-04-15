@@ -1234,7 +1234,7 @@ public class Canvas extends PApplet {
 		drawBool = false;
 		if (parent.currentTool.equals("dropper")) {
 			int c = get(mouseX, mouseY);
-			Color c2 = new Color((int) red(c), (int) green(c), (int) blue(c));
+			Color c2 = new Color(c >> 16 & 0xFF, c >> 8 & 0xFF, c & 0xFF);
 			parent.updateColorBoxes(c2);
 			parent.PENCOLOR = c2;
 		} else if (parent.currentTool.equals("selectRect") || parent.currentTool.equals("selectCirc")
@@ -2213,7 +2213,7 @@ public class Canvas extends PApplet {
 
 				int c = currentFrameGraphic.pixels[loc];
 				int c2 = clipBoard.pixels[loc2];
-				c = color(red(c), green(c), blue(c), alpha(c) - alpha(c2));
+				c = color(c >> 16 & 0xFF, c >> 8 & 0xFF, c & 0xFF, alpha(c) - alpha(c2));
 				currentFrameGraphic.pixels[loc] = c;
 			}
 		}
@@ -2363,7 +2363,7 @@ public class Canvas extends PApplet {
 			for (int yy = 0; yy < h; yy++) {
 				int loc1 = (xx) + (yy * w);
 				int c2 = mask.pixels[loc1];
-				if (red(c2) == 0)
+				if ((c2 >> 16 & 0xFF) == 0)
 					img.pixels[loc1] = color(0, 0);
 			}
 
@@ -2395,25 +2395,25 @@ public class Canvas extends PApplet {
 			for (int j = 0; j < h; j++) {
 				int loc = (j * w) + i;
 				int c = img.pixels[loc];
-				img.pixels[loc] = color(red(c), green(c), blue(c), (int) ((alpha(c) / featherDepth) * i));
+				img.pixels[loc] = color(c >> 16 & 0xFF, c >> 8 & 0xFF, c & 0xFF, (int) ((alpha(c) / featherDepth) * i));
 			}
 		for (int i = w - 1; i >= w - featherDepth; i--)
 			for (int j = 0; j < h; j++) {
 				int loc = (j * w) + i;
 				int c = img.pixels[loc];
-				img.pixels[loc] = color(red(c), green(c), blue(c), (int) ((alpha(c) / featherDepth) * (w - i)));
+				img.pixels[loc] = color(c >> 16 & 0xFF, c >> 8 & 0xFF, c & 0xFF, (int) ((alpha(c) / featherDepth) * (w - i)));
 			}
 		for (int i = 0; i < w; i++)
 			for (int j = 0; j < featherDepth; j++) {
 				int loc = (j * w) + i;
 				int c = img.pixels[loc];
-				img.pixels[loc] = color(red(c), green(c), blue(c), (int) ((alpha(c) / featherDepth) * j));
+				img.pixels[loc] = color(c >> 16 & 0xFF, c >> 8 & 0xFF, c & 0xFF, (int) ((alpha(c) / featherDepth) * j));
 			}
 		for (int i = 0; i < w; i++)
 			for (int j = h - 1; j > h - featherDepth; j--) {
 				int loc = (j * w) + i;
 				int c = img.pixels[loc];
-				img.pixels[loc] = color(red(c), green(c), blue(c), (int) ((alpha(c) / featherDepth) * (h - j)));
+				img.pixels[loc] = color(c >> 16 & 0xFF, c >> 8 & 0xFF, c & 0xFF, (int) ((alpha(c) / featherDepth) * (h - j)));
 			}
 		img.updatePixels();
 
@@ -2534,15 +2534,15 @@ public class Canvas extends PApplet {
 		pg.updatePixels();
 		return pg;
 	}
-
+	
 	public boolean compareColors(int c1, int c2, int inAccuracy, boolean dontIgnoreAlpha) {
 		if (c2 == c1)
 			return true;
 		double dif;
 		if (!dontIgnoreAlpha)
-			dif = (abs(red(c1) - red(c2)) + abs(green(c1) - green(c2)) + abs(blue(c1) - blue(c2)));
+			dif = (abs((c1 >> 16 & 0xFF) - (c2 >> 16 & 0xFF)) + abs((c1 >> 8 & 0xFF) - (c2 >> 8 & 0xFF)) + abs((c1 & 0xFF) - (c2 & 0xFF)));
 		else
-			dif = (abs(red(c1) - red(c2)) + abs(green(c1) - green(c2)) + abs(blue(c1) - blue(c2))
+			dif = (abs((c1 >> 16 & 0xFF) - (c2 >> 16 & 0xFF)) + abs((c1 >> 8 & 0xFF) - (c2 >> 8 & 0xFF)) + abs((c1 & 0xFF)  - (c2 & 0xFF))
 					+ abs(alpha(c1) - alpha(c2)));
 		// System.out.println(dif +" = DIFFERENCE");
 		return (dif <= inAccuracy);
@@ -2583,11 +2583,17 @@ public class Canvas extends PApplet {
 			else if (filterName.equals("Motion Blur"))
 				previewThumb = motionBlurFilter(previewThumb, (float) (amounts[0] / 10), (float) (amounts[1] / 10),
 						(float) (amounts[2] / 360));
-			else if (filterName.equals("Painting Style 1"))
+			else if (filterName.equals("Paint 1"))
 				previewThumb = paintingSytle1(previewThumb, (int) (amounts[0]), (int) (amounts[1]), (int) (amounts[2]),
 						(int) (amounts[3]));
-			else if (filterName.equals("Painting Style 2"))
+			else if (filterName.equals("Paint 2"))
+				previewThumb = runningStrokes(previewThumb, (int) (amounts[0]), (int) (amounts[1]), (int) (amounts[2]),
+						(int) (amounts[3]));
+			else if (filterName.equals("Paint 3"))
 				previewThumb = splashPaint(previewThumb, (int) (amounts[0]), (int) (amounts[1]), (int) (amounts[2]),
+						(int) (amounts[3]));
+			else if (filterName.equals("Paint 4"))
+				previewThumb = followingStrokes(previewThumb, (int) (amounts[0]), (int) (amounts[1]), (int) (amounts[2]),
 						(int) (amounts[3]));
 			else if (filterName.equals("Polar Filter"))
 				previewThumb = polarFilter(previewThumb, (float) (amounts[0] / 100), (float) (amounts[1]));
@@ -2629,11 +2635,17 @@ public class Canvas extends PApplet {
 			else if (filterName.equals("Motion Blur"))
 				tmp = motionBlurFilter(tmp, (float) (amounts[0] / 10), (float) (amounts[1] / 10),
 						(float) (amounts[2] / 360));
-			else if (filterName.equals("Painting Style 1"))
+			else if (filterName.equals("Paint 1"))
 				tmp = paintingSytle1(tmp, (int) (amounts[0]), (int) (amounts[1]), (int) (amounts[2]),
 						(int) (amounts[3]));
-			else if (filterName.equals("Painting Style 2"))
+			else if (filterName.equals("Paint 2"))
+				tmp = runningStrokes(tmp, (int) (amounts[0]), (int) (amounts[1]), (int) (amounts[2]),
+						(int) (amounts[3]));
+			else if (filterName.equals("Paint 3"))
 				tmp = splashPaint(tmp, (int) (amounts[0]), (int) (amounts[1]), (int) (amounts[2]),
+						(int) (amounts[3]));
+			else if (filterName.equals("Paint 4"))
+				tmp = followingStrokes(tmp, (int) (amounts[0]), (int) (amounts[1]), (int) (amounts[2]),
 						(int) (amounts[3]));
 			else if (filterName.equals("Polar Filter"))
 				tmp = polarFilter(tmp, (float) (amounts[0] / 100), (float) (amounts[1]));
@@ -2785,7 +2797,7 @@ public class Canvas extends PApplet {
 				int c = img.pixels[loc];
 				if (amounts > -1)
 					tmp.stroke(c);
-				tmp.fill(red(c), green(c), blue(c), alpha(c));
+				tmp.fill(c >> 16 & 0xFF, c >> 8 & 0xFF, c & 0xFF, alpha(c));
 				tmp.ellipse(x + amount / 2, y + amount / 2, amount, amount);
 			}
 		tmp.endDraw();
@@ -2820,7 +2832,7 @@ public class Canvas extends PApplet {
 				int loc = yy * img.width + x;
 
 				int c = img.pixels[loc];
-				int csum = (int) (red(c) + green(c) + blue(c));
+				int csum = (int) ((c >> 16 & 0xFF) + (c >> 8 & 0xFF) + (c & 0xFF));
 				if (alpha(pg.pixels[loc]) < 100) {
 					int dif = abs(lc - csum);
 					if (dif > intensity) {
@@ -2828,7 +2840,7 @@ public class Canvas extends PApplet {
 						if (y > 0)
 							yy = ((int) random(y - 3, y + 3));
 						yy = constrain(yy, 0, img.height - 1);
-						createNewCurve(20 - (int) (red(c) + green(c) + blue(c)) / 40);
+						createNewCurve(20 - (int) ((c >> 16 & 0xFF) + (c >> 8 & 0xFF) + (c & 0xFF)) / 40);
 
 						bristle = (int) random(0, hairyness);
 						count = 0;
@@ -2837,13 +2849,15 @@ public class Canvas extends PApplet {
 						if (count > (int) random(30, 45)) {
 
 							bristle = (int) random(0, hairyness);
-							// createNewCurve(20-(int)(red(c)+green(c)+blue(c))/40);
+							// createNewCurve(20-(int)((c >> 16 & 0xFF)+(c >> 8 & 0xFF)+(c  & 0xFF))/40);
 						}
 						bristle--;
 					}
-					int dr = (int) random(red(c) - brush_hairs, red(c) + brush_hairs);
-					int db = (int) random(blue(c) - brush_hairs, blue(c) + brush_hairs);
-					int dg = (int) random(green(c) - brush_hairs, green(c) + brush_hairs);
+
+					
+					int dr = (int) random((c >> 16 & 0xFF) - brush_hairs, (c >> 16 & 0xFF) + brush_hairs);
+					int db = (int) random((c  & 0xFF) - brush_hairs, (c  & 0xFF) + brush_hairs);
+					int dg = (int) random((c >> 8 & 0xFF) - brush_hairs, (c >> 8 & 0xFF) + brush_hairs);
 
 					pg.stroke(dr, dg, db, alpha(c));
 					// pg.strokeWeight((int)random(1,2));
@@ -2884,8 +2898,8 @@ public class Canvas extends PApplet {
 			for (int x = 0; x < img.width; x += siz) {
 				int loc = y * img.width + x;
 				int c = img.pixels[loc];
-				int csum = (int) (red(c) + green(c) + blue(c));
-				pg.tint(red(c), green(c), blue(c), alpha(c));
+				int csum = (int) ((c >> 16 & 0xFF) + (c >> 8 & 0xFF) + (c  & 0xFF));
+				pg.tint((c >> 16 & 0xFF), (c >> 8 & 0xFF), (c  & 0xFF), alpha(c));
 				pg.pushMatrix();
 				
 				pg.translate(x, y);
@@ -2912,6 +2926,206 @@ public class Canvas extends PApplet {
 		pg.ellipseMode(CORNER);
 		return pg.get();
 	}
+	
+	public PImage runningStrokes(PImage img, int minBrushSize, int maxBrushSize, int roughness, int brushNum) {
+		println("starting filter");
+		PGraphics pg = createGraphics(img.width, img.height);
+		pg.loadPixels();
+		img.loadPixels();
+		pg.fill(0, 0);
+		strokeWeight(0);
+		pg.noFill();
+		pg.beginDraw();
+		// pg.fill(0,0);
+		pg.image(img, 0, 0);
+		pg.ellipseMode(CENTER);
+		int siz = minBrushSize;
+		Boolean gettingLarger = true;
+		PImage brush = loadImage("brushes/1/"+brushNum+".png");
+		pg.noFill();
+		for (int y = 0; y < img.height; y += Math.max(1, siz/2)) {
+			for (int x = 0; x < img.width; x += Math.max(1, siz/2)) {
+				int loc = y * img.width + x;
+				int cg = pg.pixels[loc];
+				if (red(cg) + green(cg) + blue(cg)+alpha(cg) != 0)
+				{
+					break;
+				}
+				int ex = (int)random(1,pg.width-2);
+				int ey= (int)random(1,pg.height-2);
+				int sx = Math.min(x, ex);
+				int sy = Math.min(y, ey);
+				ex = Math.max(x, ex);
+				ey = Math.max(y, ey);
+				int dif=(int)(random(3,7));
+				float rot = random(0,360)*TWO_PI/360;
+				while(sx<ex && sy<ey)
+				{
+					cg = pg.pixels[loc];
+					if (red(cg) + green(cg) + blue(cg)+alpha(cg) != 0)
+					{
+						continue;
+					}
+					loc = sy * img.width + sx;
+					int c = img.pixels[loc];
+					pg.tint((c >> 16 & 0xFF), (c >> 8 & 0xFF), (c  & 0xFF), alpha(c));
+					pg.pushMatrix();
+					pg.translate(sx, sy);
+					pg.rotate(rot);
+					pg.image(brush, 0, 0, siz, siz);
+					pg.popMatrix();
+					if (maxBrushSize > maxBrushSize) {
+						if (gettingLarger) {
+							siz += (int) random(1, roughness);
+							if (siz > maxBrushSize) {
+								gettingLarger = false;
+							}
+						} else {
+							siz -= (int) random(1, roughness);
+							if (siz < minBrushSize) {
+								gettingLarger = false;
+							}
+						}
+					}
+					sx+=((ex-sx)/dif)+roughness;
+					sy+=((ey-sy)/dif)+roughness;
+				}
+			}
+		}
+
+		pg.endDraw();
+		pg.ellipseMode(CORNER);
+		println("end filter");
+		return pg.get();
+	}
+	
+	
+	public PImage followingStrokes(PImage img, int minBrushSize, int maxBrushSize, int roughness, int brushNum) {
+		println("starting filter fs");
+		PGraphics pg = createGraphics(img.width, img.height);
+		pg.loadPixels();
+		img.loadPixels();
+		pg.fill(0, 0);
+		strokeWeight(0);
+		pg.noFill();
+		pg.beginDraw();
+		// pg.fill(0,0);
+		pg.image(img, 0, 0);
+		pg.ellipseMode(CENTER);
+		int siz = minBrushSize;
+		Boolean gettingLarger = true;
+		PImage brush = loadImage("brushes/1/"+brushNum+".png");
+		pg.noFill();
+		for (int y = 0; y < img.height; y += siz) {
+			for (int x = 0; x < img.width; x += siz) {
+				int loc = y * img.width + x;
+				int cg = pg.pixels[loc];
+				if (red(cg) + green(cg) + blue(cg)+alpha(cg) != 0)
+				{
+					break;
+				}
+				int sx = x;
+				int sy = y;
+				int dif=(int)random(1,siz);
+				float rot = random(0,360)*TWO_PI/360;
+
+				int strokeLength = (int)random(12, img.width/2);
+				int s=0;
+				cg = img.pixels[loc];
+				
+				Color lastColor = new Color(cg >> 16 & 0xFF, cg >> 8 & 0xFF, cg & 0xFF, (int)alpha(cg));
+ 
+				while(s<strokeLength && sx<img.width && sy<img.height && sx>0 && sy>0)
+				{
+					loc = sy * img.width + sx;
+					s++;
+					cg = pg.pixels[loc];
+					if (red(cg) + green(cg) + blue(cg)+alpha(cg) != 0)
+					{
+						continue;
+					}
+					
+					loc = sy * img.width + sx;
+					int c = (img.pixels[loc]);
+					pg.tint((((c >> 16 & 0xFF)+(lastColor.getRed()))/2), (((c >> 8 & 0xFF)+(lastColor.getGreen()))/2), (((c & 0xFF)+(lastColor.getBlue()))/2), (((alpha(c)+(lastColor.getAlpha()))/2)));
+					
+					//c=c ^ lastColor;
+					lastColor = new Color(
+							(int)((c >> 16 & 0xFF)+lastColor.getRed())/2, 
+							(int)((c >> 8 & 0xFF)+lastColor.getGreen())/2, 
+							(int)((c & 0xFF)+lastColor.getBlue())/2, 
+							(int)(alpha(c)+lastColor.getAlpha())/2
+					);
+					
+					pg.pushMatrix();
+					pg.translate(sx, sy);
+					pg.rotate(rot);
+					pg.image(brush, 0, 0, siz, siz);
+					pg.popMatrix();
+					if (maxBrushSize > maxBrushSize) {
+						if (gettingLarger) {
+							siz += (int) random(1, roughness);
+							if (siz > maxBrushSize) {
+								gettingLarger = false;
+							}
+						} else {
+							siz -= (int) random(1, roughness);
+							if (siz < minBrushSize) {
+								gettingLarger = false;
+							}
+						}
+					}
+					int tx=sx+1;
+					int ty=sy+1;
+					int tempCol = 9999;
+					if (sx+dif<img.width && sy+dif<img.height){
+						int tempCol2 = img.pixels[(sy+dif) * img.width + (sx+dif)];
+						if ((cg-tempCol2) > (cg-tempCol) ){
+							tempCol=tempCol2;
+							tx=sx+dif;ty=sy+dif;
+						}
+					}
+
+					if (sx-dif>0 && sy+dif<img.height){
+						int tempCol2 = img.pixels[(sy+dif) * img.width + (sx-dif)];
+						if ((cg-tempCol2) > (cg-tempCol) )
+							{
+							tempCol=tempCol2;
+							tx=sx-dif;ty=sy+dif;
+							}
+					}
+
+					if (sx-dif>0 && sy-dif>0){
+						int tempCol2 = img.pixels[(sy-dif) * img.width + (sx-dif)];
+						if ((cg-tempCol2) > (cg-tempCol) )
+						{
+							tempCol=tempCol2;
+							tx=sx-dif;ty=sy-dif;
+							}
+					}
+					
+					if (sx+dif<img.width && sy-dif>0){
+						int tempCol2 = img.pixels[(sy-dif) * img.width + (sx+dif)];
+						if ((cg-tempCol2) > (cg-tempCol) )
+						{
+							tempCol=tempCol2;
+							tx=sx+dif;ty=sy-dif;
+							}
+					}
+					sx=tx; sy=ty;
+				}
+			}
+		}
+
+		pg.endDraw();
+		pg.ellipseMode(CORNER);
+		println("end filter");
+		return pg.get();
+	}
+	
+	
+	
+
 
 	int[][] cv;
 
@@ -2965,7 +3179,7 @@ public class Canvas extends PApplet {
 				tmp.pushMatrix();
 				int loc = (y * img.width) + x;
 				int c = img.pixels[loc];
-				tmp.fill(red(c), green(c), blue(c), alpha(c));
+				tmp.fill(c >> 16 & 0xFF, c >> 8 & 0xFF, c & 0xFF, alpha(c));
 				if (stWeight > -1)
 					tmp.stroke(c);
 				tmp.translate(x - (boxSize / 2), y - (boxSize / 2));

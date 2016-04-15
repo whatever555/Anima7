@@ -66,11 +66,17 @@ public class FilterFrame extends EInternalFrame {
 		this.parent=parent;
 
 		if(options.equals("PAINTING")){
-			filters.add("Painting Style 1");
-			filterPanes.add(new FilterPane("Painting Style 1",parent,this,new String[]{"Lossy","Density","Lossyness","Intensity"},new int[]{1,1,1,1},new int[]{100,100,100,100},new float[]{1,12,12,12}));
-			
-			filters.add("Painting Style 2");
-			filterPanes.add(new FilterPane("Painting Style 2",parent,this,new String[]{"Min brush size","Max brush size","Roughness","Brush"},new int[]{1,1,1,1},new int[]{500,500,499,7},new float[]{1,12,5,1}));
+			filters.add("Paint 1");
+			filterPanes.add(new FilterPane("Paint 1",parent,this,new String[]{"Lossy","Density","Lossyness","Intensity"},new int[]{1,1,1,1},new int[]{100,100,100,100},new float[]{1,12,12,12}));
+
+			filters.add("Paint 2");
+			filterPanes.add(new FilterPane("Paint 2",parent,this,new String[]{"Min brush size","Max brush size","Roughness","Brush"},new int[]{1,1,1,1},new int[]{500,500,499,7},new float[]{1,12,5,1}));
+
+			filters.add("Paint 3");
+			filterPanes.add(new FilterPane("Paint 3",parent,this,new String[]{"Min brush size","Max brush size","Roughness","Brush"},new int[]{1,1,1,1},new int[]{500,500,499,7},new float[]{1,12,5,1}));
+
+			filters.add("Paint 4");
+			filterPanes.add(new FilterPane("Paint 4",parent,this,new String[]{"Min brush size","Max brush size","Roughness","Brush"},new int[]{1,1,1,1},new int[]{500,500,499,7},new float[]{1,12,5,1}));
 			
 			
 		}else if(options.equals("AMNONP5")){
